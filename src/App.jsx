@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Plus, Edit2, Trash2, CheckCircle, Circle, Calendar, 
   Save, X, Briefcase, Eye, EyeOff, LayoutDashboard, 
-  ArrowLeft, ExternalLink, BarChart3, FileText 
+  ArrowLeft, ExternalLink, BarChart3, FileText, RefreshCw 
 } from 'lucide-react';
 
 // --- CONFIGURACIÓN DE ESTILOS Y TIPOGRAFÍA ---
@@ -90,7 +90,7 @@ export default function App() {
   // --- ESTADOS ---
   const [viewMode, setViewMode] = useState('admin'); // 'admin' | 'client'
   
-  // Persistencia de Proyectos con LÓGICA DE DEMO ROBUSTA
+  // Persistencia de Proyectos
   const [projects, setProjects] = useState(() => {
     const saved = localStorage.getItem('ja_os_projects');
     const parsedProjects = saved ? JSON.parse(saved) : [];
@@ -98,8 +98,6 @@ export default function App() {
     // SI NO HAY PROYECTOS, CARGAMOS EL DEMO ROBUSTO
     if (parsedProjects.length === 0) {
       const demoData = JSON.parse(JSON.stringify(projectTemplates.seo.data));
-      // Calculamos un progreso inicial basado en las tareas completadas del template
-      // (En el template puse algunas como true para que se vea movimiento)
       return [{
         id: 1,
         name: 'Proyecto Demo: E-commerce',
@@ -108,7 +106,7 @@ export default function App() {
         projectType: 'seo',
         startDate: new Date().toISOString().split('T')[0],
         status: 'active',
-        progress: 15, // Valor inicial, se recalculará al editar
+        progress: 15,
         data: demoData
       }];
     }
@@ -129,7 +127,7 @@ export default function App() {
     localStorage.setItem('ja_os_projects', JSON.stringify(projects));
   }, [projects]);
 
-  // Al cargar un proyecto, recalcular su progreso real basado en los datos
+  // Recalcular progreso real
   useEffect(() => {
       if (selectedProject) {
           let total = 0, completed = 0;
@@ -145,10 +143,17 @@ export default function App() {
               setProjects(prev => prev.map(p => p.id === updated.id ? updated : p));
           }
       }
-  }, [selectedProject?.data]); // Se ejecuta cuando cambia la data del proyecto seleccionado
+  }, [selectedProject?.data]);
 
 
   // --- FUNCIONES ---
+  const handleHardReset = () => {
+    if(confirm('⚠️ ¿ESTÁS SEGURO? \n\nEsto borrará TODOS tus proyectos guardados y reiniciará la app con el template de demostración original.')) {
+      localStorage.removeItem('ja_os_projects');
+      window.location.reload();
+    }
+  };
+
   const createNewProject = () => {
     const template = projectTemplates[newProjectData.projectType];
     const newProject = {
@@ -165,7 +170,6 @@ export default function App() {
 
   const updateProjectData = (newData) => {
     const updatedProject = { ...selectedProject, data: newData };
-    // El useEffect se encargará de recalcular el progreso visualmente
     setSelectedProject(updatedProject);
     setProjects(projects.map(p => p.id === updatedProject.id ? updatedProject : p));
   };
@@ -279,18 +283,26 @@ export default function App() {
             </h1>
             <p className={`text-slate-400 ${styles.fontBody}`}>Sistema Operativo de Consultoría Estratégica</p>
           </div>
-          <button 
-            onClick={() => setShowNewProject(true)}
-            className={`px-6 py-3 rounded-xl flex items-center gap-2 font-semibold ${styles.primaryBtn}`}
-          >
-            <Plus size={20} /> Nuevo Proyecto
-          </button>
+          <div className="flex gap-4">
+            <button 
+              onClick={handleHardReset}
+              className="px-4 py-3 rounded-xl flex items-center gap-2 font-bold text-xs bg-red-500/10 text-red-500 border border-red-500/30 hover:bg-red-500 hover:text-white transition-all"
+            >
+              <RefreshCw size={16} /> RESET SYSTEM
+            </button>
+            <button 
+              onClick={() => setShowNewProject(true)}
+              className={`px-6 py-3 rounded-xl flex items-center gap-2 font-semibold ${styles.primaryBtn}`}
+            >
+              <Plus size={20} /> Nuevo Proyecto
+            </button>
+          </div>
         </header>
 
         {projects.length === 0 ? (
           <div className="text-center py-20 bg-slate-900/50 rounded-3xl border border-dashed border-slate-700">
             <LayoutDashboard size={48} className="mx-auto text-slate-600 mb-4" />
-            <p className="text-slate-500">No tienes proyectos activos. Crea el primero para comenzar.</p>
+            <p className="text-slate-500">No tienes proyectos activos. Pulsa Reset System o crea uno nuevo.</p>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -353,7 +365,7 @@ export default function App() {
             </div>
           </div>
 
-          {/* CONTROLES ADMIN / CLIENTE */}
+          {/* CONTROLES ADMIN / CLIENTE + RESET */}
           <div className="flex items-center gap-4">
             <div className="hidden md:flex bg-slate-900 p-1 rounded-lg border border-slate-800">
               <button 
@@ -369,6 +381,14 @@ export default function App() {
                 <Eye size={14} /> Vista Cliente
               </button>
             </div>
+            
+            <button 
+              onClick={handleHardReset}
+              className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-bold bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white transition-all ml-2"
+              title="Borrar todo y reiniciar demo"
+            >
+              <Trash2 size={14} /> RESET
+            </button>
           </div>
         </div>
       </div>
