@@ -2,18 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { 
   Plus, Edit2, Trash2, CheckCircle, Circle, Calendar, 
   Save, X, Briefcase, Eye, EyeOff, LayoutDashboard, 
-  ArrowLeft, ExternalLink, BarChart3, FileText, RefreshCw 
+  ArrowLeft, ExternalLink, BarChart3, FileText, RefreshCw,
+  Activity, Zap, Target, Layers, ArrowUpRight
 } from 'lucide-react';
 
 // --- CONFIGURACIÓN DE ESTILOS Y TIPOGRAFÍA ---
 const styles = {
   fontHeading: "font-['Poppins',_sans-serif]",
   fontBody: "font-['Raleway',_sans-serif]",
-  glassCard: "bg-slate-800/50 backdrop-blur-xl border border-white/10 shadow-xl",
+  glassCard: "bg-slate-900/60 backdrop-blur-xl border border-slate-700/50 shadow-2xl",
   activeTab: "bg-amber-500 text-slate-900 shadow-[0_0_15px_rgba(245,158,11,0.4)]",
   inactiveTab: "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white",
-  primaryBtn: "bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-lg hover:shadow-orange-500/20",
-  secondaryBtn: "bg-slate-700 hover:bg-slate-600 text-white border border-white/10"
+  primaryBtn: "bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold shadow-[0_0_20px_rgba(245,158,11,0.3)] transition-all",
+  secondaryBtn: "bg-slate-800 hover:bg-slate-700 text-white border border-slate-600",
+  neonText: "text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-300 drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]"
 };
 
 // --- DATA INICIAL (TEMPLATES ROBUSTOS) ---
@@ -88,14 +90,12 @@ const phases = [
 
 export default function App() {
   // --- ESTADOS ---
-  const [viewMode, setViewMode] = useState('admin'); // 'admin' | 'client'
+  const [viewMode, setViewMode] = useState('admin');
   
-  // Persistencia de Proyectos
+  // Persistencia
   const [projects, setProjects] = useState(() => {
     const saved = localStorage.getItem('ja_os_projects');
     const parsedProjects = saved ? JSON.parse(saved) : [];
-
-    // SI NO HAY PROYECTOS, CARGAMOS EL DEMO ROBUSTO
     if (parsedProjects.length === 0) {
       const demoData = JSON.parse(JSON.stringify(projectTemplates.seo.data));
       return [{
@@ -127,7 +127,6 @@ export default function App() {
     localStorage.setItem('ja_os_projects', JSON.stringify(projects));
   }, [projects]);
 
-  // Recalcular progreso real
   useEffect(() => {
       if (selectedProject) {
           let total = 0, completed = 0;
@@ -145,10 +144,9 @@ export default function App() {
       }
   }, [selectedProject?.data]);
 
-
   // --- FUNCIONES ---
   const handleHardReset = () => {
-    if(confirm('⚠️ ¿ESTÁS SEGURO? \n\nEsto borrará TODOS tus proyectos guardados y reiniciará la app con el template de demostración original.')) {
+    if(confirm('⚠️ ¿RESET DE FÁBRICA? \n\nSe borrarán todos los proyectos y se restaurará la Demo.')) {
       localStorage.removeItem('ja_os_projects');
       window.location.reload();
     }
@@ -212,12 +210,23 @@ export default function App() {
     updateProjectData(newData);
   };
 
+  // --- CALCULOS DASHBOARD ---
+  const totalProjects = projects.length;
+  const avgProgress = projects.length > 0 
+    ? Math.round(projects.reduce((acc, curr) => acc + curr.progress, 0) / projects.length) 
+    : 0;
+  const totalTasks = projects.reduce((acc, p) => {
+      let count = 0;
+      Object.values(p.data).forEach(arr => count += arr.length);
+      return acc + count;
+  }, 0);
+
   // --- RENDERIZADO ---
 
   // 1. MODAL NUEVO PROYECTO
   if (showNewProject) return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4 font-sans">
-      <div className={`max-w-2xl w-full ${styles.glassCard} rounded-2xl p-8 animate-in fade-in zoom-in duration-300`}>
+    <div className="min-h-screen bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 font-sans z-50 fixed inset-0">
+      <div className={`max-w-2xl w-full ${styles.glassCard} rounded-2xl p-8 border-amber-500/20`}>
         <div className="flex justify-between items-center mb-6">
           <h2 className={`text-2xl text-white ${styles.fontHeading}`}>Iniciar Nuevo Proyecto</h2>
           <button onClick={() => setShowNewProject(false)} className="text-slate-400 hover:text-white"><X /></button>
@@ -263,88 +272,210 @@ export default function App() {
             disabled={!newProjectData.name}
             className={`w-full py-4 rounded-xl font-bold mt-6 ${styles.primaryBtn} ${!newProjectData.name ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            Crear Dashboard
+            Lanzar Estrategia
           </button>
         </div>
       </div>
     </div>
   );
 
-  // 2. DASHBOARD DE PROYECTOS (HOME)
+  // 2. DASHBOARD DE PROYECTOS (HOME - IMPACTANTE)
   if (!selectedProject) return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 p-6 md:p-12 font-sans selection:bg-amber-500/30">
+    <div className="min-h-screen bg-slate-950 text-slate-200 p-4 md:p-8 font-sans selection:bg-amber-500/30 overflow-hidden">
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Raleway:wght@300;400;500;600&display=swap');`}</style>
       
-      <div className="max-w-7xl mx-auto">
-        <header className="flex justify-between items-end mb-12">
+      {/* FONDO ANIMADO TECH */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+          <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[120px]"></div>
+          <div className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-blue-500/10 rounded-full blur-[100px]"></div>
+      </div>
+
+      <div className="max-w-7xl mx-auto relative z-10">
+        
+        {/* HEADER TIPO HUD */}
+        <header className="flex flex-col md:flex-row justify-between items-end mb-10 border-b border-slate-800 pb-6">
           <div>
-            <h1 className={`text-4xl md:text-5xl font-bold text-white mb-2 ${styles.fontHeading}`}>
-              SOSTAC <span className="text-amber-500 italic">FLOW</span>
+            <div className="flex items-center gap-3 mb-2">
+                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
+                <span className="text-xs font-mono text-slate-400 tracking-widest">SYSTEM ONLINE // V 2.0</span>
+            </div>
+            <h1 className={`text-5xl font-bold text-white tracking-tight ${styles.fontHeading}`}>
+              SOSTAC <span className={styles.neonText}>FLOW</span>
             </h1>
-            <p className={`text-slate-400 ${styles.fontBody}`}>Sistema Operativo de Consultoría Estratégica</p>
+            <p className={`text-slate-400 mt-2 ${styles.fontBody}`}>Centro de Comando Estratégico</p>
           </div>
-          <div className="flex gap-4">
+          <div className="flex gap-4 mt-6 md:mt-0">
             <button 
               onClick={handleHardReset}
-              className="px-4 py-3 rounded-xl flex items-center gap-2 font-bold text-xs bg-red-500/10 text-red-500 border border-red-500/30 hover:bg-red-500 hover:text-white transition-all"
+              className="px-4 py-2 rounded-lg flex items-center gap-2 font-bold text-xs bg-red-500/10 text-red-500 border border-red-500/30 hover:bg-red-500 hover:text-white transition-all"
             >
-              <RefreshCw size={16} /> RESET SYSTEM
+              <RefreshCw size={14} /> RESET DB
             </button>
             <button 
               onClick={() => setShowNewProject(true)}
-              className={`px-6 py-3 rounded-xl flex items-center gap-2 font-semibold ${styles.primaryBtn}`}
+              className={`px-6 py-3 rounded-xl flex items-center gap-2 font-bold text-sm ${styles.primaryBtn}`}
             >
-              <Plus size={20} /> Nuevo Proyecto
+              <Plus size={18} /> NUEVA ESTRATEGIA
             </button>
           </div>
         </header>
 
-        {projects.length === 0 ? (
-          <div className="text-center py-20 bg-slate-900/50 rounded-3xl border border-dashed border-slate-700">
-            <LayoutDashboard size={48} className="mx-auto text-slate-600 mb-4" />
-            <p className="text-slate-500">No tienes proyectos activos. Pulsa Reset System o crea uno nuevo.</p>
-          </div>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map(project => (
-              <div 
-                key={project.id}
-                onClick={() => setSelectedProject(project)}
-                className={`group cursor-pointer rounded-2xl p-6 transition-all hover:-translate-y-1 ${styles.glassCard} hover:border-amber-500/50`}
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <div className={`p-3 rounded-lg ${styles.activeTab} bg-amber-500/10 text-amber-500`}>
-                    <Briefcase size={24} />
-                  </div>
-                  <span className="text-xs font-mono text-slate-500 bg-slate-900 px-2 py-1 rounded">
-                    {project.status.toUpperCase()}
-                  </span>
+        {/* KPI CARDS (BENTO GRID TOP) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            {/* KPI 1 */}
+            <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden group`}>
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <Layers size={80} />
+                </div>
+                <h3 className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Proyectos Activos</h3>
+                <div className="text-4xl font-bold text-white mb-2">{totalProjects}</div>
+                <div className="flex items-center gap-2 text-xs text-green-400">
+                    <ArrowUpRight size={14} /> <span>100% Operativo</span>
+                </div>
+            </div>
+
+            {/* KPI 2 */}
+            <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden group`}>
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <Activity size={80} />
+                </div>
+                <h3 className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Eficiencia Global</h3>
+                <div className="text-4xl font-bold text-white mb-2">{avgProgress}%</div>
+                <div className="w-full bg-slate-700 h-1.5 rounded-full mt-2">
+                    <div className="bg-amber-500 h-full rounded-full" style={{width: `${avgProgress}%`}}></div>
+                </div>
+            </div>
+
+            {/* KPI 3 */}
+            <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden group`}>
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <Target size={80} />
+                </div>
+                <h3 className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Tareas en Radar</h3>
+                <div className="text-4xl font-bold text-white mb-2">{totalTasks}</div>
+                <div className="text-xs text-slate-500">Items estratégicos bajo gestión</div>
+            </div>
+        </div>
+
+        {/* MAIN CONTENT GRID */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            {/* COLUMN LEFT: PROJECTS LIST (2/3) */}
+            <div className="lg:col-span-2 space-y-6">
+                <div className="flex justify-between items-center mb-2">
+                    <h2 className={`text-xl font-bold text-white flex items-center gap-2 ${styles.fontHeading}`}>
+                        <Briefcase size={20} className="text-amber-500" /> Proyectos en Curso
+                    </h2>
+                </div>
+
+                {projects.length === 0 ? (
+                    <div className="text-center py-20 bg-slate-900/50 rounded-3xl border border-dashed border-slate-700">
+                        <LayoutDashboard size={48} className="mx-auto text-slate-600 mb-4" />
+                        <p className="text-slate-500">Sistema en espera. Inicie una nueva estrategia.</p>
+                    </div>
+                ) : (
+                    <div className="grid gap-4">
+                        {projects.map(project => (
+                        <div 
+                            key={project.id}
+                            onClick={() => setSelectedProject(project)}
+                            className={`group cursor-pointer rounded-xl p-6 transition-all border border-slate-800 bg-slate-900/40 hover:bg-slate-800 hover:border-amber-500/50 hover:shadow-lg relative overflow-hidden`}
+                        >
+                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            
+                            <div className="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 className={`text-lg font-bold text-white mb-1 group-hover:text-amber-400 transition-colors ${styles.fontHeading}`}>{project.name}</h3>
+                                    <p className="text-sm text-slate-400">{project.client} • {projectTemplates[project.projectType]?.name}</p>
+                                </div>
+                                <div className="text-2xl font-bold text-slate-700 group-hover:text-white transition-colors">
+                                    {project.progress}%
+                                </div>
+                            </div>
+                            
+                            {/* MINI VISUALIZER OF PHASES */}
+                            <div className="flex gap-1 mb-2">
+                                {phases.map((ph, idx) => {
+                                    // Check status of phase
+                                    const pTasks = project.data[ph.id] || [];
+                                    const isComplete = pTasks.length > 0 && pTasks.every(t => t.completed);
+                                    const hasProgress = pTasks.some(t => t.completed);
+                                    
+                                    let colorClass = "bg-slate-800";
+                                    if (isComplete) colorClass = "bg-green-500";
+                                    else if (hasProgress) colorClass = "bg-amber-500";
+                                    
+                                    return (
+                                        <div key={idx} className={`h-1 flex-1 rounded-full ${colorClass}`} title={ph.name}></div>
+                                    )
+                                })}
+                            </div>
+                            <div className="flex justify-between text-[10px] text-slate-500 font-mono uppercase">
+                                <span>S</span><span>O</span><span>S</span><span>T</span><span>A</span><span>C</span>
+                            </div>
+                        </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            {/* COLUMN RIGHT: SYSTEM STATUS (1/3) */}
+            <div className="space-y-6">
+                 <div className="flex justify-between items-center mb-2">
+                    <h2 className={`text-xl font-bold text-white flex items-center gap-2 ${styles.fontHeading}`}>
+                        <Zap size={20} className="text-amber-500" /> Acciones Rápidas
+                    </h2>
                 </div>
                 
-                <h3 className={`text-xl font-bold text-white mb-1 ${styles.fontHeading}`}>{project.name}</h3>
-                <p className="text-sm text-slate-400 mb-6">{project.client}</p>
-                
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs text-slate-300">
-                    <span>Progreso SOSTAC</span>
-                    <span>{project.progress}%</span>
-                  </div>
-                  <div className="h-2 w-full bg-slate-700 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-gradient-to-r from-amber-500 to-orange-500 transition-all duration-1000" 
-                      style={{width: `${project.progress}%`}}
-                    />
-                  </div>
+                <div className={`${styles.glassCard} p-6 rounded-2xl`}>
+                    <div className="space-y-4">
+                        <button onClick={() => setShowNewProject(true)} className="w-full text-left p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-amber-500/50 transition-all flex items-center gap-3 group">
+                            <div className="p-2 bg-amber-500/10 rounded-md text-amber-500 group-hover:text-white group-hover:bg-amber-500 transition-colors">
+                                <Plus size={16} />
+                            </div>
+                            <div>
+                                <div className="text-sm font-bold text-white">Nueva Estrategia</div>
+                                <div className="text-xs text-slate-500">Crear desde template</div>
+                            </div>
+                        </button>
+
+                        <button className="w-full text-left p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 transition-all flex items-center gap-3 group">
+                            <div className="p-2 bg-blue-500/10 rounded-md text-blue-500 group-hover:text-white group-hover:bg-blue-500 transition-colors">
+                                <FileText size={16} />
+                            </div>
+                            <div>
+                                <div className="text-sm font-bold text-white">Exportar Reportes</div>
+                                <div className="text-xs text-slate-500">Generar PDF global</div>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div className="mt-8 pt-6 border-t border-slate-800">
+                        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Estado del Sistema</h4>
+                        <div className="space-y-3">
+                             <div className="flex justify-between items-center text-xs">
+                                <span className="text-slate-400">Database</span>
+                                <span className="text-green-400 font-mono">LOCAL_STORAGE OK</span>
+                            </div>
+                             <div className="flex justify-between items-center text-xs">
+                                <span className="text-slate-400">Version</span>
+                                <span className="text-slate-300 font-mono">v2.4.0 (Beta)</span>
+                            </div>
+                            <div className="flex justify-between items-center text-xs">
+                                <span className="text-slate-400">License</span>
+                                <span className="text-amber-500 font-mono">JAIRO AMAYA PRO</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
+            </div>
+
+        </div>
       </div>
     </div>
   );
 
-  // 3. VISTA DE DETALLE DE PROYECTO
+  // 3. VISTA DE DETALLE DE PROYECTO (MANTENIDA IGUAL PERO CON FONDO AJUSTADO)
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200 font-sans">
       
@@ -387,7 +518,7 @@ export default function App() {
               className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-bold bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white transition-all ml-2"
               title="Borrar todo y reiniciar demo"
             >
-              <Trash2 size={14} /> RESET
+              <Trash2 size={14} />
             </button>
           </div>
         </div>
@@ -479,7 +610,6 @@ export default function App() {
                         </div>
                       )}
                       
-                      {/* Área de notas con más visibilidad si hay contenido */}
                       <div className={`mt-2 flex items-start gap-2 ${!task.notes && viewMode === 'client' ? 'hidden' : ''}`}>
                         <FileText size={14} className={`mt-1 ${task.notes ? 'text-slate-400' : 'text-slate-600'}`} />
                         <textarea 
