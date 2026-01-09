@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   Plus, Edit2, Trash2, CheckCircle, Circle, Calendar, 
   Save, X, Briefcase, Eye, EyeOff, LayoutDashboard, 
@@ -6,7 +6,6 @@ import {
   Activity, Zap, Target, Layers, ArrowUpRight, Share2, 
   Github, Twitter, Linkedin, Globe, HardDrive, Cpu, Terminal,
   Database, Network, Download
-  /* HE ELIMINADO Lock, LogOut y Loader2 PARA EVITAR EL ERROR */
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import { createClient } from '@supabase/supabase-js';
@@ -29,14 +28,20 @@ const styles = {
   neonText: "text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-300 drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]"
 };
 
-// --- 2. TEMPLATES (CONTENIDO COMPLETO) ---
+// --- 2. TEMPLATES (CONTENIDO COMPLETO - SIN RECORTES) ---
 const projectTemplates = {
   seo: {
     name: 'Consultoría SEO',
     description: 'Diagnóstico + Estrategia + Priorización',
     data: {
       situation: [
-        { id: 's1', text: 'Ejecutar Auditoría Técnica Inicial', completed: true, notes: 'Diagnóstico de salud del sitio usando herramienta propietaria (Crawl/Index).', link: 'https://jairoamaya.co/auditor-seo-interactivo/' },
+        { 
+            id: 's1', 
+            text: 'Ejecutar Auditoría Técnica Inicial', 
+            completed: true, 
+            notes: 'Diagnóstico de salud del sitio usando herramienta propietaria (Crawl/Index).', 
+            link: 'https://jairoamaya.co/auditor-seo-interactivo/' 
+        },
         { id: 's2', text: 'Análisis de Competencia (Top 3 SERP)', completed: true, notes: 'Competidor A domina keywords informacionales. Oportunidad en transaccionales.', link: '' },
         { id: 's3', text: 'Keyword Research Transaccional', completed: false, notes: 'Foco en long-tail keywords con intención de compra alta.', link: '' },
         { id: 's4', text: 'Revisión de Perfil de Enlaces (Backlinks)', completed: false, notes: 'Análisis de toxicidad y autoridad de dominio.', link: '' },
@@ -53,7 +58,13 @@ const projectTemplates = {
         { id: 'st3', text: 'Link Building: Digital PR & Outreach', completed: false, notes: 'Conseguir enlaces de sitios de nicho con DR > 40.', link: '' },
       ],
       tactics: [
-          { id: 't1', text: 'Matriz de Prioridad (Impacto vs Esfuerzo)', completed: false, notes: 'Clasificar hallazgos de la auditoría para definir Quick Wins.', link: 'https://jairoamaya.co/matriz-de-prioridad-seo/' },
+          { 
+              id: 't1', 
+              text: 'Matriz de Prioridad (Impacto vs Esfuerzo)', 
+              completed: false, 
+              notes: 'Clasificar hallazgos de la auditoría para definir Quick Wins.', 
+              link: 'https://jairoamaya.co/matriz-de-prioridad-seo/'
+          },
           { id: 't2', text: 'Optimización On-Page de 20 URLs Prioritarias', completed: false, notes: 'Ajuste de H-Tags y NLP.', link: '' },
           { id: 't3', text: 'Creación de 4 Artículos "Pilar" Mensuales', completed: false, notes: 'Contenido de >1500 palabras.', link: '' },
           { id: 't4', text: 'Implementación de Schema Markup', completed: false, notes: 'Product, FAQ y Organization.', link: '' },
@@ -143,6 +154,7 @@ export default function App() {
   const [projects, setProjects] = useState([]);
   const [loadingProjects, setLoadingProjects] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [onboarding, setOnboarding] = useState(false);
 
   const [selectedProject, setSelectedProject] = useState(null);
   const [activePhase, setActivePhase] = useState('situation');
@@ -153,46 +165,83 @@ export default function App() {
     name: '', client: '', industry: '', projectType: 'seo', startDate: new Date().toISOString().split('T')[0]
   });
 
+  const initializedRef = useRef(false);
+
   // --- SESIÓN Y CARGA ---
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setAuthLoading(false);
-      if (session) fetchProjects();
+      if (session) fetchProjects(session.user.id);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-      if (session) fetchProjects();
+      if (session) fetchProjects(session.user.id);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
   // --- BASE DE DATOS (SUPABASE) ---
-  const fetchProjects = async () => {
+  const fetchProjects = async (userId) => {
     setLoadingProjects(true);
     const { data, error } = await supabase.from('projects').select('*').order('updated_at', { ascending: false });
+    
     if (!error && data) {
-        // Parsear el JSON 'data' que viene de la DB
+        // Parsear JSONB
         const parsedProjects = data.map(p => ({
             ...p,
-            data: p.data // Supabase ya devuelve JSONB como objeto
+            data: p.data
         }));
         setProjects(parsedProjects);
+
+        // --- AUTO-ONBOARDING: Si no hay proyectos, crear DEMO automáticamente ---
+        if (parsedProjects.length === 0 && !initializedRef.current) {
+            initializedRef.current = true; // Evitar bucles
+            setOnboarding(true);
+            setTimeout(() => {
+                autoGenerateDemo(userId);
+            }, 1000);
+        }
     }
     setLoadingProjects(false);
   };
 
-  // Función de Guardado (Debounce o Manual)
+  const autoGenerateDemo = async (userId) => {
+      const template = projectTemplates['seo'];
+      // Insertar directo sin pasar ID manual (Dejar que Supabase genere el ID)
+      const { data, error } = await supabase.from('projects').insert([{
+          name: 'Demo: Tech Growth Strategy',
+          client: 'SaaS Unicorn Inc.',
+          industry: 'Software / B2B',
+          project_type: 'seo',
+          start_date: new Date().toISOString().split('T')[0],
+          status: 'active',
+          progress: 13,
+          data: template.data,
+          user_id: userId
+      }]).select();
+
+      if (data && !error) {
+          const newProject = { ...data[0], data: data[0].data };
+          setProjects([newProject]);
+          setOnboarding(false);
+      }
+  };
+
   const saveProjectToCloud = useCallback(async (projectToSave) => {
     if (!session) return;
     setSaving(true);
     
-    const { id, created_at, ...updateData } = projectToSave; // Excluir campos inmutables
+    const { id, created_at, ...updateData } = projectToSave;
     
-    // Si tiene ID numérico (de Supabase), actualizamos. Si es temp (Date.now), insertamos.
-    if (typeof id === 'number') {
+    // LOGICA CORREGIDA: Si el ID es un timestamp grande (> 10 billones), es un proyecto nuevo local.
+    // Si el ID es pequeño (ej. 1, 50, 100), es un ID de base de datos.
+    const isLocalId = id > 10000000000;
+
+    if (!isLocalId) {
+        // ACTUALIZAR (UPDATE)
         await supabase.from('projects').update({
             name: updateData.name,
             client: updateData.client,
@@ -201,8 +250,8 @@ export default function App() {
             updated_at: new Date()
         }).eq('id', id);
     } else {
-        // Es nuevo, insertar
-        const { data, error } = await supabase.from('projects').insert([{
+        // CREAR NUEVO (INSERT)
+        const { data } = await supabase.from('projects').insert([{
             name: updateData.name,
             client: updateData.client,
             industry: updateData.industry,
@@ -215,20 +264,18 @@ export default function App() {
         }]).select();
         
         if (data && data[0]) {
-            // Actualizar ID local con el real de la DB
-            setProjects(prev => prev.map(p => p.id === id ? data[0] : p));
-            setSelectedProject(data[0]);
+            // Reemplazar el proyecto temporal con el real de la DB
+            setProjects(prev => prev.map(p => p.id === id ? { ...data[0], data: data[0].data } : p));
+            if (selectedProject && selectedProject.id === id) {
+                setSelectedProject({ ...data[0], data: data[0].data });
+            }
         }
     }
     setSaving(false);
-  }, [session]);
+  }, [session, selectedProject]);
 
-  // --- MANEJO DE ESTADO LOCAL ---
   const updateProjectData = (newData) => {
-    // 1. Actualizar visualmente inmediato
     const updated = { ...selectedProject, data: newData };
-    
-    // Calcular progreso
     let total = 0, completed = 0;
     Object.values(newData).forEach(phase => {
         total += phase.length;
@@ -238,8 +285,6 @@ export default function App() {
 
     setSelectedProject(updated);
     setProjects(prev => prev.map(p => p.id === updated.id ? updated : p));
-
-    // 2. Guardar en Nube (Debounce manual simple: guardar a los 2s)
     saveProjectToCloud(updated);
   };
 
@@ -262,10 +307,10 @@ export default function App() {
     setSelectedProject(null);
   };
 
-  // --- LÓGICA DE GESTIÓN (IGUAL A V8) ---
+  // --- LÓGICA DE GESTIÓN (FULL) ---
   const createNewProject = async () => {
     const template = projectTemplates[newProjectData.projectType];
-    const tempId = Date.now(); // ID temporal
+    const tempId = Date.now(); // ID Temporal
     const newProject = {
       id: tempId,
       ...newProjectData,
@@ -281,24 +326,6 @@ export default function App() {
     
     // Guardar en DB
     await saveProjectToCloud(newProject);
-  };
-
-  const generateDemoProject = async () => {
-      const template = projectTemplates['seo'];
-      const demoProject = {
-          name: 'Demo: Tech Growth Strategy',
-          client: 'SaaS Unicorn Inc.',
-          industry: 'Software / B2B',
-          projectType: 'seo',
-          startDate: new Date().toISOString().split('T')[0],
-          status: 'active',
-          progress: 13,
-          data: JSON.parse(JSON.stringify(template.data))
-      };
-      // Forzar ID temp para inserción
-      const { id, ...cleanDemo } = demoProject; 
-      await saveProjectToCloud({ id: Date.now(), ...cleanDemo });
-      await fetchProjects(); // Recargar para obtener el ID real
   };
 
   const toggleTask = (taskId) => {
@@ -449,13 +476,6 @@ export default function App() {
     doc.save(`${selectedProject.client.replace(/\s+/g, '_')}_Strategy_Report.pdf`);
   };
 
-  const handleHardReset = () => {
-    if(confirm('⚠️ ¿REINICIAR SISTEMA? \n\nAtención: Esta acción borrará todos los proyectos guardados localmente. Úsala solo si necesitas restaurar la versión original.')) {
-      localStorage.removeItem('ja_os_projects');
-      window.location.reload();
-    }
-  };
-
   const isInternalTool = (url) => url && url.includes('jairoamaya.co');
 
   // --- RENDER: LOGIN SCREEN ---
@@ -487,7 +507,7 @@ export default function App() {
                     {loginMessage}
                 </div>
             )}
-            <p className="mt-8 text-xs text-slate-600">v9.4.0 Cloud Edition (Stable)</p>
+            <p className="mt-8 text-xs text-slate-600">v9.6.0 Cloud Edition (Auto-Onboarding)</p>
         </div>
     </div>
   );
@@ -525,17 +545,17 @@ export default function App() {
           </div>
         </header>
 
-        {loadingProjects ? (
-            <div className="text-center py-20 text-amber-500 font-bold">Cargando Proyectos...</div>
+        {loadingProjects || onboarding ? (
+            <div className="text-center py-20 animate-pulse">
+                <div className="text-amber-500 font-bold text-xl mb-2">Inicializando Espacio de Trabajo...</div>
+                <div className="text-slate-500 text-sm">Configurando base de datos segura y creando proyecto demo.</div>
+            </div>
         ) : (
             <div className="grid lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-4">
                     {projects.length === 0 ? (
                         <div className="text-center py-20 bg-slate-900/40 border border-dashed border-slate-800 rounded-3xl">
-                            <p className="text-slate-500 mb-4">No hay proyectos en la nube.</p>
-                            <button onClick={generateDemoProject} className="text-amber-500 hover:text-white underline text-sm">
-                                Cargar Proyecto de Ejemplo (Demo)
-                            </button>
+                            <p className="text-slate-500">Tu espacio está listo. Crea tu primera estrategia.</p>
                         </div>
                     ) : (
                         <div className="grid gap-4">
@@ -590,36 +610,6 @@ export default function App() {
                         <div className="grid grid-cols-2 gap-4">
                             <div><div className="text-2xl font-bold text-white">{projects.length}</div><div className="text-xs text-slate-500">Proyectos</div></div>
                             <div><div className="text-2xl font-bold text-white">{saving ? <span className="text-amber-500 text-sm">...</span> : <CheckCircle className="inline text-green-500" size={16}/>}</div><div className="text-xs text-slate-500">Estado Sync</div></div>
-                        </div>
-                    </div>
-                    
-                    <div className={`${styles.glassCard} p-6 rounded-2xl`}>
-                        <div className="space-y-4">
-                            <button onClick={() => setShowNewProject(true)} className="w-full text-left p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-amber-500/50 transition-all flex items-center gap-3 group">
-                                <div className="p-2 bg-amber-500/10 rounded-md text-amber-500 group-hover:text-white group-hover:bg-amber-500 transition-colors"><Plus size={16} /></div>
-                                <div>
-                                    <div className="text-sm font-bold text-white">Nueva Estrategia</div>
-                                    <div className="text-xs text-slate-500">Crear desde template</div>
-                                </div>
-                            </button>
-                            {/* BOTÓN PDF GENERATOR ACTIVO */}
-                            <button onClick={generatePDF} className="w-full text-left p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 transition-all flex items-center gap-3 group">
-                                <div className="p-2 bg-blue-500/10 rounded-md text-blue-500 group-hover:text-white group-hover:bg-blue-500 transition-colors"><Download size={16} /></div>
-                                <div>
-                                    <div className="text-sm font-bold text-white">Generar Reporte PDF</div>
-                                    <div className="text-xs text-slate-500">Descargar estado actual</div>
-                                </div>
-                            </button>
-                        </div>
-
-                        <div className="mt-8 pt-6 border-t border-slate-800">
-                            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Integraciones</h4>
-                            <div className="space-y-3">
-                                <div className="flex justify-between items-center text-xs">
-                                    <span className="text-slate-400">JairoAmaya.co</span>
-                                    <span className="text-green-400 font-mono flex items-center gap-1"><CheckCircle size={10} /> CONNECTED</span>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -698,20 +688,12 @@ export default function App() {
                     <a href="https://twitter.com/JAIROAMAYA" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Twitter size={18} /></a>
                     <a href="https://jairoamaya.co" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Globe size={18} /></a>
                 </div>
-
-                <button 
-                    onClick={handleHardReset}
-                    className="text-[10px] text-slate-700 hover:text-red-500 transition-colors flex items-center gap-1 font-mono uppercase"
-                    title="Restaurar valores de fábrica"
-                >
-                    <RefreshCw size={10} /> [ DEV MODE: RESET DATA ]
-                </button>
             </div>
         </div>
         
         <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600">
             <p>© 2026 Jairo Amaya Full Stack Marketer. All rights reserved.</p>
-            <p className="font-mono">v9.4.0 CLOUD EDITION (FULL)</p>
+            <p className="font-mono">v9.6.0 CLOUD EDITION (AUTO-ONBOARD)</p>
         </div>
       </footer>
     </div>
@@ -958,20 +940,12 @@ export default function App() {
                     <a href="https://twitter.com/JAIROAMAYA" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Twitter size={18} /></a>
                     <a href="https://jairoamaya.co" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Globe size={18} /></a>
                 </div>
-
-                <button 
-                    onClick={handleHardReset}
-                    className="text-[10px] text-slate-700 hover:text-red-500 transition-colors flex items-center gap-1 font-mono uppercase"
-                    title="Restaurar valores de fábrica"
-                >
-                    <RefreshCw size={10} /> [ DEV MODE: RESET DATA ]
-                </button>
             </div>
         </div>
         
         <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600">
             <p>© 2026 Jairo Amaya Full Stack Marketer. All rights reserved.</p>
-            <p className="font-mono">v9.4.0 CLOUD EDITION (FULL)</p>
+            <p className="font-mono">v9.6.0 CLOUD EDITION (FULL CONTENT)</p>
         </div>
       </footer>
     </div>
