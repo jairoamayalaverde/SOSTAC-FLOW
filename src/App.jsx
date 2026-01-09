@@ -362,7 +362,7 @@ export default function App() {
             <h1 className={`text-5xl font-bold text-white tracking-tight ${styles.fontHeading}`}>
               SOSTAC <span className={styles.neonText}>FLOW</span>
             </h1>
-            <p className={`text-slate-400 mt-2 ${styles.fontBody}`}>Ingeniería de Marketing & Gestión Estratégica</p>
+           <p className={`text-slate-400 mt-2 ${styles.fontBody}`}>Gestión estratégica de proyectos de consultoría digital</p>
           </div>
           <div className="flex gap-4 mt-6 md:mt-0">
             <button 
@@ -513,7 +513,7 @@ export default function App() {
                     </div>
                 </a>
                 <p className="text-slate-500 text-sm mt-4 max-w-sm leading-relaxed">
-                   Ingeniería de marketing y estrategias orientadas a resultados tangibles.
+                   Acciones estratégicas orientadas a resultados tangibles.
                 </p>
             </div>
             
@@ -549,7 +549,7 @@ export default function App() {
         </div>
         
         <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600">
-            <p>© 2026 Jairo Amaya. All rights reserved.</p>
+            <p>© 2026 Jairo Amaya Full Stack Marketer. All rights reserved.</p>
             <p className="font-mono">v7.6.0 STABLE</p>
         </div>
       </footer>
@@ -771,9 +771,7 @@ export default function App() {
                         <p className="text-amber-500 font-bold text-sm tracking-wider uppercase group-hover:text-white transition-colors">Full Stack Marketer</p>
                     </div>
                 </a>
-                <p className="text-slate-500 text-sm mt-4 max-w-sm leading-relaxed">
-                   Ingeniería de marketing y estrategias orientadas a resultados tangibles.
-                </p>
+               <p className={`text-slate-400 mt-2 ${styles.fontBody}`}>Gestión estratégica de proyectos de consultoría digital</p>
             </div>
             
             <div>
