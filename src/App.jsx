@@ -20,7 +20,7 @@ const styles = {
   neonText: "text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-300 drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]"
 };
 
-// --- 2. DATA: TEMPLATES ROBUSTOS (V7.0) ---
+// --- 2. DATA: TEMPLATES ROBUSTOS ---
 const projectTemplates = {
   seo: {
     name: 'Ingeniería SEO (Core)',
@@ -144,7 +144,7 @@ export default function App() {
     const saved = localStorage.getItem('ja_os_projects');
     const parsed = saved ? JSON.parse(saved) : [];
     
-    // DEMO INICIAL MEJORADA (CARGA EL TEMPLATE SEO COMPLETO)
+    // SIEMPRE que esté vacío, cargamos el DEMO SEO COMPLETO
     if (parsed.length === 0) {
       const demoData = JSON.parse(JSON.stringify(projectTemplates.seo.data));
       return [{
@@ -357,7 +357,7 @@ export default function App() {
           <div>
             <div className="flex items-center gap-3 mb-2">
                 <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
-                <span className="text-xs font-mono text-slate-400 tracking-widest uppercase">System Online // v7.0</span>
+                <span className="text-xs font-mono text-slate-400 tracking-widest uppercase">System Online // v7.2</span>
             </div>
             <h1 className={`text-5xl font-bold text-white tracking-tight ${styles.fontHeading}`}>
               SOSTAC <span className={styles.neonText}>FLOW</span>
@@ -454,6 +454,15 @@ export default function App() {
                                     )
                                 })}
                             </div>
+                            {/* SOSTAC LABELS RESTAURADOS */}
+                            <div className="flex justify-between text-[10px] text-slate-500 font-mono uppercase mt-2 px-1">
+                                <span title="Situation">S</span>
+                                <span title="Objectives">O</span>
+                                <span title="Strategy">S</span>
+                                <span title="Tactics">T</span>
+                                <span title="Action">A</span>
+                                <span title="Control">C</span>
+                            </div>
                         </div>
                         ))}
                     </div>
@@ -499,7 +508,7 @@ export default function App() {
         </div>
       </div>
 
-      {/* FOOTER: JAIRO AMAYA BRANDING (LINK ACTIVADO) */}
+      {/* FOOTER: JAIRO AMAYA BRANDING (LINKS REALES) */}
       <footer className="relative z-10 border-t border-slate-800 bg-slate-950/80 backdrop-blur-md pt-12 pb-12 mt-12">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="md:col-span-2">
@@ -530,8 +539,9 @@ export default function App() {
                     <span className="text-xs text-green-500 font-mono font-bold">SYSTEM OPERATIONAL</span>
                  </div>
                  <div className="flex gap-4">
-                    <a href="https://www.linkedin.com/in/jairoamaya" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Linkedin size={18} /></a>
-                    <a href="https://twitter.com" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Twitter size={18} /></a>
+                    {/* LINKS REALES */}
+                    <a href="https://www.linkedin.com/in/jairoamayalaverde/" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Linkedin size={18} /></a>
+                    <a href="https://twitter.com/JAIROAMAYA" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Twitter size={18} /></a>
                     <a href="https://jairoamaya.co" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Globe size={18} /></a>
                 </div>
             </div>
@@ -539,7 +549,7 @@ export default function App() {
         
         <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600">
             <p>© 2026 Jairo Amaya. All rights reserved.</p>
-            <p className="font-mono">v7.0.0 GOLD BUILD</p>
+            <p className="font-mono">v7.2.0 GOLD BUILD</p>
         </div>
       </footer>
     </div>
