@@ -1,13 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Plus, Edit2, Trash2, CheckCircle, Circle, Calendar, 
   Save, X, Briefcase, Eye, EyeOff, LayoutDashboard, 
   ArrowLeft, ExternalLink, BarChart3, FileText, RefreshCw,
   Activity, Zap, Target, Layers, ArrowUpRight, Share2, 
   Github, Twitter, Linkedin, Globe, HardDrive, Cpu, Terminal,
-  Database, Network, Download
+  Database, Network, Download, LogOut, Loader2
 } from 'lucide-react';
 import jsPDF from 'jspdf';
+import { createClient } from '@supabase/supabase-js';
+
+// --- 0. CREDENCIALES (YA CONFIGURADAS) ---
+const SUPABASE_URL = 'https://hompawsonronlgrvujjb.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvbXBhd3NvbnJvbmxncnZ1ampiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc5ODI0MTMsImV4cCI6MjA4MzU1ODQxM30.UicwlthUkU9Ey5KltrZwdK7ZkTxHcYr4hr5foDUCW0A';
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // --- 1. CONFIGURACIÓN DE ESTILOS & BRANDING ---
 const styles = {
@@ -21,7 +28,7 @@ const styles = {
   neonText: "text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-300 drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]"
 };
 
-// --- 2. DATA: TEMPLATES ROBUSTOS ---
+// --- 2. DATA: TEMPLATES ROBUSTOS (CONTENIDO COMPLETO RESTAURADO) ---
 const projectTemplates = {
   seo: {
     name: 'Consultoría SEO',
@@ -138,208 +145,159 @@ const phases = [
 ];
 
 export default function App() {
+  const [session, setSession] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [email, setEmail] = useState('');
+  const [loginMessage, setLoginMessage] = useState('');
+
   const [viewMode, setViewMode] = useState('admin');
-  
-  // --- 3. PERSISTENCIA + DEMO ROBUSTA ---
-  const [projects, setProjects] = useState(() => {
-    const saved = localStorage.getItem('ja_os_projects');
-    const parsed = saved ? JSON.parse(saved) : [];
-    
-    // DEMO INICIAL MEJORADA
-    if (parsed.length === 0) {
-      const demoData = JSON.parse(JSON.stringify(projectTemplates.seo.data));
-      return [{
-        id: 1,
-        name: 'Demo: Tech Growth Strategy',
-        client: 'SaaS Unicorn Inc.',
-        industry: 'Software / B2B',
-        projectType: 'seo',
-        startDate: new Date().toISOString().split('T')[0],
-        status: 'active',
-        progress: 15,
-        data: demoData
-      }];
-    }
-    return parsed;
-  });
+  const [projects, setProjects] = useState([]);
+  const [loadingProjects, setLoadingProjects] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const [selectedProject, setSelectedProject] = useState(null);
   const [activePhase, setActivePhase] = useState('situation');
   const [showNewProject, setShowNewProject] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
+  
   const [newProjectData, setNewProjectData] = useState({
     name: '', client: '', industry: '', projectType: 'seo', startDate: new Date().toISOString().split('T')[0]
   });
 
+  // --- EFECTO: VERIFICAR SESIÓN AL INICIO ---
   useEffect(() => {
-    localStorage.setItem('ja_os_projects', JSON.stringify(projects));
-  }, [projects]);
-
-  useEffect(() => {
-    if (selectedProject) {
-        let total = 0, completed = 0;
-        Object.values(selectedProject.data).forEach(phase => {
-            total += phase.length;
-            completed += phase.filter(t => t.completed).length;
-        });
-        const realProgress = total === 0 ? 0 : Math.round((completed / total) * 100);
-        
-        if (selectedProject.progress !== realProgress) {
-            const updated = { ...selectedProject, progress: realProgress };
-            setSelectedProject(updated);
-            setProjects(prev => prev.map(p => p.id === updated.id ? updated : p));
-        }
-    }
-  }, [selectedProject?.data]);
-
-  // --- MOTOR PDF GENERATOR ---
-  const generatePDF = () => {
-    if (!selectedProject) return;
-
-    const doc = new jsPDF();
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    
-    // Header Dark
-    doc.setFillColor(15, 23, 42); // slate-950
-    doc.rect(0, 0, pageWidth, 40, 'F');
-    
-    // Logo & Titulo
-    doc.setTextColor(245, 158, 11); // amber-500
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(22);
-    doc.text('SOSTAC FLOW', 20, 20);
-    
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.text('REPORTE EJECUTIVO DE ESTRATEGIA', 20, 30);
-
-    // Info del Proyecto
-    doc.setTextColor(50, 50, 50);
-    doc.setFontSize(16);
-    doc.setFont("helvetica", "bold");
-    doc.text(selectedProject.name, 20, 55);
-
-    doc.setFontSize(10);
-    doc.setTextColor(100, 100, 100);
-    doc.setFont("helvetica", "normal");
-    doc.text(`Cliente: ${selectedProject.client}`, 20, 62);
-    doc.text(`Industria: ${selectedProject.industry}`, 20, 67);
-    doc.text(`Fecha: ${selectedProject.startDate}`, 150, 62);
-    doc.text(`Progreso: ${selectedProject.progress}%`, 150, 67);
-
-    doc.setDrawColor(200, 200, 200);
-    doc.line(20, 75, pageWidth - 20, 75);
-
-    // Loop de Fases
-    let yPos = 85;
-
-    phases.forEach(phase => {
-        const tasks = selectedProject.data[phase.id] || [];
-        
-        doc.setFillColor(245, 158, 11); // Amber pill
-        doc.roundedRect(20, yPos, 170, 8, 1, 1, 'F');
-        doc.setTextColor(0, 0, 0);
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(10);
-        doc.text(`${phase.name.toUpperCase()} PHASE`, 25, yPos + 5.5);
-        
-        yPos += 15;
-
-        if (tasks.length === 0) {
-            doc.setTextColor(150, 150, 150);
-            doc.setFont("helvetica", "italic");
-            doc.text("Sin items registrados en esta fase.", 25, yPos);
-            yPos += 10;
-        } else {
-            tasks.forEach(task => {
-                doc.setDrawColor(0, 0, 0);
-                if(task.completed) {
-                    doc.setFillColor(34, 197, 94); // Green
-                    doc.rect(25, yPos - 3, 3, 3, 'F');
-                } else {
-                    doc.setFillColor(255, 255, 255);
-                    doc.rect(25, yPos - 3, 3, 3, 'S');
-                }
-
-                doc.setTextColor(0, 0, 0);
-                doc.setFont("helvetica", task.completed ? "normal" : "bold");
-                const splitText = doc.splitTextToSize(task.text, 150);
-                doc.text(splitText, 32, yPos);
-                
-                yPos += (splitText.length * 5); 
-
-                if(task.notes) {
-                    doc.setTextColor(100, 100, 100);
-                    doc.setFont("helvetica", "italic");
-                    doc.setFontSize(9);
-                    const splitNotes = doc.splitTextToSize(`Nota: ${task.notes}`, 140);
-                    doc.text(splitNotes, 32, yPos);
-                    yPos += (splitNotes.length * 4) + 2;
-                    doc.setFontSize(10);
-                } else {
-                    yPos += 2;
-                }
-
-                if (yPos > pageHeight - 30) {
-                    doc.addPage();
-                    yPos = 20;
-                }
-            });
-        }
-        yPos += 5;
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setAuthLoading(false);
+      if (session) fetchProjects();
     });
 
-    // Footer en PDF
-    const pageCount = doc.internal.getNumberOfPages();
-    for(let i = 1; i <= pageCount; i++) {
-        doc.setPage(i);
-        doc.setFillColor(240, 240, 240);
-        doc.rect(0, pageHeight - 20, pageWidth, 20, 'F');
-        doc.setTextColor(100, 100, 100);
-        doc.setFontSize(8);
-        doc.text('Generado con SOSTAC FLOW | Jairo Amaya - Full Stack Marketer', 20, pageHeight - 10);
-        doc.text(`jairoamaya.co`, pageWidth - 40, pageHeight - 10);
-    }
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session) fetchProjects();
+    });
 
-    doc.save(`${selectedProject.client.replace(/\s+/g, '_')}_Strategy_Report.pdf`);
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // --- FUNCIONES DE BASE DE DATOS (SUPABASE) ---
+  const fetchProjects = async () => {
+    setLoadingProjects(true);
+    const { data, error } = await supabase.from('projects').select('*').order('updated_at', { ascending: false });
+    if (!error && data) {
+        // Parsear el JSON 'data' que viene de la DB
+        const parsedProjects = data.map(p => ({
+            ...p,
+            data: p.data // Supabase ya devuelve JSONB como objeto
+        }));
+        setProjects(parsedProjects);
+    }
+    setLoadingProjects(false);
   };
 
-  // --- 4. FUNCIONES LÓGICAS ---
-  const handleHardReset = () => {
-    if(confirm('⚠️ ¿REINICIAR SISTEMA? \n\nAtención: Esta acción borrará todos los proyectos guardados localmente. Úsala solo si necesitas restaurar la versión original.')) {
-      localStorage.removeItem('ja_os_projects');
-      window.location.reload();
+  // Función de Guardado (Debounce o Manual)
+  const saveProjectToCloud = useCallback(async (projectToSave) => {
+    if (!session) return;
+    setSaving(true);
+    
+    const { id, created_at, ...updateData } = projectToSave; // Excluir campos inmutables
+    
+    // Si tiene ID numérico (de Supabase), actualizamos. Si es temp (Date.now), insertamos.
+    if (typeof id === 'number') {
+        await supabase.from('projects').update({
+            name: updateData.name,
+            client: updateData.client,
+            progress: updateData.progress,
+            data: updateData.data, // Guardamos toda la estructura SOSTAC
+            updated_at: new Date()
+        }).eq('id', id);
+    } else {
+        // Es nuevo, insertar
+        const { data, error } = await supabase.from('projects').insert([{
+            name: updateData.name,
+            client: updateData.client,
+            industry: updateData.industry,
+            project_type: updateData.projectType,
+            start_date: updateData.startDate,
+            status: 'active',
+            progress: updateData.progress || 0,
+            data: updateData.data,
+            user_id: session.user.id
+        }]).select();
+        
+        if (data && data[0]) {
+            // Actualizar ID local con el real de la DB
+            setProjects(prev => prev.map(p => p.id === id ? data[0] : p));
+            setSelectedProject(data[0]);
+        }
     }
+    setSaving(false);
+  }, [session]);
+
+  // --- MANEJO DE ESTADO LOCAL ---
+  const updateProjectData = (newData) => {
+    // 1. Actualizar visualmente inmediato
+    const updated = { ...selectedProject, data: newData };
+    
+    // Calcular progreso
+    let total = 0, completed = 0;
+    Object.values(newData).forEach(phase => {
+        total += phase.length;
+        completed += phase.filter(t => t.completed).length;
+    });
+    updated.progress = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+    setSelectedProject(updated);
+    setProjects(prev => prev.map(p => p.id === updated.id ? updated : p));
+
+    // 2. Guardar en Nube (Debounce manual simple: guardar a los 2s)
+    saveProjectToCloud(updated);
   };
 
-  const createNewProject = () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setAuthLoading(true);
+    const { error } = await supabase.auth.signInWithOtp({ email });
+    if (error) {
+        alert('Error: ' + error.message);
+    } else {
+        setLoginMessage('¡Enlace mágico enviado! Revisa tu correo.');
+    }
+    setAuthLoading(false);
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setSession(null);
+    setProjects([]);
+    setSelectedProject(null);
+  };
+
+  // --- LÓGICA DE GESTIÓN (IGUAL A V8) ---
+  const createNewProject = async () => {
     const template = projectTemplates[newProjectData.projectType];
+    const tempId = Date.now(); // ID temporal
     const newProject = {
-      id: Date.now(),
+      id: tempId,
       ...newProjectData,
       status: 'active',
       progress: 0,
       data: JSON.parse(JSON.stringify(template.data))
     };
-    setProjects([...projects, newProject]);
+    
+    // UI Optimistic Update
+    setProjects([newProject, ...projects]);
     setShowNewProject(false);
     setNewProjectData({ name: '', client: '', industry: '', projectType: 'seo', startDate: new Date().toISOString().split('T')[0] });
-  };
-
-  const updateProjectData = (newData) => {
-    const updated = { ...selectedProject, data: newData };
-    setSelectedProject(updated);
-    setProjects(projects.map(p => p.id === updated.id ? updated : p));
+    
+    // Guardar en DB
+    await saveProjectToCloud(newProject);
   };
 
   const toggleTask = (taskId) => {
     if (viewMode === 'client') return;
     const newData = { ...selectedProject.data };
-    newData[activePhase] = newData[activePhase].map(t => 
-      t.id === taskId ? { ...t, completed: !t.completed } : t
-    );
+    newData[activePhase] = newData[activePhase].map(t => t.id === taskId ? { ...t, completed: !t.completed } : t);
     updateProjectData(newData);
   };
 
@@ -365,95 +323,169 @@ export default function App() {
     updateProjectData(newData);
   };
 
-  const shareProject = () => {
-      const text = `🚀 *Estado de Proyecto: ${selectedProject.name}*\nCliente: ${selectedProject.client}\nProgreso Global: ${selectedProject.progress}%\n\nGenerado con SOSTAC FLOW`;
-      navigator.clipboard.writeText(text);
-      alert('Resumen copiado al portapapeles!');
+  const generatePDF = () => {
+    if (!selectedProject) return;
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    
+    // Header Dark
+    doc.setFillColor(15, 23, 42); // slate-950
+    doc.rect(0, 0, pageWidth, 40, 'F');
+    
+    // Logo & Titulo
+    doc.setTextColor(245, 158, 11); // amber-500
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(22);
+    doc.text('SOSTAC FLOW', 20, 20);
+    
+    // Subtitle
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text('REPORTE EJECUTIVO DE ESTRATEGIA', 20, 30);
+
+    // Info del Proyecto
+    doc.setTextColor(50, 50, 50);
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text(selectedProject.name, 20, 55);
+
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Cliente: ${selectedProject.client}`, 20, 62);
+    doc.text(`Industria: ${selectedProject.industry}`, 20, 67);
+    doc.text(`Fecha: ${selectedProject.startDate}`, 150, 62);
+    doc.text(`Progreso: ${selectedProject.progress}%`, 150, 67);
+
+    // Separator
+    doc.setDrawColor(200, 200, 200);
+    doc.line(20, 75, pageWidth - 20, 75);
+
+    // Content Loop
+    let yPos = 85;
+
+    phases.forEach(phase => {
+        const tasks = selectedProject.data[phase.id] || [];
+        
+        // Phase Header
+        doc.setFillColor(245, 158, 11); // Amber pill
+        doc.roundedRect(20, yPos, 170, 8, 1, 1, 'F');
+        doc.setTextColor(0, 0, 0);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.text(`${phase.name.toUpperCase()} PHASE`, 25, yPos + 5.5);
+        
+        yPos += 15;
+
+        if (tasks.length === 0) {
+            doc.setTextColor(150, 150, 150);
+            doc.setFont("helvetica", "italic");
+            doc.text("Sin items registrados en esta fase.", 25, yPos);
+            yPos += 10;
+        } else {
+            tasks.forEach(task => {
+                // Checkbox visual
+                doc.setDrawColor(0, 0, 0);
+                if(task.completed) {
+                    doc.setFillColor(34, 197, 94); // Green
+                    doc.rect(25, yPos - 3, 3, 3, 'F');
+                } else {
+                    doc.setFillColor(255, 255, 255);
+                    doc.rect(25, yPos - 3, 3, 3, 'S');
+                }
+
+                // Task Text
+                doc.setTextColor(0, 0, 0);
+                doc.setFont("helvetica", task.completed ? "normal" : "bold");
+                const splitText = doc.splitTextToSize(task.text, 150);
+                doc.text(splitText, 32, yPos);
+                
+                yPos += (splitText.length * 5); // Dynamic height
+
+                // Notes (if any)
+                if(task.notes) {
+                    doc.setTextColor(100, 100, 100);
+                    doc.setFont("helvetica", "italic");
+                    doc.setFontSize(9);
+                    const splitNotes = doc.splitTextToSize(`Nota: ${task.notes}`, 140);
+                    doc.text(splitNotes, 32, yPos);
+                    yPos += (splitNotes.length * 4) + 2;
+                    doc.setFontSize(10); // Reset size
+                } else {
+                    yPos += 2;
+                }
+
+                // Page Break Check
+                if (yPos > pageHeight - 30) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+            });
+        }
+        yPos += 5; // Spacing between phases
+    });
+
+    // --- FOOTER BRANDING ---
+    const pageCount = doc.internal.getNumberOfPages();
+    for(let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFillColor(240, 240, 240);
+        doc.rect(0, pageHeight - 20, pageWidth, 20, 'F');
+        doc.setTextColor(100, 100, 100);
+        doc.setFontSize(8);
+        doc.text('Generado con SOSTAC FLOW | Jairo Amaya - Full Stack Marketer', 20, pageHeight - 10);
+        doc.text(`jairoamaya.co`, pageWidth - 40, pageHeight - 10);
+    }
+
+    doc.save(`${selectedProject.client.replace(/\s+/g, '_')}_Strategy_Report.pdf`);
+  };
+
+  const handleHardReset = () => {
+    if(confirm('⚠️ ¿REINICIAR SISTEMA? \n\nAtención: Esta acción borrará todos los proyectos guardados localmente. Úsala solo si necesitas restaurar la versión original.')) {
+      localStorage.removeItem('ja_os_projects');
+      window.location.reload();
+    }
   };
 
   const isInternalTool = (url) => url && url.includes('jairoamaya.co');
 
-  // --- 5. RENDERIZADO: MODAL ---
-  if (showNewProject) return (
-    <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className={`max-w-4xl w-full ${styles.glassCard} rounded-2xl p-8 border-amber-500/20 animate-in fade-in zoom-in duration-300`}>
-        <div className="flex justify-between items-center mb-8">
-          <h2 className={`text-3xl text-white ${styles.fontHeading}`}>Iniciar Nueva Estrategia</h2>
-          <button onClick={() => setShowNewProject(false)} className="text-slate-400 hover:text-white"><X /></button>
-        </div>
-        
-        <div className="grid lg:grid-cols-2 gap-8">
-            <div className="space-y-5">
-                 <div>
-                    <label className="text-xs text-slate-400 uppercase font-bold mb-2 block">Datos del Proyecto</label>
-                    <input 
-                        placeholder="Nombre de la Campaña / Proyecto" 
-                        className="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-white focus:border-amber-500 outline-none mb-3"
-                        value={newProjectData.name}
-                        onChange={e => setNewProjectData({...newProjectData, name: e.target.value})}
-                    />
-                    <div className="grid grid-cols-2 gap-3">
-                        <input 
-                        placeholder="Cliente" 
-                        className="bg-slate-950 border border-slate-700 rounded-lg p-3 text-white focus:border-amber-500 outline-none"
-                        value={newProjectData.client}
-                        onChange={e => setNewProjectData({...newProjectData, client: e.target.value})}
-                        />
-                        <input 
-                        placeholder="Industria" 
-                        className="bg-slate-950 border border-slate-700 rounded-lg p-3 text-white focus:border-amber-500 outline-none"
-                        value={newProjectData.industry}
-                        onChange={e => setNewProjectData({...newProjectData, industry: e.target.value})}
-                        />
-                    </div>
-                </div>
-                
-                <button 
-                    onClick={createNewProject}
-                    disabled={!newProjectData.name}
-                    className={`w-full py-4 rounded-xl font-bold mt-4 ${styles.primaryBtn} ${!newProjectData.name ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                    Lanzar Protocolo SOSTAC
-                </button>
-            </div>
+  // --- RENDER: LOGIN SCREEN ---
+  if (authLoading) return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-amber-500"><Loader2 className="animate-spin" size={40} /></div>;
 
-            <div>
-                <label className="text-xs text-slate-400 uppercase font-bold mb-3 block">Frameworks Disponibles</label>
-                <div className="grid gap-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-                    {Object.entries(projectTemplates).map(([key, tpl]) => (
-                    <div 
-                        key={key}
-                        onClick={() => setNewProjectData({...newProjectData, projectType: key})}
-                        className={`p-4 rounded-xl border cursor-pointer transition-all flex items-center justify-between group ${
-                            newProjectData.projectType === key 
-                            ? 'bg-amber-500/10 border-amber-500' 
-                            : 'bg-slate-800 border-slate-700 hover:border-slate-500'
-                        }`}
-                    >
-                        <div>
-                            <div className={`font-bold text-white group-hover:text-amber-400 transition-colors ${styles.fontHeading}`}>{tpl.name}</div>
-                            <div className="text-xs text-slate-400">{tpl.description}</div>
-                        </div>
-                        {newProjectData.projectType === key && <CheckCircle size={18} className="text-amber-500" />}
-                    </div>
-                    ))}
+  if (!session) return (
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-slate-900 border border-slate-800 p-8 rounded-2xl shadow-2xl text-center">
+            <h1 className="text-3xl font-bold text-white mb-2 font-['Poppins']">SOSTAC <span className="text-amber-500">FLOW</span></h1>
+            <p className="text-slate-400 mb-8 text-sm">Plataforma de Gestión Estratégica</p>
+            
+            {!loginMessage ? (
+                <form onSubmit={handleLogin} className="space-y-4">
+                    <input 
+                        type="email" 
+                        placeholder="tu@email.com" 
+                        className="w-full bg-slate-950 border border-slate-700 rounded-lg p-4 text-white focus:border-amber-500 outline-none"
+                        value={email}
+                        onChange={e => setEmail(e.target.value)}
+                        required
+                    />
+                    <button className="w-full bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold py-4 rounded-lg transition-all flex items-center justify-center gap-2">
+                        <Zap size={20} /> ENVIAR ENLACE DE ACCESO
+                    </button>
+                </form>
+            ) : (
+                <div className="bg-green-500/10 border border-green-500/50 p-4 rounded-xl text-green-400">
+                    <CheckCircle className="mx-auto mb-2" size={32} />
+                    {loginMessage}
                 </div>
-            </div>
+            )}
+            <p className="mt-8 text-xs text-slate-600">v9.2.0 Cloud Edition (Full Content)</p>
         </div>
-      </div>
     </div>
   );
 
-  // --- CALCULOS ---
-  const totalProjects = projects.length;
-  const avgProgress = projects.length > 0 ? Math.round(projects.reduce((acc, curr) => acc + curr.progress, 0) / projects.length) : 0;
-  const totalTasks = projects.reduce((acc, p) => {
-      let count = 0;
-      Object.values(p.data).forEach(arr => count += arr.length);
-      return acc + count;
-  }, 0);
-
-  // --- 6. RENDERIZADO: DASHBOARD (HOME) ---
+  // --- RENDER: DASHBOARD (HOME) ---
   if (!selectedProject) return (
     <div className="min-h-screen bg-slate-950 text-slate-200 p-4 md:p-8 font-sans selection:bg-amber-500/30 overflow-x-hidden flex flex-col">
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Raleway:wght@300;400;500;600&display=swap');`}</style>
@@ -466,7 +498,7 @@ export default function App() {
 
       <div className="max-w-7xl mx-auto w-full relative z-10 flex-1">
         
-        {/* HEADER LIMPIO (SIN SYSTEM ONLINE) */}
+        {/* HEADER LIMPIO */}
         <header className="flex flex-col md:flex-row justify-between items-end mb-10 border-b border-slate-800 pb-6">
           <div>
             <h1 className={`text-5xl font-bold text-white tracking-tight ${styles.fontHeading}`}>
@@ -474,7 +506,9 @@ export default function App() {
             </h1>
             <p className={`text-slate-400 mt-2 ${styles.fontBody}`}>Gestión estratégica de proyectos de consultoría digital</p>
           </div>
-          <div className="flex gap-4 mt-6 md:mt-0">
+          <div className="flex gap-4 items-center">
+            <span className="text-xs text-slate-500 font-mono hidden md:block">{session.user.email}</span>
+            <button onClick={handleLogout} className="p-2 text-slate-500 hover:text-red-500 transition-colors" title="Cerrar Sesión"><LogOut size={20}/></button>
             <button 
               onClick={() => setShowNewProject(true)}
               className={`px-6 py-3 rounded-xl flex items-center gap-2 font-bold text-sm ${styles.primaryBtn}`}
@@ -484,133 +518,139 @@ export default function App() {
           </div>
         </header>
 
-        {/* METRICS (BENTO GRID) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-            <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden group`}>
-                <Layers size={80} className="absolute -right-4 -top-4 text-slate-800 opacity-50 group-hover:opacity-100 group-hover:text-amber-500/10 transition-all" />
-                <h3 className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Proyectos Activos</h3>
-                <div className="text-4xl font-bold text-white">{totalProjects}</div>
-                <div className="flex items-center gap-2 text-xs text-green-400">
-                    <ArrowUpRight size={14} /> <span>100% Operativo</span>
-                </div>
-            </div>
-
-            <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden group`}>
-                <Activity size={80} className="absolute -right-4 -top-4 text-slate-800 opacity-50 group-hover:opacity-100 group-hover:text-amber-500/10 transition-all" />
-                <h3 className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Eficiencia Global</h3>
-                <div className="text-4xl font-bold text-white">{avgProgress}%</div>
-                <div className="w-full bg-slate-700 h-1.5 rounded-full mt-2">
-                    <div className="bg-amber-500 h-full rounded-full" style={{width: `${avgProgress}%`}}></div>
-                </div>
-            </div>
-
-            <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden group`}>
-                <Target size={80} className="absolute -right-4 -top-4 text-slate-800 opacity-50 group-hover:opacity-100 group-hover:text-amber-500/10 transition-all" />
-                <h3 className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Tareas en Radar</h3>
-                <div className="text-4xl font-bold text-white">{totalTasks}</div>
-                <div className="text-xs text-slate-500">Items estratégicos bajo gestión</div>
-            </div>
-        </div>
-
-        {/* PROJECTS & SIDEBAR */}
-        <div className="grid lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-6">
-                <div className="flex justify-between items-center mb-2">
-                    <h2 className={`text-xl font-bold text-white flex items-center gap-2 ${styles.fontHeading}`}>
-                        <Briefcase size={20} className="text-amber-500" /> Proyectos en Curso
-                    </h2>
-                </div>
-
-                {projects.length === 0 ? (
-                    <div className="text-center py-20 bg-slate-900/40 border border-dashed border-slate-800 rounded-3xl">
-                        <p className="text-slate-500">No hay operaciones activas.</p>
-                    </div>
-                ) : (
-                    <div className="grid gap-4">
-                        {projects.map(project => (
-                        <div 
-                            key={project.id}
-                            onClick={() => setSelectedProject(project)}
-                            className={`group cursor-pointer rounded-xl p-6 transition-all border border-slate-800 bg-slate-900/40 hover:bg-slate-800 hover:border-amber-500/50 hover:shadow-lg relative overflow-hidden`}
-                        >
-                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                            
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
-                                    <h3 className={`text-lg font-bold text-white mb-1 group-hover:text-amber-400 transition-colors ${styles.fontHeading}`}>{project.name}</h3>
-                                    <div className="flex items-center gap-2 text-xs text-slate-400">
-                                        <span>{project.client}</span>
-                                        <span className="w-1 h-1 bg-slate-600 rounded-full"></span>
-                                        <span className="text-amber-500 uppercase font-bold">{projectTemplates[project.projectType]?.name}</span>
+        {loadingProjects ? (
+            <div className="text-center py-20"><Loader2 className="animate-spin mx-auto text-amber-500" size={40} /></div>
+        ) : (
+            <div className="grid lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2 space-y-4">
+                    {projects.length === 0 ? (
+                        <div className="text-center py-20 bg-slate-900/40 border border-dashed border-slate-800 rounded-3xl">
+                            <p className="text-slate-500">No hay proyectos en la nube. Crea el primero.</p>
+                        </div>
+                    ) : (
+                        <div className="grid gap-4">
+                            {projects.map(project => (
+                            <div 
+                                key={project.id}
+                                onClick={() => setSelectedProject(project)}
+                                className={`group cursor-pointer rounded-xl p-6 transition-all border border-slate-800 bg-slate-900/40 hover:bg-slate-800 hover:border-amber-500/50 hover:shadow-lg relative overflow-hidden`}
+                            >
+                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                
+                                <div className="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 className={`text-lg font-bold text-white mb-1 group-hover:text-amber-400 transition-colors ${styles.fontHeading}`}>{project.name}</h3>
+                                        <div className="flex items-center gap-2 text-xs text-slate-400">
+                                            <span>{project.client}</span>
+                                            <span className="w-1 h-1 bg-slate-600 rounded-full"></span>
+                                            <span className="text-amber-500 uppercase font-bold">{projectTemplates[project.projectType]?.name}</span>
+                                        </div>
+                                    </div>
+                                    <div className="text-xl font-bold text-slate-700 group-hover:text-white transition-colors">
+                                        {project.progress}%
                                     </div>
                                 </div>
-                                <div className="text-xl font-bold text-slate-700 group-hover:text-white transition-colors">
-                                    {project.progress}%
+                                
+                                <div className="flex gap-1 mt-4">
+                                    {phases.map((ph, idx) => {
+                                        const pTasks = project.data[ph.id] || [];
+                                        const hasProgress = pTasks.some(t => t.completed);
+                                        return (
+                                            <div key={idx} className={`h-1 flex-1 rounded-full ${hasProgress ? 'bg-amber-500' : 'bg-slate-800'}`}></div>
+                                        )
+                                    })}
+                                </div>
+                                <div className="flex justify-between text-[10px] text-slate-500 font-mono uppercase mt-2 px-1">
+                                    <span title="Situation">S</span>
+                                    <span title="Objectives">O</span>
+                                    <span title="Strategy">S</span>
+                                    <span title="Tactics">T</span>
+                                    <span title="Action">A</span>
+                                    <span title="Control">C</span>
                                 </div>
                             </div>
-                            
-                            <div className="flex gap-1 mt-4">
-                                {phases.map((ph, idx) => {
-                                    const pTasks = project.data[ph.id] || [];
-                                    const hasProgress = pTasks.some(t => t.completed);
-                                    return (
-                                        <div key={idx} className={`h-1 flex-1 rounded-full ${hasProgress ? 'bg-amber-500' : 'bg-slate-800'}`}></div>
-                                    )
-                                })}
-                            </div>
-                            <div className="flex justify-between text-[10px] text-slate-500 font-mono uppercase mt-2 px-1">
-                                <span title="Situation">S</span>
-                                <span title="Objectives">O</span>
-                                <span title="Strategy">S</span>
-                                <span title="Tactics">T</span>
-                                <span title="Action">A</span>
-                                <span title="Control">C</span>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                <div className="space-y-6">
+                    <div className={`${styles.glassCard} p-6 rounded-2xl`}>
+                        <h3 className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-4">Métricas Globales</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div><div className="text-2xl font-bold text-white">{projects.length}</div><div className="text-xs text-slate-500">Proyectos</div></div>
+                            <div><div className="text-2xl font-bold text-white">{saving ? <Loader2 className="animate-spin inline" size={16}/> : <CheckCircle className="inline text-green-500" size={16}/>}</div><div className="text-xs text-slate-500">Estado Sync</div></div>
+                        </div>
+                    </div>
+                    
+                    <div className={`${styles.glassCard} p-6 rounded-2xl`}>
+                        <div className="space-y-4">
+                            <button onClick={() => setShowNewProject(true)} className="w-full text-left p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-amber-500/50 transition-all flex items-center gap-3 group">
+                                <div className="p-2 bg-amber-500/10 rounded-md text-amber-500 group-hover:text-white group-hover:bg-amber-500 transition-colors"><Plus size={16} /></div>
+                                <div>
+                                    <div className="text-sm font-bold text-white">Nueva Estrategia</div>
+                                    <div className="text-xs text-slate-500">Crear desde template</div>
+                                </div>
+                            </button>
+                            {/* BOTÓN PDF GENERATOR ACTIVO */}
+                            <button onClick={generatePDF} className="w-full text-left p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 transition-all flex items-center gap-3 group">
+                                <div className="p-2 bg-blue-500/10 rounded-md text-blue-500 group-hover:text-white group-hover:bg-blue-500 transition-colors"><Download size={16} /></div>
+                                <div>
+                                    <div className="text-sm font-bold text-white">Generar Reporte PDF</div>
+                                    <div className="text-xs text-slate-500">Descargar estado actual</div>
+                                </div>
+                            </button>
+                        </div>
+
+                        <div className="mt-8 pt-6 border-t border-slate-800">
+                            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Integraciones</h4>
+                            <div className="space-y-3">
+                                <div className="flex justify-between items-center text-xs">
+                                    <span className="text-slate-400">JairoAmaya.co</span>
+                                    <span className="text-green-400 font-mono flex items-center gap-1"><CheckCircle size={10} /> CONNECTED</span>
+                                </div>
                             </div>
                         </div>
-                        ))}
                     </div>
-                )}
+                </div>
             </div>
-
-            <div className="space-y-6">
-                 <div className="flex justify-between items-center mb-2">
-                    <h2 className={`text-xl font-bold text-white flex items-center gap-2 ${styles.fontHeading}`}>
-                        <Zap size={20} className="text-amber-500" /> Acciones Rápidas
-                    </h2>
+        )}
+      </div>
+      
+      {/* MODAL CREAR */}
+      {showNewProject && (
+        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
+            <div className={`max-w-4xl w-full ${styles.glassCard} p-8 rounded-2xl`}>
+                <div className="flex justify-between mb-6">
+                    <h2 className="text-2xl text-white font-bold">Nuevo Proyecto</h2>
+                    <button onClick={() => setShowNewProject(false)}><X className="text-slate-400 hover:text-white"/></button>
                 </div>
                 
-                <div className={`${styles.glassCard} p-6 rounded-2xl`}>
+                <div className="grid lg:grid-cols-2 gap-8">
                     <div className="space-y-4">
-                        <button onClick={() => setShowNewProject(true)} className="w-full text-left p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-amber-500/50 transition-all flex items-center gap-3 group">
-                            <div className="p-2 bg-amber-500/10 rounded-md text-amber-500 group-hover:text-white group-hover:bg-amber-500 transition-colors"><Plus size={16} /></div>
-                            <div>
-                                <div className="text-sm font-bold text-white">Nueva Estrategia</div>
-                                <div className="text-xs text-slate-500">Crear desde template</div>
-                            </div>
-                        </button>
-                        {/* BOTÓN PDF GENERATOR ACTIVO */}
-                        <button onClick={generatePDF} className="w-full text-left p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 transition-all flex items-center gap-3 group">
-                            <div className="p-2 bg-blue-500/10 rounded-md text-blue-500 group-hover:text-white group-hover:bg-blue-500 transition-colors"><Download size={16} /></div>
-                            <div>
-                                <div className="text-sm font-bold text-white">Generar Reporte PDF</div>
-                                <div className="text-xs text-slate-500">Descargar estado actual</div>
-                            </div>
-                        </button>
-                    </div>
-
-                    <div className="mt-8 pt-6 border-t border-slate-800">
-                        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Integraciones</h4>
-                        <div className="space-y-3">
-                             <div className="flex justify-between items-center text-xs">
-                                <span className="text-slate-400">JairoAmaya.co</span>
-                                <span className="text-green-400 font-mono flex items-center gap-1"><CheckCircle size={10} /> CONNECTED</span>
-                            </div>
+                        <input className="w-full bg-slate-950 border border-slate-700 p-4 rounded-lg text-white" placeholder="Nombre del Proyecto" value={newProjectData.name} onChange={e => setNewProjectData({...newProjectData, name: e.target.value})} />
+                        <div className="grid grid-cols-2 gap-4">
+                            <input className="bg-slate-950 border border-slate-700 p-4 rounded-lg text-white" placeholder="Cliente" value={newProjectData.client} onChange={e => setNewProjectData({...newProjectData, client: e.target.value})} />
+                            <input className="bg-slate-950 border border-slate-700 p-4 rounded-lg text-white" placeholder="Industria" value={newProjectData.industry} onChange={e => setNewProjectData({...newProjectData, industry: e.target.value})} />
                         </div>
+                        <button onClick={createNewProject} disabled={!newProjectData.name} className={`w-full py-4 rounded-lg font-bold mt-4 ${styles.primaryBtn}`}>CREAR EN LA NUBE</button>
+                    </div>
+                    
+                    <div className="max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                        {Object.entries(projectTemplates).map(([key, tpl]) => (
+                            <div key={key} onClick={() => setNewProjectData({...newProjectData, projectType: key})} className={`p-4 rounded-xl border mb-3 cursor-pointer flex justify-between group ${newProjectData.projectType === key ? 'bg-amber-500/10 border-amber-500' : 'bg-slate-800 border-slate-700'}`}>
+                                <div>
+                                    <div className={`font-bold text-white group-hover:text-amber-400 transition-colors ${styles.fontHeading}`}>{tpl.name}</div>
+                                    <div className="text-xs text-slate-400">{tpl.description}</div>
+                                </div>
+                                {newProjectData.projectType === key && <CheckCircle size={18} className="text-amber-500" />}
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>
         </div>
-      </div>
+      )}
 
       {/* FOOTER */}
       <footer className="relative z-10 border-t border-slate-800 bg-slate-950/80 backdrop-blur-md pt-12 pb-12 mt-12">
@@ -661,13 +701,13 @@ export default function App() {
         
         <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600">
             <p>© 2026 Jairo Amaya Full Stack Marketer. All rights reserved.</p>
-            <p className="font-mono">v8.1.0 STABLE (PDF)</p>
+            <p className="font-mono">v9.2.0 CLOUD EDITION (FULL)</p>
         </div>
       </footer>
     </div>
   );
 
-  // --- 7. RENDERIZADO: VISTA DE PROYECTO (COCKPIT) ---
+  // --- RENDER: VISTA DE PROYECTO (COCKPIT) ---
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-amber-500/30 flex flex-col justify-between">
       
@@ -921,7 +961,7 @@ export default function App() {
         
         <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600">
             <p>© 2026 Jairo Amaya Full Stack Marketer. All rights reserved.</p>
-            <p className="font-mono">v8.1.0 STABLE (PDF)</p>
+            <p className="font-mono">v9.2.0 CLOUD EDITION (FULL)</p>
         </div>
       </footer>
     </div>
