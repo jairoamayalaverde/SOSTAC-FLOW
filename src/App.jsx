@@ -5,7 +5,8 @@ import {
   ArrowLeft, ExternalLink, BarChart3, FileText, RefreshCw,
   Activity, Zap, Target, Layers, ArrowUpRight, Share2, 
   Github, Twitter, Linkedin, Globe, HardDrive, Cpu, Terminal,
-  Database, Network, Download, LogOut, Loader2, Lock
+  Database, Network, Download
+  /* HE ELIMINADO Lock, LogOut y Loader2 PARA EVITAR EL ERROR */
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import { createClient } from '@supabase/supabase-js';
@@ -28,7 +29,7 @@ const styles = {
   neonText: "text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-300 drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]"
 };
 
-// --- 2. TEMPLATES (FULL CONTENT) ---
+// --- 2. TEMPLATES (CONTENIDO COMPLETO) ---
 const projectTemplates = {
   seo: {
     name: 'Consultoría SEO',
@@ -173,28 +174,35 @@ export default function App() {
     setLoadingProjects(true);
     const { data, error } = await supabase.from('projects').select('*').order('updated_at', { ascending: false });
     if (!error && data) {
-        const parsedProjects = data.map(p => ({ ...p, data: p.data }));
+        // Parsear el JSON 'data' que viene de la DB
+        const parsedProjects = data.map(p => ({
+            ...p,
+            data: p.data // Supabase ya devuelve JSONB como objeto
+        }));
         setProjects(parsedProjects);
     }
     setLoadingProjects(false);
   };
 
+  // Función de Guardado (Debounce o Manual)
   const saveProjectToCloud = useCallback(async (projectToSave) => {
     if (!session) return;
     setSaving(true);
     
-    const { id, created_at, ...updateData } = projectToSave;
+    const { id, created_at, ...updateData } = projectToSave; // Excluir campos inmutables
     
+    // Si tiene ID numérico (de Supabase), actualizamos. Si es temp (Date.now), insertamos.
     if (typeof id === 'number') {
         await supabase.from('projects').update({
             name: updateData.name,
             client: updateData.client,
             progress: updateData.progress,
-            data: updateData.data,
+            data: updateData.data, // Guardamos toda la estructura SOSTAC
             updated_at: new Date()
         }).eq('id', id);
     } else {
-        const { data } = await supabase.from('projects').insert([{
+        // Es nuevo, insertar
+        const { data, error } = await supabase.from('projects').insert([{
             name: updateData.name,
             client: updateData.client,
             industry: updateData.industry,
@@ -207,6 +215,7 @@ export default function App() {
         }]).select();
         
         if (data && data[0]) {
+            // Actualizar ID local con el real de la DB
             setProjects(prev => prev.map(p => p.id === id ? data[0] : p));
             setSelectedProject(data[0]);
         }
@@ -214,8 +223,12 @@ export default function App() {
     setSaving(false);
   }, [session]);
 
+  // --- MANEJO DE ESTADO LOCAL ---
   const updateProjectData = (newData) => {
+    // 1. Actualizar visualmente inmediato
     const updated = { ...selectedProject, data: newData };
+    
+    // Calcular progreso
     let total = 0, completed = 0;
     Object.values(newData).forEach(phase => {
         total += phase.length;
@@ -225,6 +238,8 @@ export default function App() {
 
     setSelectedProject(updated);
     setProjects(prev => prev.map(p => p.id === updated.id ? updated : p));
+
+    // 2. Guardar en Nube (Debounce manual simple: guardar a los 2s)
     saveProjectToCloud(updated);
   };
 
@@ -232,8 +247,11 @@ export default function App() {
     e.preventDefault();
     setAuthLoading(true);
     const { error } = await supabase.auth.signInWithOtp({ email });
-    if (error) alert('Error: ' + error.message);
-    else setLoginMessage('¡Enlace mágico enviado! Revisa tu correo.');
+    if (error) {
+        alert('Error: ' + error.message);
+    } else {
+        setLoginMessage('¡Enlace mágico enviado! Revisa tu correo.');
+    }
     setAuthLoading(false);
   };
 
@@ -244,10 +262,10 @@ export default function App() {
     setSelectedProject(null);
   };
 
-  // --- LÓGICA DE NEGOCIO ---
+  // --- LÓGICA DE GESTIÓN (IGUAL A V8) ---
   const createNewProject = async () => {
     const template = projectTemplates[newProjectData.projectType];
-    const tempId = Date.now();
+    const tempId = Date.now(); // ID temporal
     const newProject = {
       id: tempId,
       ...newProjectData,
@@ -255,9 +273,13 @@ export default function App() {
       progress: 0,
       data: JSON.parse(JSON.stringify(template.data))
     };
+    
+    // UI Optimistic Update
     setProjects([newProject, ...projects]);
     setShowNewProject(false);
     setNewProjectData({ name: '', client: '', industry: '', projectType: 'seo', startDate: new Date().toISOString().split('T')[0] });
+    
+    // Guardar en DB
     await saveProjectToCloud(newProject);
   };
 
@@ -276,7 +298,7 @@ export default function App() {
       // Forzar ID temp para inserción
       const { id, ...cleanDemo } = demoProject; 
       await saveProjectToCloud({ id: Date.now(), ...cleanDemo });
-      await fetchProjects();
+      await fetchProjects(); // Recargar para obtener el ID real
   };
 
   const toggleTask = (taskId) => {
@@ -314,52 +336,105 @@ export default function App() {
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     
-    doc.setFillColor(15, 23, 42); 
+    // Header Dark
+    doc.setFillColor(15, 23, 42); // slate-950
     doc.rect(0, 0, pageWidth, 40, 'F');
-    doc.setTextColor(245, 158, 11);
-    doc.setFont("helvetica", "bold"); doc.setFontSize(22);
+    
+    // Logo & Titulo
+    doc.setTextColor(245, 158, 11); // amber-500
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(22);
     doc.text('SOSTAC FLOW', 20, 20);
-    doc.setTextColor(255, 255, 255); doc.setFontSize(10); doc.setFont("helvetica", "normal");
-    doc.text('REPORTE EJECUTIVO', 20, 30);
+    
+    // Subtitle
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text('REPORTE EJECUTIVO DE ESTRATEGIA', 20, 30);
 
-    doc.setTextColor(50, 50, 50); doc.setFontSize(16); doc.setFont("helvetica", "bold");
+    // Info del Proyecto
+    doc.setTextColor(50, 50, 50);
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
     doc.text(selectedProject.name, 20, 55);
-    doc.setFontSize(10); doc.setTextColor(100, 100, 100); doc.setFont("helvetica", "normal");
-    doc.text(`Cliente: ${selectedProject.client}`, 20, 62);
-    doc.text(`Progreso: ${selectedProject.progress}%`, 150, 67);
-    doc.setDrawColor(200, 200, 200); doc.line(20, 75, pageWidth - 20, 75);
 
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Cliente: ${selectedProject.client}`, 20, 62);
+    doc.text(`Industria: ${selectedProject.industry}`, 20, 67);
+    doc.text(`Fecha: ${selectedProject.startDate}`, 150, 62);
+    doc.text(`Progreso: ${selectedProject.progress}%`, 150, 67);
+
+    // Separator
+    doc.setDrawColor(200, 200, 200);
+    doc.line(20, 75, pageWidth - 20, 75);
+
+    // Content Loop
     let yPos = 85;
+
     phases.forEach(phase => {
         const tasks = selectedProject.data[phase.id] || [];
-        doc.setFillColor(245, 158, 11); doc.roundedRect(20, yPos, 170, 8, 1, 1, 'F');
-        doc.setTextColor(0, 0, 0); doc.setFont("helvetica", "bold"); doc.setFontSize(10);
+        
+        // Phase Header
+        doc.setFillColor(245, 158, 11); // Amber pill
+        doc.roundedRect(20, yPos, 170, 8, 1, 1, 'F');
+        doc.setTextColor(0, 0, 0);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
         doc.text(`${phase.name.toUpperCase()} PHASE`, 25, yPos + 5.5);
+        
         yPos += 15;
+
         if (tasks.length === 0) {
-            doc.setTextColor(150, 150, 150); doc.setFont("helvetica", "italic");
-            doc.text("Sin items.", 25, yPos); yPos += 10;
+            doc.setTextColor(150, 150, 150);
+            doc.setFont("helvetica", "italic");
+            doc.text("Sin items registrados en esta fase.", 25, yPos);
+            yPos += 10;
         } else {
             tasks.forEach(task => {
+                // Checkbox visual
                 doc.setDrawColor(0, 0, 0);
-                task.completed ? doc.setFillColor(34, 197, 94) : doc.setFillColor(255, 255, 255);
-                doc.rect(25, yPos - 3, 3, 3, task.completed ? 'F' : 'S');
-                doc.setTextColor(0, 0, 0); doc.setFont("helvetica", task.completed ? "normal" : "bold");
-                doc.text(doc.splitTextToSize(task.text, 150), 32, yPos);
-                yPos += 8;
+                if(task.completed) {
+                    doc.setFillColor(34, 197, 94); // Green
+                    doc.rect(25, yPos - 3, 3, 3, 'F');
+                } else {
+                    doc.setFillColor(255, 255, 255);
+                    doc.rect(25, yPos - 3, 3, 3, 'S');
+                }
+
+                // Task Text
+                doc.setTextColor(0, 0, 0);
+                doc.setFont("helvetica", task.completed ? "normal" : "bold");
+                const splitText = doc.splitTextToSize(task.text, 150);
+                doc.text(splitText, 32, yPos);
+                
+                yPos += (splitText.length * 5); // Dynamic height
+
+                // Notes (if any)
                 if(task.notes) {
-                    doc.setTextColor(100, 100, 100); doc.setFont("helvetica", "italic"); doc.setFontSize(9);
+                    doc.setTextColor(100, 100, 100);
+                    doc.setFont("helvetica", "italic");
+                    doc.setFontSize(9);
                     const splitNotes = doc.splitTextToSize(`Nota: ${task.notes}`, 140);
                     doc.text(splitNotes, 32, yPos);
                     yPos += (splitNotes.length * 4) + 2;
-                    doc.setFontSize(10);
+                    doc.setFontSize(10); // Reset size
+                } else {
+                    yPos += 2;
                 }
-                if (yPos > pageHeight - 20) { doc.addPage(); yPos = 20; }
+
+                // Page Break Check
+                if (yPos > pageHeight - 30) {
+                    doc.addPage();
+                    yPos = 20;
+                }
             });
         }
-        yPos += 5;
+        yPos += 5; // Spacing between phases
     });
-    // Footer
+
+    // --- FOOTER BRANDING ---
     const pageCount = doc.internal.getNumberOfPages();
     for(let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
@@ -370,13 +445,21 @@ export default function App() {
         doc.text('Generado con SOSTAC FLOW | Jairo Amaya - Full Stack Marketer', 20, pageHeight - 10);
         doc.text(`jairoamaya.co`, pageWidth - 40, pageHeight - 10);
     }
-    doc.save(`${selectedProject.client}_Report.pdf`);
+
+    doc.save(`${selectedProject.client.replace(/\s+/g, '_')}_Strategy_Report.pdf`);
+  };
+
+  const handleHardReset = () => {
+    if(confirm('⚠️ ¿REINICIAR SISTEMA? \n\nAtención: Esta acción borrará todos los proyectos guardados localmente. Úsala solo si necesitas restaurar la versión original.')) {
+      localStorage.removeItem('ja_os_projects');
+      window.location.reload();
+    }
   };
 
   const isInternalTool = (url) => url && url.includes('jairoamaya.co');
 
   // --- RENDER: LOGIN SCREEN ---
-  if (authLoading) return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-amber-500"><Loader2 className="animate-spin" size={40} /></div>;
+  if (authLoading) return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-amber-500 font-bold">Cargando Sistema...</div>;
 
   if (!session) return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
@@ -404,7 +487,7 @@ export default function App() {
                     {loginMessage}
                 </div>
             )}
-            <p className="mt-8 text-xs text-slate-600">v9.3.0 Cloud Edition (Full Content)</p>
+            <p className="mt-8 text-xs text-slate-600">v9.4.0 Cloud Edition (Stable)</p>
         </div>
     </div>
   );
@@ -431,8 +514,8 @@ export default function App() {
             <p className={`text-slate-400 mt-2 ${styles.fontBody}`}>Gestión estratégica de proyectos de consultoría digital</p>
           </div>
           <div className="flex gap-4 items-center">
-            <span className="text-xs text-slate-500 font-mono hidden md:block flex items-center gap-1"><Lock size={12} className="text-green-500"/> {session.user.email}</span>
-            <button onClick={handleLogout} className="p-2 text-slate-500 hover:text-red-500 transition-colors" title="Cerrar Sesión"><LogOut size={20}/></button>
+            <span className="text-xs text-slate-500 font-mono hidden md:block flex items-center gap-1">{session.user.email}</span>
+            <button onClick={handleLogout} className="p-2 text-slate-500 hover:text-red-500 transition-colors" title="Cerrar Sesión">Salir</button>
             <button 
               onClick={() => setShowNewProject(true)}
               className={`px-6 py-3 rounded-xl flex items-center gap-2 font-bold text-sm ${styles.primaryBtn}`}
@@ -443,7 +526,7 @@ export default function App() {
         </header>
 
         {loadingProjects ? (
-            <div className="text-center py-20"><Loader2 className="animate-spin mx-auto text-amber-500" size={40} /></div>
+            <div className="text-center py-20 text-amber-500 font-bold">Cargando Proyectos...</div>
         ) : (
             <div className="grid lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-4">
@@ -506,7 +589,7 @@ export default function App() {
                         <h3 className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-4">Métricas Globales</h3>
                         <div className="grid grid-cols-2 gap-4">
                             <div><div className="text-2xl font-bold text-white">{projects.length}</div><div className="text-xs text-slate-500">Proyectos</div></div>
-                            <div><div className="text-2xl font-bold text-white">{saving ? <Loader2 className="animate-spin inline" size={16}/> : <CheckCircle className="inline text-green-500" size={16}/>}</div><div className="text-xs text-slate-500">Estado Sync</div></div>
+                            <div><div className="text-2xl font-bold text-white">{saving ? <span className="text-amber-500 text-sm">...</span> : <CheckCircle className="inline text-green-500" size={16}/>}</div><div className="text-xs text-slate-500">Estado Sync</div></div>
                         </div>
                     </div>
                     
@@ -628,7 +711,7 @@ export default function App() {
         
         <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600">
             <p>© 2026 Jairo Amaya Full Stack Marketer. All rights reserved.</p>
-            <p className="font-mono">v9.3.0 CLOUD EDITION (FULL)</p>
+            <p className="font-mono">v9.4.0 CLOUD EDITION (FULL)</p>
         </div>
       </footer>
     </div>
@@ -888,7 +971,7 @@ export default function App() {
         
         <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600">
             <p>© 2026 Jairo Amaya Full Stack Marketer. All rights reserved.</p>
-            <p className="font-mono">v9.3.0 CLOUD EDITION (FULL)</p>
+            <p className="font-mono">v9.4.0 CLOUD EDITION (FULL)</p>
         </div>
       </footer>
     </div>
