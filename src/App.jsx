@@ -57,7 +57,7 @@ const projectTemplates = {
   branding: {
     name: 'Transformación de Marca',
     description: 'Identidad y Posicionamiento',
-    data: { situation: [], objectives: [], strategy: [], tactics: [], action: [], control: [] } // Simplificado para el ejemplo
+    data: { situation: [], objectives: [], strategy: [], tactics: [], action: [], control: [] } 
   }
 };
 
@@ -74,10 +74,25 @@ export default function App() {
   // --- ESTADOS ---
   const [viewMode, setViewMode] = useState('admin'); // 'admin' | 'client'
   
-  // Persistencia de Proyectos
+  // Persistencia de Proyectos con PROYECTO DEMO INICIAL
   const [projects, setProjects] = useState(() => {
     const saved = localStorage.getItem('ja_os_projects');
-    return saved ? JSON.parse(saved) : [];
+    if (saved) {
+      return JSON.parse(saved);
+    } else {
+      // Si no hay datos, creamos el demo
+      return [{
+        id: 1,
+        name: 'Proyecto Demo: E-commerce',
+        client: 'Cliente Ejemplo S.A.',
+        industry: 'Retail / Tech',
+        projectType: 'seo',
+        startDate: new Date().toISOString().split('T')[0],
+        status: 'active',
+        progress: 15, 
+        data: projectTemplates.seo.data
+      }];
+    }
   });
 
   const [selectedProject, setSelectedProject] = useState(null);
@@ -230,7 +245,7 @@ export default function App() {
         <header className="flex justify-between items-end mb-12">
           <div>
             <h1 className={`text-4xl md:text-5xl font-bold text-white mb-2 ${styles.fontHeading}`}>
-              JAIRO AMAYA <span className="text-amber-500">OS</span>
+              SOSTAC <span className="text-amber-500 italic">FLOW</span>
             </h1>
             <p className={`text-slate-400 ${styles.fontBody}`}>Sistema Operativo de Consultoría Estratégica</p>
           </div>
