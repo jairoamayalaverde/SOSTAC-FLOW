@@ -7,7 +7,7 @@ import {
   Github, Twitter, Linkedin, Globe, HardDrive, Cpu, Terminal,
   Database, Network, Download
 } from 'lucide-react';
-import jsPDF from 'jspdf'; // IMPORTANTE: Requiere npm install jspdf
+import jsPDF from 'jspdf';
 
 // --- 1. CONFIGURACIÓN DE ESTILOS & BRANDING ---
 const styles = {
@@ -21,7 +21,7 @@ const styles = {
   neonText: "text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-300 drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]"
 };
 
-// --- 2. DATA: TEMPLATES (TUS TEXTOS EXACTOS) ---
+// --- 2. DATA: TEMPLATES ROBUSTOS ---
 const projectTemplates = {
   seo: {
     name: 'Consultoría SEO',
@@ -140,9 +140,12 @@ const phases = [
 export default function App() {
   const [viewMode, setViewMode] = useState('admin');
   
+  // --- 3. PERSISTENCIA + DEMO ROBUSTA ---
   const [projects, setProjects] = useState(() => {
     const saved = localStorage.getItem('ja_os_projects');
     const parsed = saved ? JSON.parse(saved) : [];
+    
+    // DEMO INICIAL MEJORADA
     if (parsed.length === 0) {
       const demoData = JSON.parse(JSON.stringify(projectTemplates.seo.data));
       return [{
@@ -189,7 +192,7 @@ export default function App() {
     }
   }, [selectedProject?.data]);
 
-  // --- MOTOR PDF (NUEVO) ---
+  // --- MOTOR PDF GENERATOR ---
   const generatePDF = () => {
     if (!selectedProject) return;
 
@@ -303,6 +306,7 @@ export default function App() {
     doc.save(`${selectedProject.client.replace(/\s+/g, '_')}_Strategy_Report.pdf`);
   };
 
+  // --- 4. FUNCIONES LÓGICAS ---
   const handleHardReset = () => {
     if(confirm('⚠️ ¿REINICIAR SISTEMA? \n\nAtención: Esta acción borrará todos los proyectos guardados localmente. Úsala solo si necesitas restaurar la versión original.')) {
       localStorage.removeItem('ja_os_projects');
@@ -369,6 +373,7 @@ export default function App() {
 
   const isInternalTool = (url) => url && url.includes('jairoamaya.co');
 
+  // --- 5. RENDERIZADO: MODAL ---
   if (showNewProject) return (
     <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
       <div className={`max-w-4xl w-full ${styles.glassCard} rounded-2xl p-8 border-amber-500/20 animate-in fade-in zoom-in duration-300`}>
@@ -439,6 +444,7 @@ export default function App() {
     </div>
   );
 
+  // --- CALCULOS ---
   const totalProjects = projects.length;
   const avgProgress = projects.length > 0 ? Math.round(projects.reduce((acc, curr) => acc + curr.progress, 0) / projects.length) : 0;
   const totalTasks = projects.reduce((acc, p) => {
@@ -447,10 +453,12 @@ export default function App() {
       return acc + count;
   }, 0);
 
+  // --- 6. RENDERIZADO: DASHBOARD (HOME) ---
   if (!selectedProject) return (
     <div className="min-h-screen bg-slate-950 text-slate-200 p-4 md:p-8 font-sans selection:bg-amber-500/30 overflow-x-hidden flex flex-col">
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Raleway:wght@300;400;500;600&display=swap');`}</style>
       
+      {/* FONDO ANIMADO TECH */}
       <div className="fixed inset-0 z-0 pointer-events-none">
           <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[120px]"></div>
           <div className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-blue-500/10 rounded-full blur-[100px]"></div>
@@ -458,7 +466,7 @@ export default function App() {
 
       <div className="max-w-7xl mx-auto w-full relative z-10 flex-1">
         
-        {/* HEADER LIMPIO - SIN SYSTEM ONLINE */}
+        {/* HEADER LIMPIO (SIN SYSTEM ONLINE) */}
         <header className="flex flex-col md:flex-row justify-between items-end mb-10 border-b border-slate-800 pb-6">
           <div>
             <h1 className={`text-5xl font-bold text-white tracking-tight ${styles.fontHeading}`}>
@@ -476,6 +484,7 @@ export default function App() {
           </div>
         </header>
 
+        {/* METRICS (BENTO GRID) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
             <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden group`}>
                 <Layers size={80} className="absolute -right-4 -top-4 text-slate-800 opacity-50 group-hover:opacity-100 group-hover:text-amber-500/10 transition-all" />
@@ -503,6 +512,7 @@ export default function App() {
             </div>
         </div>
 
+        {/* PROJECTS & SIDEBAR */}
         <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
                 <div className="flex justify-between items-center mb-2">
@@ -578,7 +588,7 @@ export default function App() {
                                 <div className="text-xs text-slate-500">Crear desde template</div>
                             </div>
                         </button>
-                        {/* GENERAR PDF SIDEBAR BUTTON */}
+                        {/* BOTÓN PDF GENERATOR ACTIVO */}
                         <button onClick={generatePDF} className="w-full text-left p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 transition-all flex items-center gap-3 group">
                             <div className="p-2 bg-blue-500/10 rounded-md text-blue-500 group-hover:text-white group-hover:bg-blue-500 transition-colors"><Download size={16} /></div>
                             <div>
@@ -614,7 +624,7 @@ export default function App() {
                     </div>
                 </a>
                 <p className="text-slate-500 text-sm mt-4 max-w-sm leading-relaxed">
-                   Acciones estratégicas orientadas a resultados tangibles.
+                   Gestión estratégica de proyectos de consultoría digital.
                 </p>
             </div>
             
@@ -651,17 +661,17 @@ export default function App() {
         
         <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600">
             <p>© 2026 Jairo Amaya Full Stack Marketer. All rights reserved.</p>
-            <p className="font-mono">v8.0.0 PDF ENABLED</p>
+            <p className="font-mono">v8.1.0 STABLE (PDF)</p>
         </div>
       </footer>
     </div>
   );
 
-  // --- RENDERIZADO: VISTA DE PROYECTO (COCKPIT) ---
+  // --- 7. RENDERIZADO: VISTA DE PROYECTO (COCKPIT) ---
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-amber-500/30 flex flex-col justify-between">
       
-      {/* HEADER STICKY */}
+      {/* HEADER STICKY (CON BOTÓN PDF Y SIN COMPARTIR) */}
       <div className="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-md border-b border-slate-800 shadow-xl">
         <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
           <div className="flex items-center gap-4">
@@ -679,10 +689,6 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-3">
-             <button onClick={shareProject} className="p-2 text-slate-400 hover:text-amber-500 transition-colors" title="Copiar Resumen">
-                <Share2 size={18} />
-             </button>
-             <div className="h-6 w-[1px] bg-slate-800 mx-1"></div>
              <button 
                 onClick={() => setViewMode(viewMode === 'admin' ? 'client' : 'admin')}
                 className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all border ${
@@ -693,7 +699,8 @@ export default function App() {
             >
                 {viewMode === 'admin' ? 'MODO EDITOR' : 'VISTA CLIENTE'}
             </button>
-            {/* PDF GENERATOR BUTTON IN PROJECT HEADER */}
+            
+            {/* BOTÓN PDF ACTIVO */}
             <button onClick={generatePDF} className="p-2 text-amber-500 hover:text-white transition-colors" title="Descargar Reporte PDF">
                 <Download size={18} />
             </button>
@@ -877,7 +884,7 @@ export default function App() {
                     </div>
                 </a>
                 <p className="text-slate-500 text-sm mt-4 max-w-sm leading-relaxed">
-                   Acciones estratégicas orientadas a resultados tangibles.
+                   Gestión estratégica de proyectos de consultoría digital.
                 </p>
             </div>
             
@@ -914,7 +921,7 @@ export default function App() {
         
         <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600">
             <p>© 2026 Jairo Amaya Full Stack Marketer. All rights reserved.</p>
-            <p className="font-mono">v8.0.0 PDF ENABLED</p>
+            <p className="font-mono">v8.1.0 STABLE (PDF)</p>
         </div>
       </footer>
     </div>
