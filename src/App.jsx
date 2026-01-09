@@ -4,7 +4,7 @@ import {
   Save, X, Briefcase, Eye, EyeOff, LayoutDashboard, 
   ArrowLeft, ExternalLink, BarChart3, FileText, RefreshCw,
   Activity, Zap, Target, Layers, ArrowUpRight, Share2, 
-  Github, Twitter, Linkedin, Globe, HardDrive, Cpu
+  Github, Twitter, Linkedin, Globe, HardDrive, Cpu, Terminal
 } from 'lucide-react';
 
 // --- CONFIGURACIÓN DE ESTILOS & BRANDING ---
@@ -19,7 +19,7 @@ const styles = {
   neonText: "text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-300 drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]"
 };
 
-// --- DATA: TEMPLATES CON ECOSISTEMA JAIRO AMAYA ---
+// --- DATA: TEMPLATES COMPLETOS & ROBUSTOS ---
 const projectTemplates = {
   seo: {
     name: 'Consultoría SEO (Ecosistema)',
@@ -29,16 +29,25 @@ const projectTemplates = {
         { 
             id: 's1', 
             text: 'Ejecutar Auditoría Técnica Inicial', 
-            completed: false, 
+            completed: true, 
             notes: 'Usar la herramienta propietaria para detectar errores 404, LCP y redirecciones.', 
             link: 'https://jairoamaya.co/auditor-seo-interactivo/' // <--- INTEGRACIÓN AUDITOR
         },
-        { id: 's2', text: 'Keyword Research Transaccional', completed: false, notes: '', link: '' },
+        { id: 's2', text: 'Análisis de Competencia (Top 3 SERP)', completed: true, notes: 'Competidor A domina keywords informacionales. Oportunidad en transaccionales.', link: '' },
+        { id: 's3', text: 'Keyword Research Transaccional', completed: false, notes: 'Foco en long-tail keywords con intención de compra alta.', link: '' },
+        { id: 's4', text: 'Revisión de Perfil de Enlaces (Backlinks)', completed: false, notes: '', link: '' },
+        { id: 's5', text: 'Benchmark de Velocidad (Core Web Vitals)', completed: true, notes: 'LCP en móvil necesita optimización urgente (3.5s).', link: '' },
       ],
       objectives: [
-        { id: 'o1', text: '+40% Tráfico Orgánico YoY', completed: false, notes: '', link: '' },
+        { id: 'o1', text: '+40% Tráfico Orgánico YoY', completed: false, notes: 'Meta: 15,000 visitas/mes para Q3.', link: '' },
+        { id: 'o2', text: 'Posicionar 5 Keywords "Money" en Top 3', completed: false, notes: '', link: '' },
+        { id: 'o3', text: 'Mejorar Tasa de Conversión Orgánica (CRO)', completed: false, notes: 'Objetivo: Pasar del 1.2% al 2.0%.', link: '' },
       ],
-      strategy: [{ id: 'st1', text: 'Content Hubs Temáticos', completed: false, notes: '', link: '' }],
+      strategy: [
+        { id: 'st1', text: 'Content Hubs: Autoridad Temática', completed: false, notes: 'Crear clusters de contenido alrededor de productos core.', link: '' },
+        { id: 'st2', text: 'SEO Técnico: Fundación Sólida', completed: false, notes: 'Priorizar indexabilidad y velocidad de carga.', link: '' },
+        { id: 'st3', text: 'Link Building: Digital PR & Outreach', completed: false, notes: 'Conseguir enlaces de sitios de nicho con DR > 40.', link: '' },
+      ],
       tactics: [
           { 
               id: 't1', 
@@ -47,10 +56,22 @@ const projectTemplates = {
               notes: 'Clasificar hallazgos de la auditoría para definir Quick Wins.', 
               link: 'https://jairoamaya.co/matriz-de-prioridad-seo/' // <--- INTEGRACIÓN MATRIZ
           },
-          { id: 't2', text: '4 Artículos Pilar / Mes', completed: false, notes: '', link: '' }
+          { id: 't2', text: 'Optimización On-Page de 20 URLs Prioritarias', completed: false, notes: '', link: '' },
+          { id: 't3', text: 'Creación de 4 Artículos "Pilar" Mensuales', completed: false, notes: 'Contenido de >1500 palabras.', link: '' },
+          { id: 't4', text: 'Implementación de Schema Markup', completed: false, notes: '', link: '' },
       ],
-      action: [{ id: 'a1', text: 'Sprint 1: Technical Fixes', completed: false, notes: '', link: '' }],
-      control: [{ id: 'c1', text: 'Setup GA4 + GSC', completed: false, notes: '', link: '' }]
+      action: [
+        { id: 'a1', text: 'Semana 1: Fix Errores Técnicos Críticos', completed: false, notes: '', link: '' },
+        { id: 'a2', text: 'Semana 2: Optimización On-Page Categorías', completed: false, notes: '', link: '' },
+        { id: 'a3', text: 'Semana 3: Producción Contenido Blog', completed: false, notes: '', link: '' },
+        { id: 'a4', text: 'Semana 4: Revisión y Ajustes Mensuales', completed: false, notes: '', link: '' },
+      ],
+      control: [
+        { id: 'c1', text: 'Setup Dashboard GA4 + GSC', completed: false, notes: '', link: '' },
+        { id: 'c2', text: 'Tracking Semanal de Posiciones', completed: false, notes: '', link: '' },
+        { id: 'c3', text: 'Auditoría de Salud del Sitio (Mensual)', completed: false, notes: '', link: '' },
+        { id: 'c4', text: 'Revisión Trimestral de Estrategia', completed: false, notes: '', link: '' },
+      ]
     }
   },
   personal_brand: {
@@ -59,19 +80,28 @@ const projectTemplates = {
     data: {
       situation: [
         { id: 'pb1', text: 'Auditoría de Huella Digital Actual', completed: false, notes: 'Googlear nombre y analizar SERP.', link: '' },
+        { id: 'pb2', text: 'Definición de Arquetipo de Marca', completed: false, notes: '¿Sabio, Héroe o Gobernante?', link: '' },
+        { id: 'pb3', text: 'Análisis de Audiencia Objetivo', completed: false, notes: '', link: '' },
       ],
       objectives: [
         { id: 'po1', text: 'Ser Top of Mind en el nicho', completed: false, notes: '', link: '' },
+        { id: 'po2', text: 'Crecer 10k seguidores en LinkedIn', completed: false, notes: '', link: '' },
       ],
-      strategy: [], tactics: [], action: [], control: []
-    }
-  },
-  smo: {
-    name: 'SMO (Social Media)',
-    description: 'Optimización de Redes Sociales',
-    data: {
-      situation: [{ id: 'sm1', text: 'Auditoría de Canales Actuales', completed: false, notes: '', link: '' }],
-      objectives: [], strategy: [], tactics: [], action: [], control: []
+      strategy: [
+        { id: 'pst1', text: 'Estrategia de Contenidos "Thought Leadership"', completed: false, notes: 'Opinión experta vs contenido educativo.', link: '' },
+        { id: 'pst2', text: 'Networking Estratégico', completed: false, notes: '', link: '' },
+      ],
+      tactics: [
+        { id: 'pt1', text: 'Newsletter Semanal (Substack)', completed: false, notes: '', link: '' },
+        { id: 'pt2', text: 'LinkedIn: 3 Posts + 5 Comentarios diarios', completed: false, notes: '', link: '' },
+      ],
+      action: [
+        { id: 'pa1', text: 'Semana 1: Optimización de Perfiles Sociales', completed: false, notes: '', link: '' },
+        { id: 'pa2', text: 'Sesión de Fotos Corporativas', completed: false, notes: '', link: '' },
+      ],
+      control: [
+        { id: 'pc1', text: 'Métricas de Engagement (SSI LinkedIn)', completed: false, notes: '', link: '' },
+      ]
     }
   },
   blank: {
@@ -293,9 +323,9 @@ export default function App() {
     </div>
   );
 
-  // 2. DASHBOARD DE PROYECTOS (V2.0 RESTAURADO Y MEJORADO)
+  // 2. DASHBOARD DE PROYECTOS (HOME)
   if (!selectedProject) return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 p-4 md:p-8 font-sans selection:bg-amber-500/30 overflow-hidden">
+    <div className="min-h-screen bg-slate-950 text-slate-200 p-4 md:p-8 font-sans selection:bg-amber-500/30 flex flex-col justify-between overflow-x-hidden">
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Raleway:wght@300;400;500;600&display=swap');`}</style>
       
       {/* FONDO ANIMADO TECH */}
@@ -304,26 +334,26 @@ export default function App() {
           <div className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-blue-500/10 rounded-full blur-[100px]"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto relative z-10 flex flex-col min-h-[90vh]">
+      <div className="max-w-7xl mx-auto w-full relative z-10 flex-1">
         
-        {/* HEADER TIPO HUD */}
+        {/* HEADER */}
         <header className="flex flex-col md:flex-row justify-between items-end mb-10 border-b border-slate-800 pb-6">
           <div>
             <div className="flex items-center gap-3 mb-2">
-                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
-                <span className="text-xs font-mono text-slate-400 tracking-widest uppercase">System Online // v3.5</span>
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
+                <span className="text-[10px] font-mono text-slate-400 tracking-widest uppercase">System Online // v4.0</span>
             </div>
             <h1 className={`text-5xl font-bold text-white tracking-tight ${styles.fontHeading}`}>
               SOSTAC <span className={styles.neonText}>FLOW</span>
             </h1>
-            <p className={`text-slate-400 mt-2 ${styles.fontBody}`}>Centro de Comando Estratégico</p>
+            <p className={`text-slate-400 mt-2 ${styles.fontBody}`}>Ingeniería de Marketing & Gestión Estratégica</p>
           </div>
           <div className="flex gap-4 mt-6 md:mt-0">
             <button 
               onClick={handleHardReset}
               className="px-4 py-2 rounded-lg flex items-center gap-2 font-bold text-xs bg-red-500/10 text-red-500 border border-red-500/30 hover:bg-red-500 hover:text-white transition-all"
             >
-              <RefreshCw size={14} /> RESET DB
+              <RefreshCw size={14} /> RESET
             </button>
             <button 
               onClick={() => setShowNewProject(true)}
@@ -334,159 +364,129 @@ export default function App() {
           </div>
         </header>
 
-        {/* KPI CARDS (BENTO GRID TOP) */}
+        {/* METRICS GRID */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-            <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden group`}>
-                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <Layers size={80} />
-                </div>
-                <h3 className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Proyectos Activos</h3>
-                <div className="text-4xl font-bold text-white mb-2">{totalProjects}</div>
-                <div className="flex items-center gap-2 text-xs text-green-400">
-                    <ArrowUpRight size={14} /> <span>100% Operativo</span>
+            <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden`}>
+                <Layers size={80} className="absolute -right-4 -top-4 text-slate-800 opacity-50" />
+                <h3 className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Estrategias Activas</h3>
+                <div className="text-4xl font-bold text-white">{totalProjects}</div>
+            </div>
+            <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden`}>
+                <Activity size={80} className="absolute -right-4 -top-4 text-slate-800 opacity-50" />
+                <h3 className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Progreso Global</h3>
+                <div className="text-4xl font-bold text-white">{avgProgress}%</div>
+                <div className="w-full bg-slate-800 h-1 mt-3 rounded-full overflow-hidden">
+                    <div className="bg-amber-500 h-full" style={{width: `${avgProgress}%`}}></div>
                 </div>
             </div>
-
-            <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden group`}>
-                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <Activity size={80} />
-                </div>
-                <h3 className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Eficiencia Global</h3>
-                <div className="text-4xl font-bold text-white mb-2">{avgProgress}%</div>
-                <div className="w-full bg-slate-700 h-1.5 rounded-full mt-2">
-                    <div className="bg-amber-500 h-full rounded-full" style={{width: `${avgProgress}%`}}></div>
-                </div>
-            </div>
-
-            <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden group`}>
-                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <Target size={80} />
-                </div>
-                <h3 className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Tareas en Radar</h3>
-                <div className="text-4xl font-bold text-white mb-2">{totalTasks}</div>
-                <div className="text-xs text-slate-500">Items estratégicos bajo gestión</div>
+            <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden`}>
+                <Target size={80} className="absolute -right-4 -top-4 text-slate-800 opacity-50" />
+                <h3 className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Total Entregables</h3>
+                <div className="text-4xl font-bold text-white">{totalTasks}</div>
             </div>
         </div>
 
-        {/* MAIN CONTENT GRID */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-auto">
-            
-            {/* COLUMN LEFT: PROJECTS LIST (2/3) */}
-            <div className="lg:col-span-2 space-y-6">
-                <div className="flex justify-between items-center mb-2">
-                    <h2 className={`text-xl font-bold text-white flex items-center gap-2 ${styles.fontHeading}`}>
-                        <Briefcase size={20} className="text-amber-500" /> Proyectos en Curso
-                    </h2>
-                </div>
+        {/* PROJECTS LIST */}
+        <div className="mb-12">
+            <h2 className={`text-xl font-bold text-white mb-6 flex items-center gap-2 ${styles.fontHeading}`}>
+                <Briefcase size={20} className="text-amber-500" /> Proyectos Recientes
+            </h2>
 
-                {projects.length === 0 ? (
-                    <div className="text-center py-20 bg-slate-900/50 rounded-3xl border border-dashed border-slate-700">
-                        <LayoutDashboard size={48} className="mx-auto text-slate-600 mb-4" />
-                        <p className="text-slate-500">Sistema en espera. Inicie una nueva estrategia.</p>
-                    </div>
-                ) : (
-                    <div className="grid gap-4">
-                        {projects.map(project => (
-                        <div 
-                            key={project.id}
-                            onClick={() => setSelectedProject(project)}
-                            className={`group cursor-pointer rounded-xl p-6 transition-all border border-slate-800 bg-slate-900/40 hover:bg-slate-800 hover:border-amber-500/50 hover:shadow-lg relative overflow-hidden`}
-                        >
-                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                            
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
-                                    <h3 className={`text-lg font-bold text-white mb-1 group-hover:text-amber-400 transition-colors ${styles.fontHeading}`}>{project.name}</h3>
-                                    <p className="text-sm text-slate-400">{project.client} • {projectTemplates[project.projectType]?.name}</p>
-                                </div>
-                                <div className="text-2xl font-bold text-slate-700 group-hover:text-white transition-colors">
-                                    {project.progress}%
+            {projects.length === 0 ? (
+                <div className="text-center py-20 bg-slate-900/40 border border-dashed border-slate-800 rounded-3xl">
+                    <p className="text-slate-500">No hay operaciones activas.</p>
+                </div>
+            ) : (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {projects.map(project => (
+                    <div 
+                        key={project.id}
+                        onClick={() => setSelectedProject(project)}
+                        className={`group cursor-pointer rounded-xl p-6 transition-all border border-slate-800 bg-slate-900/40 hover:bg-slate-800 hover:border-amber-500/50 hover:shadow-lg relative overflow-hidden`}
+                    >
+                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-amber-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        
+                        <div className="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 className={`text-lg font-bold text-white mb-1 group-hover:text-amber-400 transition-colors ${styles.fontHeading}`}>{project.name}</h3>
+                                <div className="flex items-center gap-2 text-xs text-slate-400">
+                                    <span>{project.client}</span>
+                                    <span className="w-1 h-1 bg-slate-600 rounded-full"></span>
+                                    <span className="text-amber-500 uppercase font-bold">{projectTemplates[project.projectType]?.name}</span>
                                 </div>
                             </div>
-                            
-                            {/* MINI VISUALIZER OF PHASES */}
-                            <div className="flex gap-1 mb-2">
-                                {phases.map((ph, idx) => {
-                                    const pTasks = project.data[ph.id] || [];
-                                    const hasProgress = pTasks.some(t => t.completed);
-                                    return (
-                                        <div key={idx} className={`h-1 flex-1 rounded-full ${hasProgress ? 'bg-amber-500' : 'bg-slate-800'}`} title={ph.name}></div>
-                                    )
-                                })}
-                            </div>
-                            <div className="flex justify-between text-[10px] text-slate-500 font-mono uppercase">
-                                <span>S</span><span>O</span><span>S</span><span>T</span><span>A</span><span>C</span>
+                            <div className="text-xl font-bold text-slate-700 group-hover:text-white transition-colors">
+                                {project.progress}%
                             </div>
                         </div>
-                        ))}
-                    </div>
-                )}
-            </div>
-
-            {/* COLUMN RIGHT: SYSTEM STATUS (1/3) */}
-            <div className="space-y-6">
-                 <div className="flex justify-between items-center mb-2">
-                    <h2 className={`text-xl font-bold text-white flex items-center gap-2 ${styles.fontHeading}`}>
-                        <Zap size={20} className="text-amber-500" /> Acciones Rápidas
-                    </h2>
-                </div>
-                
-                <div className={`${styles.glassCard} p-6 rounded-2xl`}>
-                    <div className="space-y-4">
-                        <button onClick={() => setShowNewProject(true)} className="w-full text-left p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-amber-500/50 transition-all flex items-center gap-3 group">
-                            <div className="p-2 bg-amber-500/10 rounded-md text-amber-500 group-hover:text-white group-hover:bg-amber-500 transition-colors">
-                                <Plus size={16} />
-                            </div>
-                            <div>
-                                <div className="text-sm font-bold text-white">Nueva Estrategia</div>
-                                <div className="text-xs text-slate-500">Crear desde template</div>
-                            </div>
-                        </button>
-
-                        <button className="w-full text-left p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 transition-all flex items-center gap-3 group">
-                            <div className="p-2 bg-blue-500/10 rounded-md text-blue-500 group-hover:text-white group-hover:bg-blue-500 transition-colors">
-                                <FileText size={16} />
-                            </div>
-                            <div>
-                                <div className="text-sm font-bold text-white">Exportar Reportes</div>
-                                <div className="text-xs text-slate-500">Generar PDF global</div>
-                            </div>
-                        </button>
-                    </div>
-
-                    <div className="mt-8 pt-6 border-t border-slate-800">
-                        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Estado del Sistema</h4>
-                        <div className="space-y-3">
-                             <div className="flex justify-between items-center text-xs">
-                                <span className="text-slate-400">Database</span>
-                                <span className="text-green-400 font-mono">LOCAL_STORAGE OK</span>
-                            </div>
-                            <div className="flex justify-between items-center text-xs">
-                                <span className="text-slate-400">Integrations</span>
-                                <span className="text-amber-500 font-mono">AUDITOR + MATRIZ LINKED</span>
-                            </div>
+                        
+                        <div className="flex gap-1 mt-4">
+                            {phases.map((ph, idx) => {
+                                const pTasks = project.data[ph.id] || [];
+                                const hasProgress = pTasks.some(t => t.completed);
+                                return (
+                                    <div key={idx} className={`h-1 flex-1 rounded-full ${hasProgress ? 'bg-amber-500' : 'bg-slate-800'}`}></div>
+                                )
+                            })}
                         </div>
                     </div>
+                    ))}
                 </div>
-            </div>
-
+            )}
         </div>
-
-        {/* FOOTER RESTAURADO */}
-        <footer className="mt-12 py-6 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-500">
-            <div>© 2026 Jairo Amaya SOSTAC FLOW.</div>
-            <div className="flex gap-4">
-                <a href="https://jairoamaya.co" className="hover:text-white transition-colors">Website</a>
-                <a href="#" className="hover:text-white transition-colors">Support</a>
-                <a href="#" className="hover:text-white transition-colors">Privacy</a>
-            </div>
-        </footer>
 
       </div>
+
+      {/* FOOTER IMPACTANTE Y PERSONALIZADO */}
+      <footer className="relative z-10 border-t border-slate-800 bg-slate-950/80 backdrop-blur-md pt-12 pb-12 mt-12">
+        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+            
+            {/* BRAND */}
+            <div className="md:col-span-2">
+                <h4 className={`text-2xl font-bold text-white mb-2 ${styles.fontHeading}`}>JAIRO AMAYA</h4>
+                <div className="flex items-center gap-2">
+                    <span className="h-0.5 w-8 bg-amber-500"></span>
+                    <p className="text-amber-500 font-bold text-sm tracking-wider uppercase">Full Stack Marketer</p>
+                </div>
+                <p className="text-slate-500 text-sm mt-4 max-w-sm leading-relaxed">
+                    Transformando negocios mediante ingeniería de marketing y estrategias orientadas a resultados tangibles.
+                </p>
+            </div>
+            
+            {/* LINKS */}
+            <div>
+                <h5 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Ecosistema</h5>
+                <ul className="space-y-2 text-sm text-slate-500">
+                    <li><a href="https://jairoamaya.co/auditor-seo-interactivo/" target="_blank" className="hover:text-amber-500 transition-colors">Auditor SEO</a></li>
+                    <li><a href="https://jairoamaya.co/matriz-de-prioridad-seo/" target="_blank" className="hover:text-amber-500 transition-colors">Matriz de Prioridad</a></li>
+                    <li><a href="#" className="hover:text-amber-500 transition-colors">Consultoría</a></li>
+                </ul>
+            </div>
+
+            {/* STATUS */}
+            <div className="flex flex-col md:items-end">
+                 <h5 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Estado</h5>
+                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 mb-4">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
+                    <span className="text-xs text-green-500 font-mono font-bold">SYSTEM OPERATIONAL</span>
+                 </div>
+                 <div className="flex gap-4">
+                    <a href="https://www.linkedin.com/in/jairoamaya" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Linkedin size={18} /></a>
+                    <a href="https://twitter.com" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Twitter size={18} /></a>
+                    <a href="https://jairoamaya.co" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Globe size={18} /></a>
+                </div>
+            </div>
+        </div>
+        
+        <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600">
+            <p>© 2026 Jairo Amaya. All rights reserved.</p>
+            <p className="font-mono">v4.0.2 BUILD 2026</p>
+        </div>
+      </footer>
     </div>
   );
 
-  // 3. VISTA DE PROYECTO (COCKPIT RESTAURADO)
+  // 3. VISTA DE PROYECTO (COCKPIT RESTAURADO V3.5)
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-amber-500/30">
       
