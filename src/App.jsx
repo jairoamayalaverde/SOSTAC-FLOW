@@ -3,10 +3,11 @@ import {
   Plus, Edit2, Trash2, CheckCircle, Circle, Calendar, 
   Save, X, Briefcase, Eye, EyeOff, LayoutDashboard, 
   ArrowLeft, ExternalLink, BarChart3, FileText, RefreshCw,
-  Activity, Zap, Target, Layers, ArrowUpRight
+  Activity, Zap, Target, Layers, ArrowUpRight, Share2, 
+  Github, Twitter, Linkedin, Globe, HardDrive, Cpu
 } from 'lucide-react';
 
-// --- CONFIGURACIÓN DE ESTILOS Y TIPOGRAFÍA ---
+// --- CONFIGURACIÓN DE ESTILOS ---
 const styles = {
   fontHeading: "font-['Poppins',_sans-serif]",
   fontBody: "font-['Raleway',_sans-serif]",
@@ -14,104 +15,132 @@ const styles = {
   activeTab: "bg-amber-500 text-slate-900 shadow-[0_0_15px_rgba(245,158,11,0.4)]",
   inactiveTab: "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white",
   primaryBtn: "bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold shadow-[0_0_20px_rgba(245,158,11,0.3)] transition-all",
-  secondaryBtn: "bg-slate-800 hover:bg-slate-700 text-white border border-slate-600",
   neonText: "text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-300 drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]"
 };
 
-// --- DATA INICIAL (TEMPLATES ROBUSTOS) ---
+// --- DATA: TEMPLATES CON HERRAMIENTAS JAIRO AMAYA INTEGRADAS ---
 const projectTemplates = {
-  blank: {
-    name: 'Proyecto en Blanco',
-    description: 'Empieza desde cero',
-    data: { situation: [], objectives: [], strategy: [], tactics: [], action: [], control: [] }
-  },
   seo: {
-    name: 'Consultoría SEO High-Ticket',
-    description: 'Posicionamiento, Autoridad y Conversión',
+    name: 'Consultoría SEO (Ecosistema)',
+    description: 'Diagnóstico + Estrategia + Priorización',
     data: {
       situation: [
-        { id: 's1', text: 'Auditoría Técnica Profunda (Crawl & Indexación)', completed: true, notes: 'Identificados 15 errores 404 y 3 cadenas de redirección críticas.' },
-        { id: 's2', text: 'Análisis de Competencia (Top 3 SERP)', completed: true, notes: 'Competidor A domina keywords informacionales. Oportunidad en transaccionales.' },
-        { id: 's3', text: 'Keyword Research & Gap Analysis', completed: false, notes: 'Foco en long-tail keywords con intención de compra alta.' },
-        { id: 's4', text: 'Revisión de Perfil de Enlaces (Backlinks)', completed: false, notes: '' },
-        { id: 's5', text: 'Benchmark de Velocidad (Core Web Vitals)', completed: true, notes: 'LCP en móvil necesita optimización urgente (3.5s).' },
+        { 
+            id: 's1', 
+            text: 'Ejecutar Auditoría Técnica Inicial', 
+            completed: false, 
+            notes: 'Usar la herramienta propietaria para detectar errores 404, LCP y redirecciones.', 
+            link: 'https://jairoamaya.co/auditor-seo-interactivo/' // <--- INTEGRACIÓN AUDITOR
+        },
+        { id: 's2', text: 'Keyword Research Transaccional', completed: false, notes: '', link: '' },
       ],
       objectives: [
-        { id: 'o1', text: 'Aumentar Tráfico Orgánico Calificado (+40% YoY)', completed: false, notes: 'Meta: 15,000 visitas/mes para Q3.' },
-        { id: 'o2', text: 'Posicionar 5 Keywords "Money" en Top 3', completed: false, notes: '' },
-        { id: 'o3', text: 'Mejorar Tasa de Conversión Orgánica (CRO)', completed: false, notes: 'Objetivo: Pasar del 1.2% al 2.0%.' },
+        { id: 'o1', text: '+40% Tráfico Orgánico YoY', completed: false, notes: '', link: '' },
+      ],
+      strategy: [{ id: 'st1', text: 'Content Hubs Temáticos', completed: false, notes: '', link: '' }],
+      tactics: [
+          { 
+              id: 't1', 
+              text: 'Matriz de Prioridad (Impacto vs Esfuerzo)', 
+              completed: false, 
+              notes: 'Clasificar hallazgos de la auditoría para definir Quick Wins.', 
+              link: 'https://jairoamaya.co/matriz-de-prioridad-seo/' // <--- INTEGRACIÓN MATRIZ
+          },
+          { id: 't2', text: '4 Artículos Pilar / Mes', completed: false, notes: '', link: '' }
+      ],
+      action: [{ id: 'a1', text: 'Sprint 1: Technical Fixes', completed: false, notes: '', link: '' }],
+      control: [{ id: 'c1', text: 'Setup GA4 + GSC', completed: false, notes: '', link: '' }]
+    }
+  },
+  personal_brand: {
+    name: 'Marca Personal',
+    description: 'Posicionamiento de Líderes',
+    data: {
+      situation: [
+        { id: 'pb1', text: 'Auditoría de Huella Digital Actual', completed: false, notes: 'Googlear nombre y analizar SERP.', link: '' },
+        { id: 'pb2', text: 'Definición de Arquetipo de Marca', completed: false, notes: '¿Sabio, Héroe o Gobernante?', link: '' },
+      ],
+      objectives: [
+        { id: 'po1', text: 'Ser Top of Mind en el nicho', completed: false, notes: '', link: '' },
+        { id: 'po2', text: 'Crecer 10k seguidores en LinkedIn', completed: false, notes: '', link: '' },
       ],
       strategy: [
-        { id: 'st1', text: 'Content Hubs: Autoridad Temática', completed: false, notes: 'Crear clusters de contenido alrededor de productos core.' },
-        { id: 'st2', text: 'SEO Técnico: Fundación Sólida', completed: false, notes: 'Priorizar indexabilidad y velocidad de carga.' },
-        { id: 'st3', text: 'Link Building: Digital PR & Outreach', completed: false, notes: 'Conseguir enlaces de sitios de nicho con DR > 40.' },
+        { id: 'pst1', text: 'Estrategia de Contenidos "Thought Leadership"', completed: false, notes: 'Opinión experta vs contenido educativo.', link: '' },
       ],
       tactics: [
-        { id: 't1', text: 'Optimización On-Page de 20 URLs Prioritarias', completed: false, notes: 'Uso de la Matriz de Prioridad para seleccionar las URLs.' },
-        { id: 't2', text: 'Creación de 4 Artículos "Pilar" Mensuales', completed: false, notes: 'Contenido de >1500 palabras, profundidad semántica.' },
-        { id: 't3', text: 'Implementación de Schema Markup (Product, FAQ)', completed: false, notes: '' },
-        { id: 't4', text: 'Campaña de Guest Posting (2 links/mes)', completed: false, notes: '' },
+        { id: 'pt1', text: 'Newsletter Semanal (Substack)', completed: false, notes: '', link: '' },
       ],
       action: [
-        { id: 'a1', text: 'Semana 1: Fix Errores Técnicos Críticos', completed: false, notes: '' },
-        { id: 'a2', text: 'Semana 2: Optimización On-Page Categorías', completed: false, notes: '' },
-        { id: 'a3', text: 'Semana 3: Producción Contenido Blog', completed: false, notes: '' },
-        { id: 'a4', text: 'Semana 4: Revisión y Ajustes Mensuales', completed: false, notes: '' },
+        { id: 'pa1', text: 'Semana 1: Optimización de Perfiles Sociales', completed: false, notes: '', link: '' },
       ],
       control: [
-        { id: 'c1', text: 'Dashboard GA4 + GSC Personalizado', completed: false, notes: '' },
-        { id: 'c2', text: 'Tracking Semanal de Posiciones (Rank Tracker)', completed: false, notes: '' },
-        { id: 'c3', text: 'Auditoría de Salud del Sitio (Mensual)', completed: false, notes: '' },
-        { id: 'c4', text: 'Revisión Trimestral de Estrategia', completed: false, notes: '' },
+        { id: 'pc1', text: 'Métricas de Engagement (SSI LinkedIn)', completed: false, notes: '', link: '' },
       ]
     }
   },
-  branding: {
-    name: 'Transformación de Marca',
-    description: 'Identidad, Voz y Posicionamiento',
-    data: { 
-        situation: [
-            { id: 'bs1', text: 'Auditoría de Marca Actual', completed: false, notes: '' },
-            { id: 'bs2', text: 'Entrevistas a Stakeholders', completed: false, notes: '' }
-        ], 
-        objectives: [], strategy: [], tactics: [], action: [], control: [] 
-    } 
+  smo: {
+    name: 'SMO (Social Media)',
+    description: 'Optimización de Redes Sociales',
+    data: {
+      situation: [
+        { id: 'sm1', text: 'Auditoría de Canales Actuales', completed: false, notes: '', link: '' },
+      ],
+      objectives: [
+        { id: 'mo1', text: 'Aumentar Engagement Rate al 5%', completed: false, notes: '', link: '' },
+      ],
+      strategy: [
+        { id: 'mst1', text: 'Estrategia de Contenido Visual (Reels/TikTok)', completed: false, notes: '', link: '' },
+      ],
+      tactics: [
+        { id: 'mt1', text: 'Calendario Editorial Mensual', completed: false, notes: '', link: '' },
+      ],
+      action: [
+        { id: 'ma1', text: 'Producción de Lote de Contenido (Batch)', completed: false, notes: '', link: '' },
+      ],
+      control: [
+        { id: 'mc1', text: 'Reporte Mensual de Alcance e Interacción', completed: false, notes: '', link: '' },
+      ]
+    }
+  },
+  blank: {
+    name: 'Proyecto en Blanco',
+    description: 'Personalizado',
+    data: { situation: [], objectives: [], strategy: [], tactics: [], action: [], control: [] }
   }
 };
 
 const phases = [
-  { id: 'situation', name: 'Situation', icon: '📊', color: 'text-blue-400', border: 'border-blue-500' },
-  { id: 'objectives', name: 'Objectives', icon: '🎯', color: 'text-green-400', border: 'border-green-500' },
-  { id: 'strategy', name: 'Strategy', icon: '🧠', color: 'text-purple-400', border: 'border-purple-500' },
-  { id: 'tactics', name: 'Tactics', icon: '⚡', color: 'text-amber-400', border: 'border-amber-500' },
-  { id: 'action', name: 'Action', icon: '🚀', color: 'text-red-400', border: 'border-red-500' },
-  { id: 'control', name: 'Control', icon: '📈', color: 'text-cyan-400', border: 'border-cyan-500' }
+  { id: 'situation', name: 'Situation', icon: '📊', color: 'text-blue-400' },
+  { id: 'objectives', name: 'Objectives', icon: '🎯', color: 'text-green-400' },
+  { id: 'strategy', name: 'Strategy', icon: '🧠', color: 'text-purple-400' },
+  { id: 'tactics', name: 'Tactics', icon: '⚡', color: 'text-amber-400' },
+  { id: 'action', name: 'Action', icon: '🚀', color: 'text-red-400' },
+  { id: 'control', name: 'Control', icon: '📈', color: 'text-cyan-400' }
 ];
 
 export default function App() {
-  // --- ESTADOS ---
   const [viewMode, setViewMode] = useState('admin');
   
-  // Persistencia con Carga de Demo Robusto
+  // Persistencia
   const [projects, setProjects] = useState(() => {
     const saved = localStorage.getItem('ja_os_projects');
-    const parsedProjects = saved ? JSON.parse(saved) : [];
-    // Si está vacío, inyectamos el demo
-    if (parsedProjects.length === 0) {
+    const parsed = saved ? JSON.parse(saved) : [];
+    if (parsed.length === 0) {
+      // PROYECTO DEMO CON ENLACES A TUS HERRAMIENTAS
       const demoData = JSON.parse(JSON.stringify(projectTemplates.seo.data));
       return [{
         id: 1,
-        name: 'Proyecto Demo: E-commerce',
-        client: 'Cliente Ejemplo S.A.',
-        industry: 'Retail / Tech',
+        name: 'Demo: E-commerce Growth',
+        client: 'TechStore Global',
+        industry: 'Retail',
         projectType: 'seo',
         startDate: new Date().toISOString().split('T')[0],
         status: 'active',
-        progress: 15, // Inicial
+        progress: 10,
         data: demoData
       }];
     }
-    return parsedProjects;
+    return parsed;
   });
 
   const [selectedProject, setSelectedProject] = useState(null);
@@ -123,32 +152,31 @@ export default function App() {
     name: '', client: '', industry: '', projectType: 'seo', startDate: new Date().toISOString().split('T')[0]
   });
 
-  // --- EFECTOS ---
   useEffect(() => {
     localStorage.setItem('ja_os_projects', JSON.stringify(projects));
   }, [projects]);
 
-  // Recalculo de progreso al cambiar datos
+  // Recálculo de progreso
   useEffect(() => {
-      if (selectedProject) {
-          let total = 0, completed = 0;
-          Object.values(selectedProject.data).forEach(phase => {
-              total += phase.length;
-              completed += phase.filter(t => t.completed).length;
-          });
-          const realProgress = total === 0 ? 0 : Math.round((completed / total) * 100);
-          
-          if (selectedProject.progress !== realProgress) {
-              const updated = { ...selectedProject, progress: realProgress };
-              setSelectedProject(updated);
-              setProjects(prev => prev.map(p => p.id === updated.id ? updated : p));
-          }
-      }
+    if (selectedProject) {
+        let total = 0, completed = 0;
+        Object.values(selectedProject.data).forEach(phase => {
+            total += phase.length;
+            completed += phase.filter(t => t.completed).length;
+        });
+        const realProgress = total === 0 ? 0 : Math.round((completed / total) * 100);
+        
+        if (selectedProject.progress !== realProgress) {
+            const updated = { ...selectedProject, progress: realProgress };
+            setSelectedProject(updated);
+            setProjects(prev => prev.map(p => p.id === updated.id ? updated : p));
+        }
+    }
   }, [selectedProject?.data]);
 
-  // --- FUNCIONES ---
+  // --- ACTIONS ---
   const handleHardReset = () => {
-    if(confirm('⚠️ ¿RESET DE FÁBRICA? \n\nSe borrarán todos los proyectos y se restaurará la Demo.')) {
+    if(confirm('⚠️ ¿Reiniciar Sistema? Se borrarán todos los datos locales.')) {
       localStorage.removeItem('ja_os_projects');
       window.location.reload();
     }
@@ -169,11 +197,12 @@ export default function App() {
   };
 
   const updateProjectData = (newData) => {
-    const updatedProject = { ...selectedProject, data: newData };
-    setSelectedProject(updatedProject);
-    setProjects(projects.map(p => p.id === updatedProject.id ? updatedProject : p));
+    const updated = { ...selectedProject, data: newData };
+    setSelectedProject(updated);
+    setProjects(projects.map(p => p.id === updated.id ? updated : p));
   };
 
+  // Task Operations
   const toggleTask = (taskId) => {
     if (viewMode === 'client') return;
     const newData = { ...selectedProject.data };
@@ -184,7 +213,7 @@ export default function App() {
   };
 
   const addTask = () => {
-    const newTask = { id: Date.now(), text: 'Nueva tarea estratégica', completed: false, notes: '' };
+    const newTask = { id: Date.now(), text: 'Nuevo item estratégico', completed: false, notes: '', link: '' };
     const newData = { ...selectedProject.data };
     newData[activePhase] = [...newData[activePhase], newTask];
     updateProjectData(newData);
@@ -192,98 +221,111 @@ export default function App() {
   };
 
   const deleteTask = (taskId) => {
-    if (confirm('¿Eliminar esta tarea?')) {
+    if (confirm('¿Eliminar este item?')) {
       const newData = { ...selectedProject.data };
       newData[activePhase] = newData[activePhase].filter(t => t.id !== taskId);
       updateProjectData(newData);
     }
   };
 
-  const updateTaskText = (taskId, text) => {
+  const updateTaskField = (taskId, field, value) => {
     const newData = { ...selectedProject.data };
-    newData[activePhase] = newData[activePhase].map(t => t.id === taskId ? { ...t, text } : t);
-    updateProjectData(newData);
-    setEditingTask(null);
-  };
-
-  const updateTaskNotes = (taskId, notes) => {
-    const newData = { ...selectedProject.data };
-    newData[activePhase] = newData[activePhase].map(t => t.id === taskId ? { ...t, notes } : t);
+    newData[activePhase] = newData[activePhase].map(t => t.id === taskId ? { ...t, [field]: value } : t);
     updateProjectData(newData);
   };
 
-  // --- CALCULOS DASHBOARD ---
+  const shareProject = () => {
+      const text = `🚀 *Estado de Proyecto: ${selectedProject.name}*\nCliente: ${selectedProject.client}\nProgreso Global: ${selectedProject.progress}%\n\nGenerado con SOSTAC FLOW`;
+      navigator.clipboard.writeText(text);
+      alert('Resumen copiado al portapapeles!');
+  };
+
+  // Helper para detectar links propios
+  const isInternalTool = (url) => url.includes('jairoamaya.co');
+
+  // --- RENDER HELPERS ---
   const totalProjects = projects.length;
-  const avgProgress = projects.length > 0 
-    ? Math.round(projects.reduce((acc, curr) => acc + curr.progress, 0) / projects.length) 
-    : 0;
+  const avgProgress = projects.length > 0 ? Math.round(projects.reduce((acc, curr) => acc + curr.progress, 0) / projects.length) : 0;
   const totalTasks = projects.reduce((acc, p) => {
       let count = 0;
       Object.values(p.data).forEach(arr => count += arr.length);
       return acc + count;
   }, 0);
 
-  // --- RENDERIZADO ---
-
   // 1. MODAL NUEVO PROYECTO
   if (showNewProject) return (
-    <div className="min-h-screen bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 font-sans z-50 fixed inset-0">
-      <div className={`max-w-2xl w-full ${styles.glassCard} rounded-2xl p-8 border-amber-500/20 animate-in fade-in zoom-in duration-300`}>
-        <div className="flex justify-between items-center mb-6">
-          <h2 className={`text-2xl text-white ${styles.fontHeading}`}>Iniciar Nuevo Proyecto</h2>
+    <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className={`max-w-4xl w-full ${styles.glassCard} rounded-2xl p-8 border-amber-500/20 animate-in fade-in zoom-in duration-300`}>
+        <div className="flex justify-between items-center mb-8">
+          <h2 className={`text-3xl text-white ${styles.fontHeading}`}>Inicializar Nueva Estrategia</h2>
           <button onClick={() => setShowNewProject(false)} className="text-slate-400 hover:text-white"><X /></button>
         </div>
         
-        <div className="space-y-4">
-          <input 
-            placeholder="Nombre del Proyecto" 
-            className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-3 text-white focus:border-amber-500 outline-none"
-            value={newProjectData.name}
-            onChange={e => setNewProjectData({...newProjectData, name: e.target.value})}
-          />
-          <div className="grid grid-cols-2 gap-4">
-            <input 
-              placeholder="Cliente" 
-              className="bg-slate-900/50 border border-slate-700 rounded-lg p-3 text-white focus:border-amber-500 outline-none"
-              value={newProjectData.client}
-              onChange={e => setNewProjectData({...newProjectData, client: e.target.value})}
-            />
-            <input 
-              placeholder="Industria" 
-              className="bg-slate-900/50 border border-slate-700 rounded-lg p-3 text-white focus:border-amber-500 outline-none"
-              value={newProjectData.industry}
-              onChange={e => setNewProjectData({...newProjectData, industry: e.target.value})}
-            />
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4 mt-4">
-            {Object.entries(projectTemplates).map(([key, tpl]) => (
-              <div 
-                key={key}
-                onClick={() => setNewProjectData({...newProjectData, projectType: key})}
-                className={`p-4 rounded-xl border cursor-pointer transition-all ${newProjectData.projectType === key ? 'bg-amber-500/10 border-amber-500' : 'bg-slate-800 border-slate-700 hover:border-slate-500'}`}
-              >
-                <div className={`font-bold text-white ${styles.fontHeading}`}>{tpl.name}</div>
-                <div className="text-xs text-slate-400">{tpl.description}</div>
-              </div>
-            ))}
-          </div>
+        <div className="grid lg:grid-cols-2 gap-8">
+            <div className="space-y-5">
+                 <div>
+                    <label className="text-xs text-slate-400 uppercase font-bold mb-2 block">Datos del Proyecto</label>
+                    <input 
+                        placeholder="Nombre de la Campaña / Proyecto" 
+                        className="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-white focus:border-amber-500 outline-none mb-3"
+                        value={newProjectData.name}
+                        onChange={e => setNewProjectData({...newProjectData, name: e.target.value})}
+                    />
+                    <div className="grid grid-cols-2 gap-3">
+                        <input 
+                        placeholder="Cliente" 
+                        className="bg-slate-950 border border-slate-700 rounded-lg p-3 text-white focus:border-amber-500 outline-none"
+                        value={newProjectData.client}
+                        onChange={e => setNewProjectData({...newProjectData, client: e.target.value})}
+                        />
+                        <input 
+                        placeholder="Industria" 
+                        className="bg-slate-950 border border-slate-700 rounded-lg p-3 text-white focus:border-amber-500 outline-none"
+                        value={newProjectData.industry}
+                        onChange={e => setNewProjectData({...newProjectData, industry: e.target.value})}
+                        />
+                    </div>
+                </div>
+                
+                <button 
+                    onClick={createNewProject}
+                    disabled={!newProjectData.name}
+                    className={`w-full py-4 rounded-xl font-bold mt-4 ${styles.primaryBtn} ${!newProjectData.name ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                    Lanzar Protocolo SOSTAC
+                </button>
+            </div>
 
-          <button 
-            onClick={createNewProject}
-            disabled={!newProjectData.name}
-            className={`w-full py-4 rounded-xl font-bold mt-6 ${styles.primaryBtn} ${!newProjectData.name ? 'opacity-50 cursor-not-allowed' : ''}`}
-          >
-            Lanzar Estrategia
-          </button>
+            <div>
+                <label className="text-xs text-slate-400 uppercase font-bold mb-3 block">Selecciona un Framework</label>
+                <div className="grid gap-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                    {Object.entries(projectTemplates).map(([key, tpl]) => (
+                    <div 
+                        key={key}
+                        onClick={() => setNewProjectData({...newProjectData, projectType: key})}
+                        className={`p-4 rounded-xl border cursor-pointer transition-all flex items-center justify-between group ${
+                            newProjectData.projectType === key 
+                            ? 'bg-amber-500/10 border-amber-500' 
+                            : 'bg-slate-800 border-slate-700 hover:border-slate-500'
+                        }`}
+                    >
+                        <div>
+                            <div className={`font-bold text-white group-hover:text-amber-400 transition-colors ${styles.fontHeading}`}>{tpl.name}</div>
+                            <div className="text-xs text-slate-400">{tpl.description}</div>
+                        </div>
+                        {newProjectData.projectType === key && <CheckCircle size={18} className="text-amber-500" />}
+                    </div>
+                    ))}
+                </div>
+            </div>
         </div>
       </div>
     </div>
   );
 
-  // 2. DASHBOARD DE PROYECTOS (HOME - IMPACTANTE)
+  // 2. DASHBOARD DE PROYECTOS (HOME)
   if (!selectedProject) return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 p-4 md:p-8 font-sans selection:bg-amber-500/30 overflow-hidden">
+    <div className="min-h-screen bg-slate-950 text-slate-200 p-4 md:p-8 font-sans selection:bg-amber-500/30 flex flex-col justify-between">
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Raleway:wght@300;400;500;600&display=swap');`}</style>
       
       {/* FONDO ANIMADO TECH */}
@@ -292,26 +334,26 @@ export default function App() {
           <div className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-blue-500/10 rounded-full blur-[100px]"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto relative z-10">
+      <div className="max-w-7xl mx-auto w-full relative z-10">
         
-        {/* HEADER TIPO HUD */}
+        {/* HEADER */}
         <header className="flex flex-col md:flex-row justify-between items-end mb-10 border-b border-slate-800 pb-6">
           <div>
             <div className="flex items-center gap-3 mb-2">
-                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
-                <span className="text-xs font-mono text-slate-400 tracking-widest">SYSTEM ONLINE // V 2.0</span>
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
+                <span className="text-[10px] font-mono text-slate-400 tracking-widest uppercase">Sistema Operativo v3.1</span>
             </div>
             <h1 className={`text-5xl font-bold text-white tracking-tight ${styles.fontHeading}`}>
               SOSTAC <span className={styles.neonText}>FLOW</span>
             </h1>
-            <p className={`text-slate-400 mt-2 ${styles.fontBody}`}>Centro de Comando Estratégico</p>
+            <p className={`text-slate-400 mt-2 ${styles.fontBody}`}>Ingeniería de Marketing & Gestión Estratégica</p>
           </div>
           <div className="flex gap-4 mt-6 md:mt-0">
             <button 
               onClick={handleHardReset}
               className="px-4 py-2 rounded-lg flex items-center gap-2 font-bold text-xs bg-red-500/10 text-red-500 border border-red-500/30 hover:bg-red-500 hover:text-white transition-all"
             >
-              <RefreshCw size={14} /> RESET DB
+              <RefreshCw size={14} /> RESET
             </button>
             <button 
               onClick={() => setShowNewProject(true)}
@@ -322,382 +364,300 @@ export default function App() {
           </div>
         </header>
 
-        {/* KPI CARDS (BENTO GRID TOP) */}
+        {/* METRICS GRID */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-            {/* KPI 1 */}
-            <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden group`}>
-                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <Layers size={80} />
-                </div>
-                <h3 className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Proyectos Activos</h3>
-                <div className="text-4xl font-bold text-white mb-2">{totalProjects}</div>
-                <div className="flex items-center gap-2 text-xs text-green-400">
-                    <ArrowUpRight size={14} /> <span>100% Operativo</span>
+            <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden`}>
+                <Layers size={80} className="absolute -right-4 -top-4 text-slate-800 opacity-50" />
+                <h3 className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Estrategias Activas</h3>
+                <div className="text-4xl font-bold text-white">{totalProjects}</div>
+            </div>
+            <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden`}>
+                <Activity size={80} className="absolute -right-4 -top-4 text-slate-800 opacity-50" />
+                <h3 className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Progreso Global</h3>
+                <div className="text-4xl font-bold text-white">{avgProgress}%</div>
+                <div className="w-full bg-slate-800 h-1 mt-3 rounded-full overflow-hidden">
+                    <div className="bg-amber-500 h-full" style={{width: `${avgProgress}%`}}></div>
                 </div>
             </div>
-
-            {/* KPI 2 */}
-            <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden group`}>
-                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <Activity size={80} />
-                </div>
-                <h3 className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Eficiencia Global</h3>
-                <div className="text-4xl font-bold text-white mb-2">{avgProgress}%</div>
-                <div className="w-full bg-slate-700 h-1.5 rounded-full mt-2">
-                    <div className="bg-amber-500 h-full rounded-full" style={{width: `${avgProgress}%`}}></div>
-                </div>
-            </div>
-
-            {/* KPI 3 */}
-            <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden group`}>
-                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <Target size={80} />
-                </div>
-                <h3 className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Tareas en Radar</h3>
-                <div className="text-4xl font-bold text-white mb-2">{totalTasks}</div>
-                <div className="text-xs text-slate-500">Items estratégicos bajo gestión</div>
+            <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden`}>
+                <Target size={80} className="absolute -right-4 -top-4 text-slate-800 opacity-50" />
+                <h3 className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Total Entregables</h3>
+                <div className="text-4xl font-bold text-white">{totalTasks}</div>
             </div>
         </div>
 
-        {/* MAIN CONTENT GRID */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            {/* COLUMN LEFT: PROJECTS LIST (2/3) */}
-            <div className="lg:col-span-2 space-y-6">
-                <div className="flex justify-between items-center mb-2">
-                    <h2 className={`text-xl font-bold text-white flex items-center gap-2 ${styles.fontHeading}`}>
-                        <Briefcase size={20} className="text-amber-500" /> Proyectos en Curso
-                    </h2>
-                </div>
+        {/* PROJECTS LIST */}
+        <div className="mb-12">
+            <h2 className={`text-xl font-bold text-white mb-6 flex items-center gap-2 ${styles.fontHeading}`}>
+                <Briefcase size={20} className="text-amber-500" /> Proyectos Recientes
+            </h2>
 
-                {projects.length === 0 ? (
-                    <div className="text-center py-20 bg-slate-900/50 rounded-3xl border border-dashed border-slate-700">
-                        <LayoutDashboard size={48} className="mx-auto text-slate-600 mb-4" />
-                        <p className="text-slate-500">Sistema en espera. Inicie una nueva estrategia.</p>
-                    </div>
-                ) : (
-                    <div className="grid gap-4">
-                        {projects.map(project => (
-                        <div 
-                            key={project.id}
-                            onClick={() => setSelectedProject(project)}
-                            className={`group cursor-pointer rounded-xl p-6 transition-all border border-slate-800 bg-slate-900/40 hover:bg-slate-800 hover:border-amber-500/50 hover:shadow-lg relative overflow-hidden`}
-                        >
-                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                            
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
-                                    <h3 className={`text-lg font-bold text-white mb-1 group-hover:text-amber-400 transition-colors ${styles.fontHeading}`}>{project.name}</h3>
-                                    <p className="text-sm text-slate-400">{project.client} • {projectTemplates[project.projectType]?.name}</p>
-                                </div>
-                                <div className="text-2xl font-bold text-slate-700 group-hover:text-white transition-colors">
-                                    {project.progress}%
+            {projects.length === 0 ? (
+                <div className="text-center py-20 bg-slate-900/40 border border-dashed border-slate-800 rounded-3xl">
+                    <p className="text-slate-500">No hay operaciones activas.</p>
+                </div>
+            ) : (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {projects.map(project => (
+                    <div 
+                        key={project.id}
+                        onClick={() => setSelectedProject(project)}
+                        className={`group cursor-pointer rounded-xl p-6 transition-all border border-slate-800 bg-slate-900/40 hover:bg-slate-800 hover:border-amber-500/50 hover:shadow-lg relative overflow-hidden`}
+                    >
+                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-amber-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        
+                        <div className="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 className={`text-lg font-bold text-white mb-1 group-hover:text-amber-400 transition-colors ${styles.fontHeading}`}>{project.name}</h3>
+                                <div className="flex items-center gap-2 text-xs text-slate-400">
+                                    <span>{project.client}</span>
+                                    <span className="w-1 h-1 bg-slate-600 rounded-full"></span>
+                                    <span className="text-amber-500 uppercase font-bold">{projectTemplates[project.projectType]?.name}</span>
                                 </div>
                             </div>
-                            
-                            {/* MINI VISUALIZER OF PHASES */}
-                            <div className="flex gap-1 mb-2">
-                                {phases.map((ph, idx) => {
-                                    // Check status of phase
-                                    const pTasks = project.data[ph.id] || [];
-                                    const isComplete = pTasks.length > 0 && pTasks.every(t => t.completed);
-                                    const hasProgress = pTasks.some(t => t.completed);
-                                    
-                                    let colorClass = "bg-slate-800";
-                                    if (isComplete) colorClass = "bg-green-500";
-                                    else if (hasProgress) colorClass = "bg-amber-500";
-                                    
-                                    return (
-                                        <div key={idx} className={`h-1 flex-1 rounded-full ${colorClass}`} title={ph.name}></div>
-                                    )
-                                })}
-                            </div>
-                            <div className="flex justify-between text-[10px] text-slate-500 font-mono uppercase">
-                                <span>S</span><span>O</span><span>S</span><span>T</span><span>A</span><span>C</span>
+                            <div className="text-xl font-bold text-slate-700 group-hover:text-white transition-colors">
+                                {project.progress}%
                             </div>
                         </div>
-                        ))}
-                    </div>
-                )}
-            </div>
-
-            {/* COLUMN RIGHT: SYSTEM STATUS (1/3) */}
-            <div className="space-y-6">
-                 <div className="flex justify-between items-center mb-2">
-                    <h2 className={`text-xl font-bold text-white flex items-center gap-2 ${styles.fontHeading}`}>
-                        <Zap size={20} className="text-amber-500" /> Acciones Rápidas
-                    </h2>
-                </div>
-                
-                <div className={`${styles.glassCard} p-6 rounded-2xl`}>
-                    <div className="space-y-4">
-                        <button onClick={() => setShowNewProject(true)} className="w-full text-left p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-amber-500/50 transition-all flex items-center gap-3 group">
-                            <div className="p-2 bg-amber-500/10 rounded-md text-amber-500 group-hover:text-white group-hover:bg-amber-500 transition-colors">
-                                <Plus size={16} />
-                            </div>
-                            <div>
-                                <div className="text-sm font-bold text-white">Nueva Estrategia</div>
-                                <div className="text-xs text-slate-500">Crear desde template</div>
-                            </div>
-                        </button>
-
-                        <button className="w-full text-left p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 transition-all flex items-center gap-3 group">
-                            <div className="p-2 bg-blue-500/10 rounded-md text-blue-500 group-hover:text-white group-hover:bg-blue-500 transition-colors">
-                                <FileText size={16} />
-                            </div>
-                            <div>
-                                <div className="text-sm font-bold text-white">Exportar Reportes</div>
-                                <div className="text-xs text-slate-500">Generar PDF global</div>
-                            </div>
-                        </button>
-                    </div>
-
-                    <div className="mt-8 pt-6 border-t border-slate-800">
-                        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Estado del Sistema</h4>
-                        <div className="space-y-3">
-                             <div className="flex justify-between items-center text-xs">
-                                <span className="text-slate-400">Database</span>
-                                <span className="text-green-400 font-mono">LOCAL_STORAGE OK</span>
-                            </div>
-                             <div className="flex justify-between items-center text-xs">
-                                <span className="text-slate-400">Version</span>
-                                <span className="text-slate-300 font-mono">v2.4.0 (Beta)</span>
-                            </div>
-                            <div className="flex justify-between items-center text-xs">
-                                <span className="text-slate-400">License</span>
-                                <span className="text-amber-500 font-mono">JAIRO AMAYA PRO</span>
-                            </div>
+                        
+                        <div className="flex gap-1 mt-4">
+                            {phases.map((ph, idx) => {
+                                const pTasks = project.data[ph.id] || [];
+                                const hasProgress = pTasks.some(t => t.completed);
+                                return (
+                                    <div key={idx} className={`h-1 flex-1 rounded-full ${hasProgress ? 'bg-amber-500' : 'bg-slate-800'}`}></div>
+                                )
+                            })}
                         </div>
                     </div>
+                    ))}
                 </div>
-            </div>
-
+            )}
         </div>
+
       </div>
+
+      {/* FOOTER IMPACTANTE */}
+      <footer className="relative z-10 border-t border-slate-900 bg-slate-950 pt-12 pb-8 mt-12">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="text-center md:text-left">
+                <h4 className={`text-xl font-bold text-white mb-2 ${styles.fontHeading}`}>JAIRO AMAYA</h4>
+                <p className="text-slate-500 text-sm">Consultor de Marketing Digital & Estrategia</p>
+            </div>
+            
+            <div className="flex gap-6">
+                <a href="#" className="text-slate-500 hover:text-white transition-colors"><Linkedin size={20} /></a>
+                <a href="#" className="text-slate-500 hover:text-white transition-colors"><Twitter size={20} /></a>
+                <a href="https://jairoamaya.co" target="_blank" className="text-slate-500 hover:text-white transition-colors"><Globe size={20} /></a>
+            </div>
+
+            <div className="flex flex-col items-center md:items-end gap-1">
+                 <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-800">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="text-[10px] text-slate-400 font-mono uppercase">Systems Operational</span>
+                 </div>
+                 <span className="text-[10px] text-slate-600">© 2026 Jairo Amaya OS. All rights reserved.</span>
+            </div>
+        </div>
+      </footer>
     </div>
   );
 
-  // 3. VISTA DE DETALLE DE PROYECTO (TACTICAL COCKPIT 2.0)
+  // 3. VISTA DE PROYECTO
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-amber-500/30">
       
-      {/* BACKGROUND ELEMENTS */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-          <div className="absolute top-[-20%] left-[20%] w-[600px] h-[600px] bg-amber-500/5 rounded-full blur-[150px]"></div>
-      </div>
-
-      {/* HEADER DE PROYECTO STICKY */}
-      <div className="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-md border-b border-white/5 shadow-2xl">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      {/* HEADER STICKY */}
+      <div className="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-md border-b border-slate-800 shadow-xl">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <button 
-              onClick={() => setSelectedProject(null)} 
-              className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all group"
-            >
-              <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+            <button onClick={() => setSelectedProject(null)} className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all">
+              <ArrowLeft size={20} />
             </button>
             <div>
-              <div className="flex items-center gap-2">
-                <h1 className={`text-lg md:text-xl font-bold text-white ${styles.fontHeading}`}>{selectedProject.name}</h1>
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-500 border border-amber-500/20">
-                  {projectTemplates[selectedProject.projectType]?.name}
-                </span>
+              <h1 className={`text-lg font-bold text-white ${styles.fontHeading}`}>{selectedProject.name}</h1>
+              <div className="flex items-center gap-2 text-xs text-slate-500">
+                <span>{selectedProject.client}</span>
+                <span className="w-1 h-1 bg-slate-600 rounded-full"></span>
+                <span className="text-amber-500 font-bold">{projectTemplates[selectedProject.projectType]?.name}</span>
               </div>
-              <p className="text-xs text-slate-500 flex items-center gap-2">
-                {selectedProject.client} 
-                <span className="w-1 h-1 bg-slate-600 rounded-full"></span> 
-                <span className={viewMode === 'client' ? 'text-green-500' : 'text-slate-400'}>
-                    {viewMode === 'client' ? 'VISTA CLIENTE ACTIVA' : 'MODO EDITOR'}
-                </span>
-              </p>
             </div>
           </div>
 
-          {/* CONTROLES */}
           <div className="flex items-center gap-3">
-            <div className="hidden md:flex bg-slate-900 p-1 rounded-lg border border-slate-800">
-              <button 
-                onClick={() => setViewMode('admin')}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-bold transition-all ${viewMode === 'admin' ? 'bg-slate-800 text-white shadow-sm border border-slate-700' : 'text-slate-500 hover:text-slate-300'}`}
-              >
-                <EyeOff size={14} /> EDITOR
-              </button>
-              <button 
-                onClick={() => setViewMode('client')}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-bold transition-all ${viewMode === 'client' ? 'bg-green-600 text-white shadow-[0_0_15px_rgba(22,163,74,0.4)]' : 'text-slate-500 hover:text-slate-300'}`}
-              >
-                <Eye size={14} /> CLIENTE
-              </button>
-            </div>
+             <button onClick={shareProject} className="p-2 text-slate-400 hover:text-amber-500 transition-colors" title="Copiar Resumen">
+                <Share2 size={18} />
+             </button>
+             <div className="h-6 w-[1px] bg-slate-800 mx-1"></div>
+             <button 
+                onClick={() => setViewMode(viewMode === 'admin' ? 'client' : 'admin')}
+                className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all border ${
+                    viewMode === 'admin' 
+                    ? 'bg-slate-800 border-slate-700 text-slate-300' 
+                    : 'bg-green-500/10 border-green-500/50 text-green-500'
+                }`}
+            >
+                {viewMode === 'admin' ? 'MODO EDITOR' : 'VISTA CLIENTE'}
+            </button>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 py-8">
         
-        {/* NAVIGATOR TIPO METRO (SOSTAC FLOW) */}
+        {/* PHASE NAVIGATOR */}
         <div className="mb-8 overflow-x-auto pb-4 scrollbar-hide">
-          <div className="flex min-w-max gap-4 p-1">
-          {phases.map((phase, idx) => {
+          <div className="flex min-w-max gap-3 p-1">
+          {phases.map((phase) => {
             const isActive = activePhase === phase.id;
-            const phaseTasks = selectedProject.data[phase.id] || [];
-            const completed = phaseTasks.filter(t => t.completed).length;
-            const progress = phaseTasks.length > 0 ? Math.round((completed / phaseTasks.length) * 100) : 0;
-            const isPhaseComplete = progress === 100;
+            const tasks = selectedProject.data[phase.id] || [];
+            const completedCount = tasks.filter(t => t.completed).length;
+            const progress = tasks.length > 0 ? (completedCount / tasks.length) * 100 : 0;
             
             return (
               <button
                 key={phase.id}
                 onClick={() => setActivePhase(phase.id)}
-                className={`relative group flex items-center gap-3 pr-6 pl-2 py-2 rounded-full border transition-all duration-300 ${
+                className={`flex flex-col items-center gap-2 min-w-[100px] p-3 rounded-2xl border transition-all ${
                     isActive 
-                    ? 'bg-slate-800 border-amber-500 ring-1 ring-amber-500/50' 
-                    : 'bg-slate-900/40 border-slate-800 hover:border-slate-600'
+                    ? 'bg-slate-900 border-amber-500 shadow-lg scale-105' 
+                    : 'bg-slate-900/40 border-slate-800 hover:bg-slate-800'
                 }`}
               >
-                {/* Circle Icon */}
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-lg transition-all ${
-                    isActive 
-                    ? 'bg-amber-500 text-slate-900 scale-110' 
-                    : isPhaseComplete 
-                        ? 'bg-green-500/20 text-green-500 border border-green-500/30'
-                        : 'bg-slate-800 text-slate-500 border border-slate-700'
-                }`}>
-                    {isPhaseComplete ? <CheckCircle size={18} /> : phase.icon}
+                <div className={`text-2xl ${isActive ? 'scale-110 transition-transform' : 'opacity-50'}`}>{phase.icon}</div>
+                <span className={`text-[10px] font-bold uppercase ${isActive ? 'text-white' : 'text-slate-500'}`}>{phase.name}</span>
+                <div className="w-full bg-slate-800 h-1 rounded-full overflow-hidden mt-1">
+                    <div className={`${progress === 100 ? 'bg-green-500' : 'bg-amber-500'} h-full transition-all`} style={{width: `${progress}%`}}></div>
                 </div>
-
-                <div className="flex flex-col items-start">
-                    <span className={`text-xs font-bold uppercase tracking-wider ${isActive ? 'text-white' : 'text-slate-500'}`}>
-                        {phase.name}
-                    </span>
-                    <div className="w-20 h-1 bg-slate-800 rounded-full mt-1 overflow-hidden">
-                        <div className={`h-full transition-all duration-500 ${isPhaseComplete ? 'bg-green-500' : 'bg-amber-500'}`} style={{width: `${progress}%`}}></div>
-                    </div>
-                </div>
-
-                {/* Connector Line (except last one) */}
-                {idx < phases.length - 1 && (
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-4 h-[2px] bg-slate-800 hidden md:block"></div>
-                )}
               </button>
             )
           })}
           </div>
         </div>
 
-        {/* ÁREA DE TRABAJO "MISSION CONTROL" */}
-        <div className="grid lg:grid-cols-4 gap-8">
-            
-            {/* SIDEBAR DE FASE (INFO) */}
-            <div className="lg:col-span-1 space-y-4">
-                <div className={`${styles.glassCard} p-6 rounded-2xl`}>
-                    <h2 className={`text-4xl font-bold text-white mb-2 ${styles.fontHeading}`}>
-                        {phases.find(p => p.id === activePhase).name}
+        {/* WORKSPACE */}
+        <div className="grid lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-4">
+                <div className="flex justify-between items-center mb-2">
+                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                        {phases.find(p => p.id === activePhase).icon} Tareas & Entregables
                     </h2>
-                    <p className="text-slate-400 text-sm leading-relaxed mb-6">
-                        Gestión táctica y control de ejecución para esta fase del proyecto.
-                    </p>
-                    
-                    <div className="space-y-4">
-                        <div className="p-4 bg-slate-900/50 rounded-xl border border-slate-800">
-                            <div className="text-xs text-slate-500 uppercase font-bold mb-1">Items Completados</div>
-                            <div className="text-2xl font-bold text-white">
-                                {selectedProject.data[activePhase]?.filter(t => t.completed).length} 
-                                <span className="text-slate-500 text-lg"> / {selectedProject.data[activePhase]?.length}</span>
-                            </div>
-                        </div>
-                        
-                        {viewMode === 'admin' && (
-                            <button 
-                                onClick={addTask} 
-                                className={`w-full py-3 rounded-xl flex items-center justify-center gap-2 font-bold text-sm ${styles.primaryBtn}`}
-                            >
-                                <Plus size={18} /> NUEVO ITEM
-                            </button>
-                        )}
-                    </div>
+                    {viewMode === 'admin' && (
+                        <button onClick={addTask} className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 ${styles.primaryBtn}`}>
+                            <Plus size={14} /> AGREGAR
+                        </button>
+                    )}
                 </div>
+
+                {selectedProject.data[activePhase]?.length === 0 ? (
+                    <div className="p-12 border-2 border-dashed border-slate-800 rounded-2xl text-center text-slate-600">
+                        No hay items configurados en esta fase.
+                    </div>
+                ) : (
+                    <div className="space-y-3">
+                        {selectedProject.data[activePhase]?.map(task => (
+                            <div key={task.id} className={`group bg-slate-900/50 border border-slate-800 p-4 rounded-xl hover:border-slate-600 transition-all ${task.completed ? 'opacity-70' : ''}`}>
+                                <div className="flex items-start gap-4">
+                                    <button 
+                                        onClick={() => toggleTask(task.id)}
+                                        disabled={viewMode === 'client'}
+                                        className={`mt-1 ${task.completed ? 'text-green-500' : 'text-slate-600 hover:text-amber-500'}`}
+                                    >
+                                        {task.completed ? <CheckCircle size={20} /> : <Circle size={20} />}
+                                    </button>
+                                    
+                                    <div className="flex-1 space-y-2">
+                                        {/* Titulo Tarea */}
+                                        {editingTask === task.id ? (
+                                            <input 
+                                                autoFocus
+                                                className="w-full bg-slate-950 text-white p-2 rounded border border-amber-500 outline-none"
+                                                defaultValue={task.text}
+                                                onBlur={(e) => updateTaskField(task.id, 'text', e.target.value)}
+                                                onKeyDown={(e) => e.key === 'Enter' && setEditingTask(null)}
+                                            />
+                                        ) : (
+                                            <div 
+                                                onClick={() => viewMode === 'admin' && setEditingTask(task.id)}
+                                                className={`font-medium ${task.completed ? 'line-through text-slate-500' : 'text-slate-200'} ${viewMode === 'admin' ? 'cursor-pointer' : ''}`}
+                                            >
+                                                {task.text}
+                                            </div>
+                                        )}
+                                        
+                                        {/* Notas / Descripcion */}
+                                        <div className={`flex items-start gap-2 ${!task.notes && viewMode === 'client' ? 'hidden' : ''}`}>
+                                            <FileText size={14} className="text-slate-600 mt-1 flex-shrink-0" />
+                                            <textarea 
+                                                placeholder={viewMode === 'admin' ? "Notas o detalles..." : ""}
+                                                value={task.notes}
+                                                readOnly={viewMode === 'client'}
+                                                onChange={(e) => updateTaskField(task.id, 'notes', e.target.value)}
+                                                className="w-full bg-transparent text-sm text-slate-400 outline-none resize-none placeholder-slate-700"
+                                                rows={task.notes ? Math.max(1, task.notes.split('\n').length) : 1}
+                                            />
+                                        </div>
+
+                                        {/* LINK / RECURSO (CON DETECCIÓN JAIRO AMAYA) */}
+                                        {(viewMode === 'admin' || task.link) && (
+                                            <div className="flex items-center gap-2 mt-2">
+                                                {task.link && (
+                                                    <a href={task.link} target="_blank" rel="noreferrer" className={`flex items-center gap-2 px-3 py-1.5 text-xs rounded-md transition-all border ${
+                                                        isInternalTool(task.link) 
+                                                        ? 'bg-amber-500 text-slate-900 border-amber-400 font-bold hover:bg-amber-400' 
+                                                        : 'bg-blue-500/10 text-blue-400 border-blue-500/20 hover:bg-blue-500 hover:text-white'
+                                                    }`}>
+                                                        {isInternalTool(task.link) ? <Cpu size={12} /> : <ExternalLink size={12} />}
+                                                        {isInternalTool(task.link) ? 'EJECUTAR HERRAMIENTA' : 'Abrir Recurso'}
+                                                    </a>
+                                                )}
+                                                
+                                                {viewMode === 'admin' && (
+                                                    <div className="flex-1 flex items-center gap-2 bg-slate-950 px-2 py-1 rounded border border-slate-800 focus-within:border-slate-600">
+                                                        <HardDrive size={12} className="text-slate-600" />
+                                                        <input 
+                                                            placeholder="Pegar URL (Drive, Docs, JairoAmaya.co)..."
+                                                            value={task.link || ''}
+                                                            onChange={(e) => updateTaskField(task.id, 'link', e.target.value)}
+                                                            className="w-full bg-transparent text-xs text-blue-300 outline-none placeholder-slate-700"
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {viewMode === 'admin' && (
+                                        <button onClick={() => deleteTask(task.id)} className="opacity-0 group-hover:opacity-100 text-slate-600 hover:text-red-500 p-2">
+                                            <Trash2 size={16} />
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
-            {/* LISTA DE TAREAS (MAIN) */}
-            <div className="lg:col-span-3">
-                <div className="space-y-3">
-                    {selectedProject.data[activePhase]?.length === 0 ? (
-                    <div className="text-center py-20 bg-slate-900/20 border-2 border-dashed border-slate-800 rounded-3xl">
-                        <p className="text-slate-500">Fase inactiva.</p>
-                        {viewMode === 'admin' && <p className="text-amber-500 text-sm mt-2 cursor-pointer hover:underline font-bold" onClick={addTask}>Inicializar Protocolo +</p>}
-                    </div>
-                    ) : (
-                    selectedProject.data[activePhase]?.map(task => (
-                        <div 
-                        key={task.id} 
-                        className={`relative group p-5 rounded-2xl border transition-all duration-300 ${
-                            task.completed 
-                            ? 'bg-slate-900/30 border-green-900/30 opacity-60' 
-                            : 'bg-slate-800/40 border-slate-700/50 hover:bg-slate-800 hover:border-amber-500/30 hover:shadow-lg'
-                        }`}
-                        >
-                            {/* Left Border Status Indicator */}
-                            <div className={`absolute left-0 top-4 bottom-4 w-1 rounded-r-full transition-colors ${task.completed ? 'bg-green-500' : 'bg-amber-500 opacity-0 group-hover:opacity-100'}`}></div>
-
-                            <div className="flex items-start gap-4 pl-2">
-                                <button 
-                                onClick={() => toggleTask(task.id)}
-                                disabled={viewMode === 'client'}
-                                className={`mt-1 transition-all ${task.completed ? 'text-green-500 scale-100' : 'text-slate-600 hover:text-amber-500 hover:scale-110'}`}
-                                >
-                                {task.completed ? <CheckCircle size={24} className="fill-green-500/10" /> : <Circle size={24} />}
-                                </button>
-                                
-                                <div className="flex-1">
-                                {editingTask === task.id ? (
-                                    <input 
-                                    autoFocus
-                                    className="w-full bg-slate-950 text-white p-3 rounded-lg border border-amber-500 outline-none mb-2 font-medium"
-                                    defaultValue={task.text}
-                                    onBlur={(e) => updateTaskText(task.id, e.target.value)}
-                                    onKeyDown={(e) => e.key === 'Enter' && updateTaskText(task.id, e.target.value)}
-                                    />
-                                ) : (
-                                    <div 
-                                    onClick={() => viewMode === 'admin' && setEditingTask(task.id)}
-                                    className={`text-lg mb-1 font-medium transition-colors ${
-                                        task.completed ? 'line-through text-slate-500' : 'text-slate-200'
-                                    } ${viewMode === 'admin' ? 'cursor-pointer hover:text-amber-400' : ''}`}
-                                    >
-                                    {task.text}
-                                    </div>
-                                )}
-                                
-                                <div className={`mt-2 flex items-start gap-3 p-2 rounded-lg transition-colors ${
-                                    task.notes ? 'bg-slate-950/50' : viewMode === 'admin' ? 'hover:bg-slate-950/30' : ''
-                                } ${!task.notes && viewMode === 'client' ? 'hidden' : ''}`}>
-                                    <FileText size={14} className={`mt-1.5 flex-shrink-0 ${task.notes ? 'text-amber-500' : 'text-slate-700'}`} />
-                                    <textarea 
-                                    placeholder={viewMode === 'admin' ? "Añadir notas de campo, evidencias o enlaces..." : ""}
-                                    value={task.notes}
-                                    readOnly={viewMode === 'client'}
-                                    onChange={(e) => updateTaskNotes(task.id, e.target.value)}
-                                    className={`w-full bg-transparent text-sm resize-none outline-none ${
-                                        task.completed ? 'text-slate-600' : 'text-slate-400'
-                                    } focus:text-amber-200 placeholder-slate-700 leading-relaxed`}
-                                    rows={task.notes ? Math.max(2, task.notes.split('\n').length) : 1}
-                                    />
-                                </div>
-                                </div>
-
-                                {viewMode === 'admin' && (
-                                <button 
-                                    onClick={() => deleteTask(task.id)}
-                                    className="opacity-0 group-hover:opacity-100 text-slate-600 hover:text-red-500 hover:bg-red-500/10 p-2 rounded-lg transition-all"
-                                >
-                                    <Trash2 size={18} />
-                                </button>
-                                )}
-                            </div>
+            {/* SIDEBAR INFO */}
+            <div className="space-y-6">
+                <div className={`${styles.glassCard} p-6 rounded-2xl`}>
+                    <h3 className="text-white font-bold mb-4 flex items-center gap-2">
+                        <Zap size={18} className="text-amber-500" /> Stats de Fase
+                    </h3>
+                    <div className="space-y-4">
+                        <div className="flex justify-between text-sm text-slate-400">
+                            <span>Completado</span>
+                            <span className="text-white font-bold">{selectedProject.data[activePhase]?.filter(t => t.completed).length} items</span>
                         </div>
-                    ))
-                    )}
+                        <div className="flex justify-between text-sm text-slate-400">
+                            <span>Total</span>
+                            <span className="text-white font-bold">{selectedProject.data[activePhase]?.length} items</span>
+                        </div>
+                        <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                            <div className="bg-amber-500 h-full" style={{width: `${selectedProject.data[activePhase]?.length > 0 ? (selectedProject.data[activePhase]?.filter(t => t.completed).length / selectedProject.data[activePhase]?.length) * 100 : 0}%`}}></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
