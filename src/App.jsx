@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Plus, Edit2, Trash2, CheckCircle, Circle, Calendar, 
   Save, X, Briefcase, Eye, EyeOff, LayoutDashboard, 
-  ArrowLeft, ExternalLink, BarChart3 
+  ArrowLeft, ExternalLink, BarChart3, FileText 
 } from 'lucide-react';
 
 // --- CONFIGURACIÓN DE ESTILOS Y TIPOGRAFÍA ---
@@ -16,7 +16,7 @@ const styles = {
   secondaryBtn: "bg-slate-700 hover:bg-slate-600 text-white border border-white/10"
 };
 
-// --- DATA INICIAL (TEMPLATES) ---
+// --- DATA INICIAL (TEMPLATES ROBUSTOS) ---
 const projectTemplates = {
   blank: {
     name: 'Proyecto en Blanco',
@@ -25,39 +25,55 @@ const projectTemplates = {
   },
   seo: {
     name: 'Consultoría SEO High-Ticket',
-    description: 'Posicionamiento y Autoridad',
+    description: 'Posicionamiento, Autoridad y Conversión',
     data: {
       situation: [
-        { id: 's1', text: 'Auditoría SEO Técnica (Score < 80)', completed: false, notes: '' },
-        { id: 's2', text: 'Análisis de Brecha de Contenidos', completed: false, notes: '' },
-        { id: 's3', text: 'Investigación de Competencia Top 3', completed: false, notes: '' },
+        { id: 's1', text: 'Auditoría Técnica Profunda (Crawl & Indexación)', completed: true, notes: 'Identificados 15 errores 404 y 3 cadenas de redirección críticas.' },
+        { id: 's2', text: 'Análisis de Competencia (Top 3 SERP)', completed: true, notes: 'Competidor A domina keywords informacionales. Oportunidad en transaccionales.' },
+        { id: 's3', text: 'Keyword Research & Gap Analysis', completed: false, notes: 'Foco en long-tail keywords con intención de compra alta.' },
+        { id: 's4', text: 'Revisión de Perfil de Enlaces (Backlinks)', completed: false, notes: '' },
+        { id: 's5', text: 'Benchmark de Velocidad (Core Web Vitals)', completed: true, notes: 'LCP en móvil necesita optimización urgente (3.5s).' },
       ],
       objectives: [
-        { id: 'o1', text: 'Aumentar tráfico orgánico en 40%', completed: false, notes: '' },
-        { id: 'o2', text: 'Posicionar 5 keywords transaccionales', completed: false, notes: '' },
+        { id: 'o1', text: 'Aumentar Tráfico Orgánico Calificado (+40% YoY)', completed: false, notes: 'Meta: 15,000 visitas/mes para Q3.' },
+        { id: 'o2', text: 'Posicionar 5 Keywords "Money" en Top 3', completed: false, notes: '' },
+        { id: 'o3', text: 'Mejorar Tasa de Conversión Orgánica (CRO)', completed: false, notes: 'Objetivo: Pasar del 1.2% al 2.0%.' },
       ],
       strategy: [
-        { id: 'st1', text: 'Pilar de Contenidos: Autoridad de Nicho', completed: false, notes: '' },
-        { id: 'st2', text: 'Link Building: Calidad sobre Cantidad', completed: false, notes: '' },
+        { id: 'st1', text: 'Content Hubs: Autoridad Temática', completed: false, notes: 'Crear clusters de contenido alrededor de productos core.' },
+        { id: 'st2', text: 'SEO Técnico: Fundación Sólida', completed: false, notes: 'Priorizar indexabilidad y velocidad de carga.' },
+        { id: 'st3', text: 'Link Building: Digital PR & Outreach', completed: false, notes: 'Conseguir enlaces de sitios de nicho con DR > 40.' },
       ],
       tactics: [
-        { id: 't1', text: 'Optimización On-Page (Matriz Prioridad)', completed: false, notes: '' },
-        { id: 't2', text: 'Creación de 4 artículos Pilar/mes', completed: false, notes: '' },
+        { id: 't1', text: 'Optimización On-Page de 20 URLs Prioritarias', completed: false, notes: 'Uso de la Matriz de Prioridad para seleccionar las URLs.' },
+        { id: 't2', text: 'Creación de 4 Artículos "Pilar" Mensuales', completed: false, notes: 'Contenido de >1500 palabras, profundidad semántica.' },
+        { id: 't3', text: 'Implementación de Schema Markup (Product, FAQ)', completed: false, notes: '' },
+        { id: 't4', text: 'Campaña de Guest Posting (2 links/mes)', completed: false, notes: '' },
       ],
       action: [
-        { id: 'a1', text: 'Semana 1: Correcciones Técnicas Críticas', completed: false, notes: '' },
-        { id: 'a2', text: 'Semana 2-4: Producción de Contenido', completed: false, notes: '' },
+        { id: 'a1', text: 'Semana 1: Fix Errores Técnicos Críticos', completed: false, notes: '' },
+        { id: 'a2', text: 'Semana 2: Optimización On-Page Categorías', completed: false, notes: '' },
+        { id: 'a3', text: 'Semana 3: Producción Contenido Blog', completed: false, notes: '' },
+        { id: 'a4', text: 'Semana 4: Revisión y Ajustes Mensuales', completed: false, notes: '' },
       ],
       control: [
-        { id: 'c1', text: 'Dashboard GA4 + GSC Configurado', completed: false, notes: '' },
-        { id: 'c2', text: 'Reporte Mensual de Posiciones', completed: false, notes: '' },
+        { id: 'c1', text: 'Dashboard GA4 + GSC Personalizado', completed: false, notes: '' },
+        { id: 'c2', text: 'Tracking Semanal de Posiciones (Rank Tracker)', completed: false, notes: '' },
+        { id: 'c3', text: 'Auditoría de Salud del Sitio (Mensual)', completed: false, notes: '' },
+        { id: 'c4', text: 'Revisión Trimestral de Estrategia', completed: false, notes: '' },
       ]
     }
   },
   branding: {
     name: 'Transformación de Marca',
-    description: 'Identidad y Posicionamiento',
-    data: { situation: [], objectives: [], strategy: [], tactics: [], action: [], control: [] } 
+    description: 'Identidad, Voz y Posicionamiento',
+    data: { 
+        situation: [
+            { id: 'bs1', text: 'Auditoría de Marca Actual', completed: false, notes: '' },
+            { id: 'bs2', text: 'Entrevistas a Stakeholders', completed: false, notes: '' }
+        ], 
+        objectives: [], strategy: [], tactics: [], action: [], control: [] 
+    } 
   }
 };
 
@@ -74,15 +90,16 @@ export default function App() {
   // --- ESTADOS ---
   const [viewMode, setViewMode] = useState('admin'); // 'admin' | 'client'
   
-  // Persistencia de Proyectos con LÓGICA DE DEMO FORZADA
+  // Persistencia de Proyectos con LÓGICA DE DEMO ROBUSTA
   const [projects, setProjects] = useState(() => {
     const saved = localStorage.getItem('ja_os_projects');
-    
-    // Convertimos lo guardado a objeto o array vacío
     const parsedProjects = saved ? JSON.parse(saved) : [];
 
-    // SI NO HAY PROYECTOS (array vacío o null), CARGAMOS EL DEMO
+    // SI NO HAY PROYECTOS, CARGAMOS EL DEMO ROBUSTO
     if (parsedProjects.length === 0) {
+      const demoData = JSON.parse(JSON.stringify(projectTemplates.seo.data));
+      // Calculamos un progreso inicial basado en las tareas completadas del template
+      // (En el template puse algunas como true para que se vea movimiento)
       return [{
         id: 1,
         name: 'Proyecto Demo: E-commerce',
@@ -91,12 +108,10 @@ export default function App() {
         projectType: 'seo',
         startDate: new Date().toISOString().split('T')[0],
         status: 'active',
-        progress: 15, 
-        data: projectTemplates.seo.data
+        progress: 15, // Valor inicial, se recalculará al editar
+        data: demoData
       }];
     }
-    
-    // Si ya hay proyectos reales, los devolvemos
     return parsedProjects;
   });
 
@@ -114,6 +129,25 @@ export default function App() {
     localStorage.setItem('ja_os_projects', JSON.stringify(projects));
   }, [projects]);
 
+  // Al cargar un proyecto, recalcular su progreso real basado en los datos
+  useEffect(() => {
+      if (selectedProject) {
+          let total = 0, completed = 0;
+          Object.values(selectedProject.data).forEach(phase => {
+              total += phase.length;
+              completed += phase.filter(t => t.completed).length;
+          });
+          const realProgress = total === 0 ? 0 : Math.round((completed / total) * 100);
+          
+          if (selectedProject.progress !== realProgress) {
+              const updated = { ...selectedProject, progress: realProgress };
+              setSelectedProject(updated);
+              setProjects(prev => prev.map(p => p.id === updated.id ? updated : p));
+          }
+      }
+  }, [selectedProject?.data]); // Se ejecuta cuando cambia la data del proyecto seleccionado
+
+
   // --- FUNCIONES ---
   const createNewProject = () => {
     const template = projectTemplates[newProjectData.projectType];
@@ -126,27 +160,18 @@ export default function App() {
     };
     setProjects([...projects, newProject]);
     setShowNewProject(false);
-    // Reset form
     setNewProjectData({ name: '', client: '', industry: '', projectType: 'seo', startDate: new Date().toISOString().split('T')[0] });
   };
 
   const updateProjectData = (newData) => {
     const updatedProject = { ...selectedProject, data: newData };
-    
-    // Recalcular progreso global
-    let total = 0, completed = 0;
-    Object.values(newData).forEach(phase => {
-      total += phase.length;
-      completed += phase.filter(t => t.completed).length;
-    });
-    updatedProject.progress = total === 0 ? 0 : Math.round((completed / total) * 100);
-
+    // El useEffect se encargará de recalcular el progreso visualmente
     setSelectedProject(updatedProject);
     setProjects(projects.map(p => p.id === updatedProject.id ? updatedProject : p));
   };
 
   const toggleTask = (taskId) => {
-    if (viewMode === 'client') return; // Clientes no tocan
+    if (viewMode === 'client') return;
     const newData = { ...selectedProject.data };
     newData[activePhase] = newData[activePhase].map(t => 
       t.id === taskId ? { ...t, completed: !t.completed } : t
@@ -434,14 +459,18 @@ export default function App() {
                         </div>
                       )}
                       
-                      <textarea 
-                        placeholder={viewMode === 'admin' ? "Notas estratégicas, enlaces o detalles..." : "Sin notas adicionales."}
-                        value={task.notes}
-                        readOnly={viewMode === 'client'}
-                        onChange={(e) => updateTaskNotes(task.id, e.target.value)}
-                        className={`w-full bg-transparent text-sm resize-none outline-none ${task.completed ? 'text-slate-600' : 'text-slate-400'} focus:text-white placeholder-slate-600`}
-                        rows={task.notes ? 2 : 1}
-                      />
+                      {/* Área de notas con más visibilidad si hay contenido */}
+                      <div className={`mt-2 flex items-start gap-2 ${!task.notes && viewMode === 'client' ? 'hidden' : ''}`}>
+                        <FileText size={14} className={`mt-1 ${task.notes ? 'text-slate-400' : 'text-slate-600'}`} />
+                        <textarea 
+                          placeholder={viewMode === 'admin' ? "Notas estratégicas, enlaces o detalles..." : "Sin notas adicionales."}
+                          value={task.notes}
+                          readOnly={viewMode === 'client'}
+                          onChange={(e) => updateTaskNotes(task.id, e.target.value)}
+                          className={`w-full bg-transparent text-sm resize-none outline-none ${task.completed ? 'text-slate-500' : 'text-slate-400'} focus:text-white placeholder-slate-600`}
+                          rows={task.notes ? Math.max(2, task.notes.split('\n').length) : 1}
+                        />
+                      </div>
                     </div>
 
                     {viewMode === 'admin' && (
