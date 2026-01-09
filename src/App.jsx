@@ -20,7 +20,7 @@ const styles = {
   neonText: "text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-300 drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]"
 };
 
-// --- 2. DATA: TEMPLATES ESTRATÉGICOS (NO OPERATIVOS) ---
+// --- 2. DATA: TEMPLATES ROBUSTOS (V7.0) ---
 const projectTemplates = {
   seo: {
     name: 'Ingeniería SEO (Core)',
@@ -29,39 +29,49 @@ const projectTemplates = {
       situation: [
         { 
             id: 's1', 
-            text: 'Auditoría Técnica Profunda', 
+            text: 'Ejecutar Auditoría Técnica Inicial', 
             completed: true, 
             notes: 'Diagnóstico de salud del sitio usando herramienta propietaria (Crawl/Index).', 
             link: 'https://jairoamaya.co/auditor-seo-interactivo/' // <--- LINK AUDITOR
         },
-        { id: 's2', text: 'Análisis de Brecha Semántica (Gap)', completed: true, notes: 'Identificar territorios de autoridad no reclamados por la competencia.', link: '' },
-        { id: 's3', text: 'Keyword Research Transaccional', completed: false, notes: 'Foco estricto en términos con intención de compra (Bottom of Funnel).', link: '' },
+        { id: 's2', text: 'Análisis de Competencia (Top 3 SERP)', completed: true, notes: 'Competidor A domina keywords informacionales. Oportunidad en transaccionales.', link: '' },
+        { id: 's3', text: 'Keyword Research Transaccional', completed: false, notes: 'Foco en long-tail keywords con intención de compra alta.', link: '' },
+        { id: 's4', text: 'Revisión de Perfil de Enlaces (Backlinks)', completed: false, notes: 'Análisis de toxicidad y autoridad de dominio.', link: '' },
+        { id: 's5', text: 'Benchmark de Velocidad (Core Web Vitals)', completed: true, notes: 'LCP en móvil necesita optimización urgente (3.5s).', link: '' },
       ],
       objectives: [
-        { id: 'o1', text: '+40% Tráfico Orgánico Calificado', completed: false, notes: 'No solo visitas, sino tráfico con potencial de conversión.', link: '' },
-        { id: 'o2', text: 'Dominio de 5 Clusters Temáticos', completed: false, notes: '', link: '' },
+        { id: 'o1', text: '+40% Tráfico Orgánico Calificado', completed: false, notes: 'Meta: 15,000 visitas/mes para Q3.', link: '' },
+        { id: 'o2', text: 'Posicionar 5 Keywords "Money" en Top 3', completed: false, notes: '', link: '' },
+        { id: 'o3', text: 'Mejorar Tasa de Conversión Orgánica (CRO)', completed: false, notes: 'Objetivo: Pasar del 1.2% al 2.0%.', link: '' },
       ],
       strategy: [
-        { id: 'st1', text: 'Arquitectura de Información Silo', completed: false, notes: 'Reestructuración de URLs y enlazado interno.', link: '' },
-        { id: 'st2', text: 'Estrategia de Contenidos "Evergreen"', completed: false, notes: 'Activos digitales que ganan valor con el tiempo.', link: '' },
+        { id: 'st1', text: 'Content Hubs: Autoridad Temática', completed: false, notes: 'Crear clusters de contenido alrededor de productos core.', link: '' },
+        { id: 'st2', text: 'SEO Técnico: Fundación Sólida', completed: false, notes: 'Priorizar indexabilidad y velocidad de carga.', link: '' },
+        { id: 'st3', text: 'Link Building: Digital PR & Outreach', completed: false, notes: 'Conseguir enlaces de sitios de nicho con DR > 40.', link: '' },
       ],
       tactics: [
           { 
               id: 't1', 
               text: 'Matriz de Prioridad (Impacto vs Esfuerzo)', 
               completed: false, 
-              notes: 'Filtrado de acciones para ejecutar solo lo que mueve la aguja.', 
+              notes: 'Clasificar hallazgos de la auditoría para definir Quick Wins.', 
               link: 'https://jairoamaya.co/matriz-de-prioridad-seo/' // <--- LINK MATRIZ
           },
-          { id: 't2', text: 'Optimización de Entidades (NLP)', completed: false, notes: 'Enriquecimiento semántico para Google Knowledge Graph.', link: '' },
+          { id: 't2', text: 'Optimización On-Page de 20 URLs Prioritarias', completed: false, notes: 'Ajuste de H-Tags y NLP.', link: '' },
+          { id: 't3', text: 'Creación de 4 Artículos "Pilar" Mensuales', completed: false, notes: 'Contenido de >1500 palabras.', link: '' },
+          { id: 't4', text: 'Implementación de Schema Markup', completed: false, notes: 'Product, FAQ y Organization.', link: '' },
       ],
       action: [
-        { id: 'a1', text: 'Sprint Técnico: Core Web Vitals', completed: false, notes: '', link: '' },
-        { id: 'a2', text: 'Despliegue de Contenidos Pilar', completed: false, notes: '', link: '' },
+        { id: 'a1', text: 'Semana 1: Fix Errores Técnicos Críticos', completed: false, notes: '', link: '' },
+        { id: 'a2', text: 'Semana 2: Optimización On-Page Categorías', completed: false, notes: '', link: '' },
+        { id: 'a3', text: 'Semana 3: Producción Contenido Blog', completed: false, notes: '', link: '' },
+        { id: 'a4', text: 'Semana 4: Revisión y Ajustes Mensuales', completed: false, notes: '', link: '' },
       ],
       control: [
-        { id: 'c1', text: 'Dashboard de Rendimiento (Data Studio)', completed: false, notes: '', link: '' },
-        { id: 'c2', text: 'Auditoría de Calidad Trimestral', completed: false, notes: '', link: '' },
+        { id: 'c1', text: 'Setup Dashboard GA4 + GSC', completed: false, notes: '', link: '' },
+        { id: 'c2', text: 'Tracking Semanal de Posiciones', completed: false, notes: '', link: '' },
+        { id: 'c3', text: 'Auditoría de Salud del Sitio (Mensual)', completed: false, notes: '', link: '' },
+        { id: 'c4', text: 'Revisión Trimestral de Estrategia', completed: false, notes: '', link: '' },
       ]
     }
   },
@@ -70,23 +80,23 @@ const projectTemplates = {
     description: 'Distribución y Arquitectura de Canales',
     data: {
       situation: [
-        { id: 'sm1', text: 'Mapeo de Ecosistema Digital', completed: false, notes: 'Análisis de dónde reside la atención real del usuario (JACN Method).', link: '' },
+        { id: 'sm1', text: 'Mapeo de Ecosistema Digital', completed: false, notes: 'Análisis de dónde reside la atención real del usuario.', link: '' },
         { id: 'sm2', text: 'Análisis de Fugas de Tráfico', completed: false, notes: '¿Dónde se pierden los usuarios entre redes y web?', link: '' },
+        { id: 'sm3', text: 'Benchmark Competitivo (Social)', completed: false, notes: 'Análisis de engagement y formatos de la competencia.', link: '' },
       ],
       objectives: [
         { id: 'mo1', text: 'Construcción de Activos Propios (Data)', completed: false, notes: 'Convertir seguidores (rentado) en base de datos (propio).', link: '' },
-        { id: 'mo2', text: 'Autoridad de Marca (Social Proof)', completed: false, notes: '', link: '' },
       ],
       strategy: [
         { id: 'mst1', text: 'Distribución de Contenido Líquido', completed: false, notes: 'Un mensaje central, múltiples formatos de distribución.', link: '' },
-        { id: 'mst2', text: 'Funnel Social Inverso', completed: false, notes: 'Llevar tráfico de redes hacia activos de conversión.', link: '' },
       ],
       tactics: [
         { id: 'mt1', text: 'Automatización de Flujos (ManyChat/Zapier)', completed: false, notes: 'Sistemas de respuesta y captura de leads automáticos.', link: '' },
-        { id: 'mt2', text: 'Reciclaje Estratégico de Contenido', completed: false, notes: '', link: '' },
+        { id: 'mt2', text: 'Calendario Editorial Interactivo', completed: false, notes: '', link: '' },
       ],
       action: [
         { id: 'ma1', text: 'Implementación de Pixels y Tracking', completed: false, notes: 'Medición exacta de la atribución social.', link: '' },
+        { id: 'ma2', text: 'Producción de Activos Visuales', completed: false, notes: '', link: '' },
       ],
       control: [
         { id: 'mc1', text: 'Informe de Atribución y Conversión', completed: false, notes: 'ROI real de los esfuerzos sociales.', link: '' },
@@ -134,7 +144,7 @@ export default function App() {
     const saved = localStorage.getItem('ja_os_projects');
     const parsed = saved ? JSON.parse(saved) : [];
     
-    // DEMO INICIAL MEJORADA
+    // DEMO INICIAL MEJORADA (CARGA EL TEMPLATE SEO COMPLETO)
     if (parsed.length === 0) {
       const demoData = JSON.parse(JSON.stringify(projectTemplates.seo.data));
       return [{
@@ -145,7 +155,7 @@ export default function App() {
         projectType: 'seo',
         startDate: new Date().toISOString().split('T')[0],
         status: 'active',
-        progress: 20,
+        progress: 15,
         data: demoData
       }];
     }
@@ -347,7 +357,7 @@ export default function App() {
           <div>
             <div className="flex items-center gap-3 mb-2">
                 <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
-                <span className="text-xs font-mono text-slate-400 tracking-widest uppercase">System Online // v6.0</span>
+                <span className="text-xs font-mono text-slate-400 tracking-widest uppercase">System Online // v7.0</span>
             </div>
             <h1 className={`text-5xl font-bold text-white tracking-tight ${styles.fontHeading}`}>
               SOSTAC <span className={styles.neonText}>FLOW</span>
@@ -376,7 +386,11 @@ export default function App() {
                 <Layers size={80} className="absolute -right-4 -top-4 text-slate-800 opacity-50 group-hover:opacity-100 group-hover:text-amber-500/10 transition-all" />
                 <h3 className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Proyectos Activos</h3>
                 <div className="text-4xl font-bold text-white">{totalProjects}</div>
+                <div className="flex items-center gap-2 text-xs text-green-400">
+                    <ArrowUpRight size={14} /> <span>100% Operativo</span>
+                </div>
             </div>
+
             <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden group`}>
                 <Activity size={80} className="absolute -right-4 -top-4 text-slate-800 opacity-50 group-hover:opacity-100 group-hover:text-amber-500/10 transition-all" />
                 <h3 className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Eficiencia Global</h3>
@@ -385,10 +399,12 @@ export default function App() {
                     <div className="bg-amber-500 h-full rounded-full" style={{width: `${avgProgress}%`}}></div>
                 </div>
             </div>
+
             <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden group`}>
                 <Target size={80} className="absolute -right-4 -top-4 text-slate-800 opacity-50 group-hover:opacity-100 group-hover:text-amber-500/10 transition-all" />
                 <h3 className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Tareas en Radar</h3>
                 <div className="text-4xl font-bold text-white">{totalTasks}</div>
+                <div className="text-xs text-slate-500">Items estratégicos bajo gestión</div>
             </div>
         </div>
 
@@ -476,10 +492,6 @@ export default function App() {
                                 <span className="text-slate-400">JairoAmaya.co</span>
                                 <span className="text-green-400 font-mono flex items-center gap-1"><CheckCircle size={10} /> CONNECTED</span>
                             </div>
-                            <div className="flex justify-between items-center text-xs">
-                                <span className="text-slate-400">JACN Legacy</span>
-                                <span className="text-amber-500 font-mono">METHODOLOGY LOADED</span>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -487,26 +499,27 @@ export default function App() {
         </div>
       </div>
 
-      {/* FOOTER: JAIRO AMAYA BRANDING */}
+      {/* FOOTER: JAIRO AMAYA BRANDING (LINK ACTIVADO) */}
       <footer className="relative z-10 border-t border-slate-800 bg-slate-950/80 backdrop-blur-md pt-12 pb-12 mt-12">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="md:col-span-2">
-                <h4 className={`text-2xl font-bold text-white mb-2 ${styles.fontHeading}`}>JAIRO AMAYA</h4>
-                <div className="flex items-center gap-2">
-                    <span className="h-0.5 w-8 bg-amber-500"></span>
-                    <p className="text-amber-500 font-bold text-sm tracking-wider uppercase">Full Stack Marketer</p>
-                </div>
+                <a href="https://jairoamaya.co" target="_blank" rel="noopener noreferrer" className="group block">
+                    <h4 className={`text-2xl font-bold text-white mb-2 group-hover:text-amber-500 transition-colors ${styles.fontHeading}`}>JAIRO AMAYA</h4>
+                    <div className="flex items-center gap-2">
+                        <span className="h-0.5 w-8 bg-amber-500"></span>
+                        <p className="text-amber-500 font-bold text-sm tracking-wider uppercase group-hover:text-white transition-colors">Full Stack Marketer</p>
+                    </div>
+                </a>
                 <p className="text-slate-500 text-sm mt-4 max-w-sm leading-relaxed">
-                   Consultoría estratégica y desarrollo de negocios digitales. Transformando datos en arquitecturas de crecimiento.
+                   Ingeniería de marketing y estrategias orientadas a resultados tangibles.
                 </p>
             </div>
             
             <div>
-                <h5 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Ecosistema</h5>
+                <h5 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Recursos</h5>
                 <ul className="space-y-2 text-sm text-slate-500">
                     <li><a href="https://jairoamaya.co/auditor-seo-interactivo/" target="_blank" className="hover:text-amber-500 transition-colors">Auditor SEO</a></li>
                     <li><a href="https://jairoamaya.co/matriz-de-prioridad-seo/" target="_blank" className="hover:text-amber-500 transition-colors">Matriz de Prioridad</a></li>
-                    <li><a href="https://jacncreativenetwork.com/" target="_blank" className="hover:text-amber-500 transition-colors">JACN Network</a></li>
                 </ul>
             </div>
 
@@ -526,7 +539,7 @@ export default function App() {
         
         <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600">
             <p>© 2026 Jairo Amaya. All rights reserved.</p>
-            <p className="font-mono">v6.0.0 BUILD 2026</p>
+            <p className="font-mono">v7.0.0 GOLD BUILD</p>
         </div>
       </footer>
     </div>
@@ -735,49 +748,6 @@ export default function App() {
             </div>
         </div>
       </div>
-
-      {/* FOOTER SAME AS DASHBOARD */}
-      <footer className="relative z-10 border-t border-slate-800 bg-slate-950/80 backdrop-blur-md pt-12 pb-12 mt-12">
-        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="md:col-span-2">
-                <h4 className={`text-2xl font-bold text-white mb-2 ${styles.fontHeading}`}>JAIRO AMAYA</h4>
-                <div className="flex items-center gap-2">
-                    <span className="h-0.5 w-8 bg-amber-500"></span>
-                    <p className="text-amber-500 font-bold text-sm tracking-wider uppercase">Full Stack Marketer</p>
-                </div>
-                <p className="text-slate-500 text-sm mt-4 max-w-sm leading-relaxed">
-                   Consultoría estratégica y desarrollo de negocios digitales. Transformando datos en arquitecturas de crecimiento.
-                </p>
-            </div>
-            
-            <div>
-                <h5 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Ecosistema</h5>
-                <ul className="space-y-2 text-sm text-slate-500">
-                    <li><a href="https://jairoamaya.co/auditor-seo-interactivo/" target="_blank" className="hover:text-amber-500 transition-colors">Auditor SEO</a></li>
-                    <li><a href="https://jairoamaya.co/matriz-de-prioridad-seo/" target="_blank" className="hover:text-amber-500 transition-colors">Matriz de Prioridad</a></li>
-                    <li><a href="https://jacncreativenetwork.com/" target="_blank" className="hover:text-amber-500 transition-colors">JACN Network</a></li>
-                </ul>
-            </div>
-
-            <div className="flex flex-col md:items-end">
-                 <h5 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Estado</h5>
-                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 mb-4">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
-                    <span className="text-xs text-green-500 font-mono font-bold">SYSTEM OPERATIONAL</span>
-                 </div>
-                 <div className="flex gap-4">
-                    <a href="https://www.linkedin.com/in/jairoamaya" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Linkedin size={18} /></a>
-                    <a href="https://twitter.com" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Twitter size={18} /></a>
-                    <a href="https://jairoamaya.co" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Globe size={18} /></a>
-                </div>
-            </div>
-        </div>
-        
-        <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600">
-            <p>© 2026 Jairo Amaya. All rights reserved.</p>
-            <p className="font-mono">v6.0.0 BUILD 2026</p>
-        </div>
-      </footer>
     </div>
   );
 }
