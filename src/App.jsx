@@ -74,13 +74,15 @@ export default function App() {
   // --- ESTADOS ---
   const [viewMode, setViewMode] = useState('admin'); // 'admin' | 'client'
   
-  // Persistencia de Proyectos con PROYECTO DEMO INICIAL
+  // Persistencia de Proyectos con LÓGICA DE DEMO FORZADA
   const [projects, setProjects] = useState(() => {
     const saved = localStorage.getItem('ja_os_projects');
-    if (saved) {
-      return JSON.parse(saved);
-    } else {
-      // Si no hay datos, creamos el demo
+    
+    // Convertimos lo guardado a objeto o array vacío
+    const parsedProjects = saved ? JSON.parse(saved) : [];
+
+    // SI NO HAY PROYECTOS (array vacío o null), CARGAMOS EL DEMO
+    if (parsedProjects.length === 0) {
       return [{
         id: 1,
         name: 'Proyecto Demo: E-commerce',
@@ -93,6 +95,9 @@ export default function App() {
         data: projectTemplates.seo.data
       }];
     }
+    
+    // Si ya hay proyectos reales, los devolvemos
+    return parsedProjects;
   });
 
   const [selectedProject, setSelectedProject] = useState(null);
