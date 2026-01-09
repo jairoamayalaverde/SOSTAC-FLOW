@@ -7,7 +7,7 @@ import {
   Github, Twitter, Linkedin, Globe, HardDrive, Cpu
 } from 'lucide-react';
 
-// --- CONFIGURACIÓN DE ESTILOS ---
+// --- CONFIGURACIÓN DE ESTILOS & BRANDING ---
 const styles = {
   fontHeading: "font-['Poppins',_sans-serif]",
   fontBody: "font-['Raleway',_sans-serif]",
@@ -15,10 +15,11 @@ const styles = {
   activeTab: "bg-amber-500 text-slate-900 shadow-[0_0_15px_rgba(245,158,11,0.4)]",
   inactiveTab: "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white",
   primaryBtn: "bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold shadow-[0_0_20px_rgba(245,158,11,0.3)] transition-all",
+  secondaryBtn: "bg-slate-800 hover:bg-slate-700 text-white border border-slate-600",
   neonText: "text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-300 drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]"
 };
 
-// --- DATA: TEMPLATES CON HERRAMIENTAS JAIRO AMAYA INTEGRADAS ---
+// --- DATA: TEMPLATES CON ECOSISTEMA JAIRO AMAYA ---
 const projectTemplates = {
   seo: {
     name: 'Consultoría SEO (Ecosistema)',
@@ -58,48 +59,19 @@ const projectTemplates = {
     data: {
       situation: [
         { id: 'pb1', text: 'Auditoría de Huella Digital Actual', completed: false, notes: 'Googlear nombre y analizar SERP.', link: '' },
-        { id: 'pb2', text: 'Definición de Arquetipo de Marca', completed: false, notes: '¿Sabio, Héroe o Gobernante?', link: '' },
       ],
       objectives: [
         { id: 'po1', text: 'Ser Top of Mind en el nicho', completed: false, notes: '', link: '' },
-        { id: 'po2', text: 'Crecer 10k seguidores en LinkedIn', completed: false, notes: '', link: '' },
       ],
-      strategy: [
-        { id: 'pst1', text: 'Estrategia de Contenidos "Thought Leadership"', completed: false, notes: 'Opinión experta vs contenido educativo.', link: '' },
-      ],
-      tactics: [
-        { id: 'pt1', text: 'Newsletter Semanal (Substack)', completed: false, notes: '', link: '' },
-      ],
-      action: [
-        { id: 'pa1', text: 'Semana 1: Optimización de Perfiles Sociales', completed: false, notes: '', link: '' },
-      ],
-      control: [
-        { id: 'pc1', text: 'Métricas de Engagement (SSI LinkedIn)', completed: false, notes: '', link: '' },
-      ]
+      strategy: [], tactics: [], action: [], control: []
     }
   },
   smo: {
     name: 'SMO (Social Media)',
     description: 'Optimización de Redes Sociales',
     data: {
-      situation: [
-        { id: 'sm1', text: 'Auditoría de Canales Actuales', completed: false, notes: '', link: '' },
-      ],
-      objectives: [
-        { id: 'mo1', text: 'Aumentar Engagement Rate al 5%', completed: false, notes: '', link: '' },
-      ],
-      strategy: [
-        { id: 'mst1', text: 'Estrategia de Contenido Visual (Reels/TikTok)', completed: false, notes: '', link: '' },
-      ],
-      tactics: [
-        { id: 'mt1', text: 'Calendario Editorial Mensual', completed: false, notes: '', link: '' },
-      ],
-      action: [
-        { id: 'ma1', text: 'Producción de Lote de Contenido (Batch)', completed: false, notes: '', link: '' },
-      ],
-      control: [
-        { id: 'mc1', text: 'Reporte Mensual de Alcance e Interacción', completed: false, notes: '', link: '' },
-      ]
+      situation: [{ id: 'sm1', text: 'Auditoría de Canales Actuales', completed: false, notes: '', link: '' }],
+      objectives: [], strategy: [], tactics: [], action: [], control: []
     }
   },
   blank: {
@@ -121,12 +93,13 @@ const phases = [
 export default function App() {
   const [viewMode, setViewMode] = useState('admin');
   
-  // Persistencia
+  // Persistencia con Carga de Demo Robusto
   const [projects, setProjects] = useState(() => {
     const saved = localStorage.getItem('ja_os_projects');
     const parsed = saved ? JSON.parse(saved) : [];
+    
+    // SIEMPRE que esté vacío, cargamos el DEMO SEO COMPLETO
     if (parsed.length === 0) {
-      // PROYECTO DEMO CON ENLACES A TUS HERRAMIENTAS
       const demoData = JSON.parse(JSON.stringify(projectTemplates.seo.data));
       return [{
         id: 1,
@@ -136,7 +109,7 @@ export default function App() {
         projectType: 'seo',
         startDate: new Date().toISOString().split('T')[0],
         status: 'active',
-        progress: 10,
+        progress: 15,
         data: demoData
       }];
     }
@@ -156,7 +129,6 @@ export default function App() {
     localStorage.setItem('ja_os_projects', JSON.stringify(projects));
   }, [projects]);
 
-  // Recálculo de progreso
   useEffect(() => {
     if (selectedProject) {
         let total = 0, completed = 0;
@@ -202,7 +174,6 @@ export default function App() {
     setProjects(projects.map(p => p.id === updated.id ? updated : p));
   };
 
-  // Task Operations
   const toggleTask = (taskId) => {
     if (viewMode === 'client') return;
     const newData = { ...selectedProject.data };
@@ -240,10 +211,9 @@ export default function App() {
       alert('Resumen copiado al portapapeles!');
   };
 
-  // Helper para detectar links propios
-  const isInternalTool = (url) => url.includes('jairoamaya.co');
+  const isInternalTool = (url) => url && url.includes('jairoamaya.co');
 
-  // --- RENDER HELPERS ---
+  // --- METRICS ---
   const totalProjects = projects.length;
   const avgProgress = projects.length > 0 ? Math.round(projects.reduce((acc, curr) => acc + curr.progress, 0) / projects.length) : 0;
   const totalTasks = projects.reduce((acc, p) => {
@@ -323,9 +293,9 @@ export default function App() {
     </div>
   );
 
-  // 2. DASHBOARD DE PROYECTOS (HOME)
+  // 2. DASHBOARD DE PROYECTOS (V2.0 RESTAURADO Y MEJORADO)
   if (!selectedProject) return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 p-4 md:p-8 font-sans selection:bg-amber-500/30 flex flex-col justify-between">
+    <div className="min-h-screen bg-slate-950 text-slate-200 p-4 md:p-8 font-sans selection:bg-amber-500/30 overflow-hidden">
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Raleway:wght@300;400;500;600&display=swap');`}</style>
       
       {/* FONDO ANIMADO TECH */}
@@ -334,26 +304,26 @@ export default function App() {
           <div className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-blue-500/10 rounded-full blur-[100px]"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto w-full relative z-10">
+      <div className="max-w-7xl mx-auto relative z-10 flex flex-col min-h-[90vh]">
         
-        {/* HEADER */}
+        {/* HEADER TIPO HUD */}
         <header className="flex flex-col md:flex-row justify-between items-end mb-10 border-b border-slate-800 pb-6">
           <div>
             <div className="flex items-center gap-3 mb-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
-                <span className="text-[10px] font-mono text-slate-400 tracking-widest uppercase">Sistema Operativo v3.1</span>
+                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
+                <span className="text-xs font-mono text-slate-400 tracking-widest uppercase">System Online // v3.5</span>
             </div>
             <h1 className={`text-5xl font-bold text-white tracking-tight ${styles.fontHeading}`}>
               SOSTAC <span className={styles.neonText}>FLOW</span>
             </h1>
-            <p className={`text-slate-400 mt-2 ${styles.fontBody}`}>Ingeniería de Marketing & Gestión Estratégica</p>
+            <p className={`text-slate-400 mt-2 ${styles.fontBody}`}>Centro de Comando Estratégico</p>
           </div>
           <div className="flex gap-4 mt-6 md:mt-0">
             <button 
               onClick={handleHardReset}
               className="px-4 py-2 rounded-lg flex items-center gap-2 font-bold text-xs bg-red-500/10 text-red-500 border border-red-500/30 hover:bg-red-500 hover:text-white transition-all"
             >
-              <RefreshCw size={14} /> RESET
+              <RefreshCw size={14} /> RESET DB
             </button>
             <button 
               onClick={() => setShowNewProject(true)}
@@ -364,106 +334,159 @@ export default function App() {
           </div>
         </header>
 
-        {/* METRICS GRID */}
+        {/* KPI CARDS (BENTO GRID TOP) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-            <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden`}>
-                <Layers size={80} className="absolute -right-4 -top-4 text-slate-800 opacity-50" />
-                <h3 className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Estrategias Activas</h3>
-                <div className="text-4xl font-bold text-white">{totalProjects}</div>
-            </div>
-            <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden`}>
-                <Activity size={80} className="absolute -right-4 -top-4 text-slate-800 opacity-50" />
-                <h3 className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Progreso Global</h3>
-                <div className="text-4xl font-bold text-white">{avgProgress}%</div>
-                <div className="w-full bg-slate-800 h-1 mt-3 rounded-full overflow-hidden">
-                    <div className="bg-amber-500 h-full" style={{width: `${avgProgress}%`}}></div>
+            <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden group`}>
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <Layers size={80} />
+                </div>
+                <h3 className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Proyectos Activos</h3>
+                <div className="text-4xl font-bold text-white mb-2">{totalProjects}</div>
+                <div className="flex items-center gap-2 text-xs text-green-400">
+                    <ArrowUpRight size={14} /> <span>100% Operativo</span>
                 </div>
             </div>
-            <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden`}>
-                <Target size={80} className="absolute -right-4 -top-4 text-slate-800 opacity-50" />
-                <h3 className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Total Entregables</h3>
-                <div className="text-4xl font-bold text-white">{totalTasks}</div>
+
+            <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden group`}>
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <Activity size={80} />
+                </div>
+                <h3 className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Eficiencia Global</h3>
+                <div className="text-4xl font-bold text-white mb-2">{avgProgress}%</div>
+                <div className="w-full bg-slate-700 h-1.5 rounded-full mt-2">
+                    <div className="bg-amber-500 h-full rounded-full" style={{width: `${avgProgress}%`}}></div>
+                </div>
+            </div>
+
+            <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden group`}>
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <Target size={80} />
+                </div>
+                <h3 className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Tareas en Radar</h3>
+                <div className="text-4xl font-bold text-white mb-2">{totalTasks}</div>
+                <div className="text-xs text-slate-500">Items estratégicos bajo gestión</div>
             </div>
         </div>
 
-        {/* PROJECTS LIST */}
-        <div className="mb-12">
-            <h2 className={`text-xl font-bold text-white mb-6 flex items-center gap-2 ${styles.fontHeading}`}>
-                <Briefcase size={20} className="text-amber-500" /> Proyectos Recientes
-            </h2>
-
-            {projects.length === 0 ? (
-                <div className="text-center py-20 bg-slate-900/40 border border-dashed border-slate-800 rounded-3xl">
-                    <p className="text-slate-500">No hay operaciones activas.</p>
+        {/* MAIN CONTENT GRID */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-auto">
+            
+            {/* COLUMN LEFT: PROJECTS LIST (2/3) */}
+            <div className="lg:col-span-2 space-y-6">
+                <div className="flex justify-between items-center mb-2">
+                    <h2 className={`text-xl font-bold text-white flex items-center gap-2 ${styles.fontHeading}`}>
+                        <Briefcase size={20} className="text-amber-500" /> Proyectos en Curso
+                    </h2>
                 </div>
-            ) : (
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {projects.map(project => (
-                    <div 
-                        key={project.id}
-                        onClick={() => setSelectedProject(project)}
-                        className={`group cursor-pointer rounded-xl p-6 transition-all border border-slate-800 bg-slate-900/40 hover:bg-slate-800 hover:border-amber-500/50 hover:shadow-lg relative overflow-hidden`}
-                    >
-                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-amber-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        
-                        <div className="flex justify-between items-start mb-4">
-                            <div>
-                                <h3 className={`text-lg font-bold text-white mb-1 group-hover:text-amber-400 transition-colors ${styles.fontHeading}`}>{project.name}</h3>
-                                <div className="flex items-center gap-2 text-xs text-slate-400">
-                                    <span>{project.client}</span>
-                                    <span className="w-1 h-1 bg-slate-600 rounded-full"></span>
-                                    <span className="text-amber-500 uppercase font-bold">{projectTemplates[project.projectType]?.name}</span>
+
+                {projects.length === 0 ? (
+                    <div className="text-center py-20 bg-slate-900/50 rounded-3xl border border-dashed border-slate-700">
+                        <LayoutDashboard size={48} className="mx-auto text-slate-600 mb-4" />
+                        <p className="text-slate-500">Sistema en espera. Inicie una nueva estrategia.</p>
+                    </div>
+                ) : (
+                    <div className="grid gap-4">
+                        {projects.map(project => (
+                        <div 
+                            key={project.id}
+                            onClick={() => setSelectedProject(project)}
+                            className={`group cursor-pointer rounded-xl p-6 transition-all border border-slate-800 bg-slate-900/40 hover:bg-slate-800 hover:border-amber-500/50 hover:shadow-lg relative overflow-hidden`}
+                        >
+                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            
+                            <div className="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 className={`text-lg font-bold text-white mb-1 group-hover:text-amber-400 transition-colors ${styles.fontHeading}`}>{project.name}</h3>
+                                    <p className="text-sm text-slate-400">{project.client} • {projectTemplates[project.projectType]?.name}</p>
+                                </div>
+                                <div className="text-2xl font-bold text-slate-700 group-hover:text-white transition-colors">
+                                    {project.progress}%
                                 </div>
                             </div>
-                            <div className="text-xl font-bold text-slate-700 group-hover:text-white transition-colors">
-                                {project.progress}%
+                            
+                            {/* MINI VISUALIZER OF PHASES */}
+                            <div className="flex gap-1 mb-2">
+                                {phases.map((ph, idx) => {
+                                    const pTasks = project.data[ph.id] || [];
+                                    const hasProgress = pTasks.some(t => t.completed);
+                                    return (
+                                        <div key={idx} className={`h-1 flex-1 rounded-full ${hasProgress ? 'bg-amber-500' : 'bg-slate-800'}`} title={ph.name}></div>
+                                    )
+                                })}
+                            </div>
+                            <div className="flex justify-between text-[10px] text-slate-500 font-mono uppercase">
+                                <span>S</span><span>O</span><span>S</span><span>T</span><span>A</span><span>C</span>
                             </div>
                         </div>
-                        
-                        <div className="flex gap-1 mt-4">
-                            {phases.map((ph, idx) => {
-                                const pTasks = project.data[ph.id] || [];
-                                const hasProgress = pTasks.some(t => t.completed);
-                                return (
-                                    <div key={idx} className={`h-1 flex-1 rounded-full ${hasProgress ? 'bg-amber-500' : 'bg-slate-800'}`}></div>
-                                )
-                            })}
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            {/* COLUMN RIGHT: SYSTEM STATUS (1/3) */}
+            <div className="space-y-6">
+                 <div className="flex justify-between items-center mb-2">
+                    <h2 className={`text-xl font-bold text-white flex items-center gap-2 ${styles.fontHeading}`}>
+                        <Zap size={20} className="text-amber-500" /> Acciones Rápidas
+                    </h2>
+                </div>
+                
+                <div className={`${styles.glassCard} p-6 rounded-2xl`}>
+                    <div className="space-y-4">
+                        <button onClick={() => setShowNewProject(true)} className="w-full text-left p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-amber-500/50 transition-all flex items-center gap-3 group">
+                            <div className="p-2 bg-amber-500/10 rounded-md text-amber-500 group-hover:text-white group-hover:bg-amber-500 transition-colors">
+                                <Plus size={16} />
+                            </div>
+                            <div>
+                                <div className="text-sm font-bold text-white">Nueva Estrategia</div>
+                                <div className="text-xs text-slate-500">Crear desde template</div>
+                            </div>
+                        </button>
+
+                        <button className="w-full text-left p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 transition-all flex items-center gap-3 group">
+                            <div className="p-2 bg-blue-500/10 rounded-md text-blue-500 group-hover:text-white group-hover:bg-blue-500 transition-colors">
+                                <FileText size={16} />
+                            </div>
+                            <div>
+                                <div className="text-sm font-bold text-white">Exportar Reportes</div>
+                                <div className="text-xs text-slate-500">Generar PDF global</div>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div className="mt-8 pt-6 border-t border-slate-800">
+                        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Estado del Sistema</h4>
+                        <div className="space-y-3">
+                             <div className="flex justify-between items-center text-xs">
+                                <span className="text-slate-400">Database</span>
+                                <span className="text-green-400 font-mono">LOCAL_STORAGE OK</span>
+                            </div>
+                            <div className="flex justify-between items-center text-xs">
+                                <span className="text-slate-400">Integrations</span>
+                                <span className="text-amber-500 font-mono">AUDITOR + MATRIZ LINKED</span>
+                            </div>
                         </div>
                     </div>
-                    ))}
                 </div>
-            )}
+            </div>
+
         </div>
+
+        {/* FOOTER RESTAURADO */}
+        <footer className="mt-12 py-6 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-500">
+            <div>© 2026 Jairo Amaya SOSTAC FLOW.</div>
+            <div className="flex gap-4">
+                <a href="https://jairoamaya.co" className="hover:text-white transition-colors">Website</a>
+                <a href="#" className="hover:text-white transition-colors">Support</a>
+                <a href="#" className="hover:text-white transition-colors">Privacy</a>
+            </div>
+        </footer>
 
       </div>
-
-      {/* FOOTER IMPACTANTE */}
-      <footer className="relative z-10 border-t border-slate-900 bg-slate-950 pt-12 pb-8 mt-12">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="text-center md:text-left">
-                <h4 className={`text-xl font-bold text-white mb-2 ${styles.fontHeading}`}>JAIRO AMAYA</h4>
-                <p className="text-slate-500 text-sm">Consultor de Marketing Digital & Estrategia</p>
-            </div>
-            
-            <div className="flex gap-6">
-                <a href="#" className="text-slate-500 hover:text-white transition-colors"><Linkedin size={20} /></a>
-                <a href="#" className="text-slate-500 hover:text-white transition-colors"><Twitter size={20} /></a>
-                <a href="https://jairoamaya.co" target="_blank" className="text-slate-500 hover:text-white transition-colors"><Globe size={20} /></a>
-            </div>
-
-            <div className="flex flex-col items-center md:items-end gap-1">
-                 <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-800">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="text-[10px] text-slate-400 font-mono uppercase">Systems Operational</span>
-                 </div>
-                 <span className="text-[10px] text-slate-600">© 2026 Jairo Amaya OS. All rights reserved.</span>
-            </div>
-        </div>
-      </footer>
     </div>
   );
 
-  // 3. VISTA DE PROYECTO
+  // 3. VISTA DE PROYECTO (COCKPIT RESTAURADO)
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-amber-500/30">
       
@@ -598,13 +621,13 @@ export default function App() {
                                             />
                                         </div>
 
-                                        {/* LINK / RECURSO (CON DETECCIÓN JAIRO AMAYA) */}
+                                        {/* LINK / RECURSO (CON DETECCIÓN JAIRO AMAYA - CRUCIAL) */}
                                         {(viewMode === 'admin' || task.link) && (
                                             <div className="flex items-center gap-2 mt-2">
                                                 {task.link && (
                                                     <a href={task.link} target="_blank" rel="noreferrer" className={`flex items-center gap-2 px-3 py-1.5 text-xs rounded-md transition-all border ${
                                                         isInternalTool(task.link) 
-                                                        ? 'bg-amber-500 text-slate-900 border-amber-400 font-bold hover:bg-amber-400' 
+                                                        ? 'bg-amber-500 text-slate-900 border-amber-400 font-bold hover:bg-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.3)]' 
                                                         : 'bg-blue-500/10 text-blue-400 border-blue-500/20 hover:bg-blue-500 hover:text-white'
                                                     }`}>
                                                         {isInternalTool(task.link) ? <Cpu size={12} /> : <ExternalLink size={12} />}
