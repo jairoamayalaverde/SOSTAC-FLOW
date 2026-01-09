@@ -92,10 +92,11 @@ export default function App() {
   // --- ESTADOS ---
   const [viewMode, setViewMode] = useState('admin');
   
-  // Persistencia
+  // Persistencia con Carga de Demo Robusto
   const [projects, setProjects] = useState(() => {
     const saved = localStorage.getItem('ja_os_projects');
     const parsedProjects = saved ? JSON.parse(saved) : [];
+    // Si está vacío, inyectamos el demo
     if (parsedProjects.length === 0) {
       const demoData = JSON.parse(JSON.stringify(projectTemplates.seo.data));
       return [{
@@ -106,7 +107,7 @@ export default function App() {
         projectType: 'seo',
         startDate: new Date().toISOString().split('T')[0],
         status: 'active',
-        progress: 15,
+        progress: 15, // Inicial
         data: demoData
       }];
     }
@@ -127,6 +128,7 @@ export default function App() {
     localStorage.setItem('ja_os_projects', JSON.stringify(projects));
   }, [projects]);
 
+  // Recalculo de progreso al cambiar datos
   useEffect(() => {
       if (selectedProject) {
           let total = 0, completed = 0;
@@ -226,7 +228,7 @@ export default function App() {
   // 1. MODAL NUEVO PROYECTO
   if (showNewProject) return (
     <div className="min-h-screen bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 font-sans z-50 fixed inset-0">
-      <div className={`max-w-2xl w-full ${styles.glassCard} rounded-2xl p-8 border-amber-500/20`}>
+      <div className={`max-w-2xl w-full ${styles.glassCard} rounded-2xl p-8 border-amber-500/20 animate-in fade-in zoom-in duration-300`}>
         <div className="flex justify-between items-center mb-6">
           <h2 className={`text-2xl text-white ${styles.fontHeading}`}>Iniciar Nuevo Proyecto</h2>
           <button onClick={() => setShowNewProject(false)} className="text-slate-400 hover:text-white"><X /></button>
@@ -475,168 +477,229 @@ export default function App() {
     </div>
   );
 
-  // 3. VISTA DE DETALLE DE PROYECTO (MANTENIDA IGUAL PERO CON FONDO AJUSTADO)
+  // 3. VISTA DE DETALLE DE PROYECTO (TACTICAL COCKPIT 2.0)
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans">
+    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-amber-500/30">
       
-      {/* HEADER DE PROYECTO */}
-      <div className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-white/5">
+      {/* BACKGROUND ELEMENTS */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+          <div className="absolute top-[-20%] left-[20%] w-[600px] h-[600px] bg-amber-500/5 rounded-full blur-[150px]"></div>
+      </div>
+
+      {/* HEADER DE PROYECTO STICKY */}
+      <div className="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-md border-b border-white/5 shadow-2xl">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <button onClick={() => setSelectedProject(null)} className="p-2 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors">
-              <ArrowLeft size={20} />
+            <button 
+              onClick={() => setSelectedProject(null)} 
+              className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all group"
+            >
+              <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
             </button>
             <div>
-              <h1 className={`text-xl font-bold text-white ${styles.fontHeading}`}>{selectedProject.name}</h1>
-              <div className="flex items-center gap-2 text-xs text-slate-400">
-                <span>{selectedProject.client}</span>
-                <span className="w-1 h-1 bg-slate-500 rounded-full"></span>
-                <span className="text-amber-500">{projectTemplates[selectedProject.projectType]?.name}</span>
+              <div className="flex items-center gap-2">
+                <h1 className={`text-lg md:text-xl font-bold text-white ${styles.fontHeading}`}>{selectedProject.name}</h1>
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-500 border border-amber-500/20">
+                  {projectTemplates[selectedProject.projectType]?.name}
+                </span>
               </div>
+              <p className="text-xs text-slate-500 flex items-center gap-2">
+                {selectedProject.client} 
+                <span className="w-1 h-1 bg-slate-600 rounded-full"></span> 
+                <span className={viewMode === 'client' ? 'text-green-500' : 'text-slate-400'}>
+                    {viewMode === 'client' ? 'VISTA CLIENTE ACTIVA' : 'MODO EDITOR'}
+                </span>
+              </p>
             </div>
           </div>
 
-          {/* CONTROLES ADMIN / CLIENTE + RESET */}
-          <div className="flex items-center gap-4">
+          {/* CONTROLES */}
+          <div className="flex items-center gap-3">
             <div className="hidden md:flex bg-slate-900 p-1 rounded-lg border border-slate-800">
               <button 
                 onClick={() => setViewMode('admin')}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${viewMode === 'admin' ? 'bg-slate-700 text-white shadow-sm' : 'text-slate-500 hover:text-slate-300'}`}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-bold transition-all ${viewMode === 'admin' ? 'bg-slate-800 text-white shadow-sm border border-slate-700' : 'text-slate-500 hover:text-slate-300'}`}
               >
-                <EyeOff size={14} /> Vista Editor
+                <EyeOff size={14} /> EDITOR
               </button>
               <button 
                 onClick={() => setViewMode('client')}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${viewMode === 'client' ? 'bg-green-600 text-white shadow-sm' : 'text-slate-500 hover:text-slate-300'}`}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-bold transition-all ${viewMode === 'client' ? 'bg-green-600 text-white shadow-[0_0_15px_rgba(22,163,74,0.4)]' : 'text-slate-500 hover:text-slate-300'}`}
               >
-                <Eye size={14} /> Vista Cliente
+                <Eye size={14} /> CLIENTE
               </button>
             </div>
-            
-            <button 
-              onClick={handleHardReset}
-              className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-bold bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white transition-all ml-2"
-              title="Borrar todo y reiniciar demo"
-            >
-              <Trash2 size={14} />
-            </button>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-8 relative z-10">
         
-        {/* TABS DE FASES SOSTAC */}
-        <div className="flex overflow-x-auto pb-4 gap-2 mb-6 scrollbar-hide">
-          {phases.map(phase => {
+        {/* NAVIGATOR TIPO METRO (SOSTAC FLOW) */}
+        <div className="mb-8 overflow-x-auto pb-4 scrollbar-hide">
+          <div className="flex min-w-max gap-4 p-1">
+          {phases.map((phase, idx) => {
             const isActive = activePhase === phase.id;
             const phaseTasks = selectedProject.data[phase.id] || [];
             const completed = phaseTasks.filter(t => t.completed).length;
             const progress = phaseTasks.length > 0 ? Math.round((completed / phaseTasks.length) * 100) : 0;
+            const isPhaseComplete = progress === 100;
             
             return (
               <button
                 key={phase.id}
                 onClick={() => setActivePhase(phase.id)}
-                className={`flex-shrink-0 min-w-[160px] p-4 rounded-xl border transition-all ${isActive ? `${styles.activeTab} border-amber-500` : `${styles.inactiveTab} border-transparent`}`}
+                className={`relative group flex items-center gap-3 pr-6 pl-2 py-2 rounded-full border transition-all duration-300 ${
+                    isActive 
+                    ? 'bg-slate-800 border-amber-500 ring-1 ring-amber-500/50' 
+                    : 'bg-slate-900/40 border-slate-800 hover:border-slate-600'
+                }`}
               >
-                <div className="flex justify-between items-start mb-2">
-                  <span className="text-2xl">{phase.icon}</span>
-                  <span className={`text-xs font-bold ${isActive ? 'text-slate-900' : phase.color}`}>{progress}%</span>
+                {/* Circle Icon */}
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-lg transition-all ${
+                    isActive 
+                    ? 'bg-amber-500 text-slate-900 scale-110' 
+                    : isPhaseComplete 
+                        ? 'bg-green-500/20 text-green-500 border border-green-500/30'
+                        : 'bg-slate-800 text-slate-500 border border-slate-700'
+                }`}>
+                    {isPhaseComplete ? <CheckCircle size={18} /> : phase.icon}
                 </div>
-                <div className={`font-bold text-left ${styles.fontHeading}`}>{phase.name}</div>
-                <div className="w-full bg-black/10 h-1 mt-2 rounded-full overflow-hidden">
-                  <div className={`h-full ${isActive ? 'bg-slate-900' : 'bg-slate-500'}`} style={{width: `${progress}%`}}></div>
+
+                <div className="flex flex-col items-start">
+                    <span className={`text-xs font-bold uppercase tracking-wider ${isActive ? 'text-white' : 'text-slate-500'}`}>
+                        {phase.name}
+                    </span>
+                    <div className="w-20 h-1 bg-slate-800 rounded-full mt-1 overflow-hidden">
+                        <div className={`h-full transition-all duration-500 ${isPhaseComplete ? 'bg-green-500' : 'bg-amber-500'}`} style={{width: `${progress}%`}}></div>
+                    </div>
                 </div>
+
+                {/* Connector Line (except last one) */}
+                {idx < phases.length - 1 && (
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-4 h-[2px] bg-slate-800 hidden md:block"></div>
+                )}
               </button>
             )
           })}
+          </div>
         </div>
 
-        {/* ÁREA DE TRABAJO */}
-        <div className={`rounded-3xl p-6 md:p-8 min-h-[500px] ${styles.glassCard}`}>
-          
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h2 className={`text-3xl font-bold text-white flex items-center gap-3 ${styles.fontHeading}`}>
-                {phases.find(p => p.id === activePhase).icon}
-                {phases.find(p => p.id === activePhase).name} Phase
-              </h2>
-              <p className="text-slate-400 mt-1">Gestión estratégica y táctica</p>
-            </div>
-            {viewMode === 'admin' && (
-              <button onClick={addTask} className={`px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-semibold ${styles.primaryBtn}`}>
-                <Plus size={18} /> Agregar Tarea
-              </button>
-            )}
-          </div>
-
-          <div className="space-y-3">
-            {selectedProject.data[activePhase]?.length === 0 ? (
-              <div className="text-center py-20 border-2 border-dashed border-slate-700 rounded-2xl">
-                <p className="text-slate-500">No hay items en esta fase aún.</p>
-                {viewMode === 'admin' && <p className="text-amber-500 text-sm mt-2 cursor-pointer hover:underline" onClick={addTask}>Crear el primer item</p>}
-              </div>
-            ) : (
-              selectedProject.data[activePhase]?.map(task => (
-                <div 
-                  key={task.id} 
-                  className={`group p-4 rounded-xl border transition-all ${task.completed ? 'bg-green-500/5 border-green-500/20 opacity-75' : 'bg-slate-800/50 border-slate-700 hover:border-amber-500/50'}`}
-                >
-                  <div className="flex items-start gap-4">
-                    <button 
-                      onClick={() => toggleTask(task.id)}
-                      disabled={viewMode === 'client'}
-                      className={`mt-1 transition-colors ${task.completed ? 'text-green-500' : 'text-slate-600 hover:text-amber-500'}`}
-                    >
-                      {task.completed ? <CheckCircle size={24} /> : <Circle size={24} />}
-                    </button>
+        {/* ÁREA DE TRABAJO "MISSION CONTROL" */}
+        <div className="grid lg:grid-cols-4 gap-8">
+            
+            {/* SIDEBAR DE FASE (INFO) */}
+            <div className="lg:col-span-1 space-y-4">
+                <div className={`${styles.glassCard} p-6 rounded-2xl`}>
+                    <h2 className={`text-4xl font-bold text-white mb-2 ${styles.fontHeading}`}>
+                        {phases.find(p => p.id === activePhase).name}
+                    </h2>
+                    <p className="text-slate-400 text-sm leading-relaxed mb-6">
+                        Gestión táctica y control de ejecución para esta fase del proyecto.
+                    </p>
                     
-                    <div className="flex-1">
-                      {editingTask === task.id ? (
-                        <input 
-                          autoFocus
-                          className="w-full bg-slate-900 text-white p-2 rounded border border-amber-500 outline-none mb-2"
-                          defaultValue={task.text}
-                          onBlur={(e) => updateTaskText(task.id, e.target.value)}
-                          onKeyDown={(e) => e.key === 'Enter' && updateTaskText(task.id, e.target.value)}
-                        />
-                      ) : (
-                        <div 
-                          onClick={() => viewMode === 'admin' && setEditingTask(task.id)}
-                          className={`text-lg mb-1 ${task.completed ? 'line-through text-slate-500' : 'text-slate-200'} ${viewMode === 'admin' ? 'cursor-pointer hover:text-amber-400' : ''}`}
-                        >
-                          {task.text}
+                    <div className="space-y-4">
+                        <div className="p-4 bg-slate-900/50 rounded-xl border border-slate-800">
+                            <div className="text-xs text-slate-500 uppercase font-bold mb-1">Items Completados</div>
+                            <div className="text-2xl font-bold text-white">
+                                {selectedProject.data[activePhase]?.filter(t => t.completed).length} 
+                                <span className="text-slate-500 text-lg"> / {selectedProject.data[activePhase]?.length}</span>
+                            </div>
                         </div>
-                      )}
-                      
-                      <div className={`mt-2 flex items-start gap-2 ${!task.notes && viewMode === 'client' ? 'hidden' : ''}`}>
-                        <FileText size={14} className={`mt-1 ${task.notes ? 'text-slate-400' : 'text-slate-600'}`} />
-                        <textarea 
-                          placeholder={viewMode === 'admin' ? "Notas estratégicas, enlaces o detalles..." : "Sin notas adicionales."}
-                          value={task.notes}
-                          readOnly={viewMode === 'client'}
-                          onChange={(e) => updateTaskNotes(task.id, e.target.value)}
-                          className={`w-full bg-transparent text-sm resize-none outline-none ${task.completed ? 'text-slate-500' : 'text-slate-400'} focus:text-white placeholder-slate-600`}
-                          rows={task.notes ? Math.max(2, task.notes.split('\n').length) : 1}
-                        />
-                      </div>
+                        
+                        {viewMode === 'admin' && (
+                            <button 
+                                onClick={addTask} 
+                                className={`w-full py-3 rounded-xl flex items-center justify-center gap-2 font-bold text-sm ${styles.primaryBtn}`}
+                            >
+                                <Plus size={18} /> NUEVO ITEM
+                            </button>
+                        )}
                     </div>
-
-                    {viewMode === 'admin' && (
-                      <button 
-                        onClick={() => deleteTask(task.id)}
-                        className="opacity-0 group-hover:opacity-100 text-slate-600 hover:text-red-400 transition-all p-2"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    )}
-                  </div>
                 </div>
-              ))
-            )}
-          </div>
+            </div>
 
+            {/* LISTA DE TAREAS (MAIN) */}
+            <div className="lg:col-span-3">
+                <div className="space-y-3">
+                    {selectedProject.data[activePhase]?.length === 0 ? (
+                    <div className="text-center py-20 bg-slate-900/20 border-2 border-dashed border-slate-800 rounded-3xl">
+                        <p className="text-slate-500">Fase inactiva.</p>
+                        {viewMode === 'admin' && <p className="text-amber-500 text-sm mt-2 cursor-pointer hover:underline font-bold" onClick={addTask}>Inicializar Protocolo +</p>}
+                    </div>
+                    ) : (
+                    selectedProject.data[activePhase]?.map(task => (
+                        <div 
+                        key={task.id} 
+                        className={`relative group p-5 rounded-2xl border transition-all duration-300 ${
+                            task.completed 
+                            ? 'bg-slate-900/30 border-green-900/30 opacity-60' 
+                            : 'bg-slate-800/40 border-slate-700/50 hover:bg-slate-800 hover:border-amber-500/30 hover:shadow-lg'
+                        }`}
+                        >
+                            {/* Left Border Status Indicator */}
+                            <div className={`absolute left-0 top-4 bottom-4 w-1 rounded-r-full transition-colors ${task.completed ? 'bg-green-500' : 'bg-amber-500 opacity-0 group-hover:opacity-100'}`}></div>
+
+                            <div className="flex items-start gap-4 pl-2">
+                                <button 
+                                onClick={() => toggleTask(task.id)}
+                                disabled={viewMode === 'client'}
+                                className={`mt-1 transition-all ${task.completed ? 'text-green-500 scale-100' : 'text-slate-600 hover:text-amber-500 hover:scale-110'}`}
+                                >
+                                {task.completed ? <CheckCircle size={24} className="fill-green-500/10" /> : <Circle size={24} />}
+                                </button>
+                                
+                                <div className="flex-1">
+                                {editingTask === task.id ? (
+                                    <input 
+                                    autoFocus
+                                    className="w-full bg-slate-950 text-white p-3 rounded-lg border border-amber-500 outline-none mb-2 font-medium"
+                                    defaultValue={task.text}
+                                    onBlur={(e) => updateTaskText(task.id, e.target.value)}
+                                    onKeyDown={(e) => e.key === 'Enter' && updateTaskText(task.id, e.target.value)}
+                                    />
+                                ) : (
+                                    <div 
+                                    onClick={() => viewMode === 'admin' && setEditingTask(task.id)}
+                                    className={`text-lg mb-1 font-medium transition-colors ${
+                                        task.completed ? 'line-through text-slate-500' : 'text-slate-200'
+                                    } ${viewMode === 'admin' ? 'cursor-pointer hover:text-amber-400' : ''}`}
+                                    >
+                                    {task.text}
+                                    </div>
+                                )}
+                                
+                                <div className={`mt-2 flex items-start gap-3 p-2 rounded-lg transition-colors ${
+                                    task.notes ? 'bg-slate-950/50' : viewMode === 'admin' ? 'hover:bg-slate-950/30' : ''
+                                } ${!task.notes && viewMode === 'client' ? 'hidden' : ''}`}>
+                                    <FileText size={14} className={`mt-1.5 flex-shrink-0 ${task.notes ? 'text-amber-500' : 'text-slate-700'}`} />
+                                    <textarea 
+                                    placeholder={viewMode === 'admin' ? "Añadir notas de campo, evidencias o enlaces..." : ""}
+                                    value={task.notes}
+                                    readOnly={viewMode === 'client'}
+                                    onChange={(e) => updateTaskNotes(task.id, e.target.value)}
+                                    className={`w-full bg-transparent text-sm resize-none outline-none ${
+                                        task.completed ? 'text-slate-600' : 'text-slate-400'
+                                    } focus:text-amber-200 placeholder-slate-700 leading-relaxed`}
+                                    rows={task.notes ? Math.max(2, task.notes.split('\n').length) : 1}
+                                    />
+                                </div>
+                                </div>
+
+                                {viewMode === 'admin' && (
+                                <button 
+                                    onClick={() => deleteTask(task.id)}
+                                    className="opacity-0 group-hover:opacity-100 text-slate-600 hover:text-red-500 hover:bg-red-500/10 p-2 rounded-lg transition-all"
+                                >
+                                    <Trash2 size={18} />
+                                </button>
+                                )}
+                            </div>
+                        </div>
+                    ))
+                    )}
+                </div>
+            </div>
         </div>
       </div>
     </div>
