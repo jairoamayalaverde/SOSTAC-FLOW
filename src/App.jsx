@@ -5,18 +5,18 @@ import {
   ArrowLeft, ExternalLink, BarChart3, FileText, RefreshCw,
   Activity, Zap, Target, Layers, ArrowUpRight, Share2, 
   Github, Twitter, Linkedin, Globe, HardDrive, Cpu, Terminal,
-  Database, Network, Download, LogOut, Loader2
+  Database, Network, Download, LogOut, Loader2, Lock
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import { createClient } from '@supabase/supabase-js';
 
-// --- 0. CREDENCIALES (YA CONFIGURADAS) ---
+// --- 0. CREDENCIALES ---
 const SUPABASE_URL = 'https://hompawsonronlgrvujjb.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvbXBhd3NvbnJvbmxncnZ1ampiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc5ODI0MTMsImV4cCI6MjA4MzU1ODQxM30.UicwlthUkU9Ey5KltrZwdK7ZkTxHcYr4hr5foDUCW0A';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// --- 1. CONFIGURACIÓN DE ESTILOS & BRANDING ---
+// --- 1. ESTILOS ---
 const styles = {
   fontHeading: "font-['Poppins',_sans-serif]",
   fontBody: "font-['Raleway',_sans-serif]",
@@ -28,20 +28,14 @@ const styles = {
   neonText: "text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-300 drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]"
 };
 
-// --- 2. DATA: TEMPLATES ROBUSTOS (CONTENIDO COMPLETO RESTAURADO) ---
+// --- 2. TEMPLATES (FULL CONTENT) ---
 const projectTemplates = {
   seo: {
     name: 'Consultoría SEO',
     description: 'Diagnóstico + Estrategia + Priorización',
     data: {
       situation: [
-        { 
-            id: 's1', 
-            text: 'Ejecutar Auditoría Técnica Inicial', 
-            completed: true, 
-            notes: 'Diagnóstico de salud del sitio usando herramienta propietaria (Crawl/Index).', 
-            link: 'https://jairoamaya.co/auditor-seo-interactivo/' 
-        },
+        { id: 's1', text: 'Ejecutar Auditoría Técnica Inicial', completed: true, notes: 'Diagnóstico de salud del sitio usando herramienta propietaria (Crawl/Index).', link: 'https://jairoamaya.co/auditor-seo-interactivo/' },
         { id: 's2', text: 'Análisis de Competencia (Top 3 SERP)', completed: true, notes: 'Competidor A domina keywords informacionales. Oportunidad en transaccionales.', link: '' },
         { id: 's3', text: 'Keyword Research Transaccional', completed: false, notes: 'Foco en long-tail keywords con intención de compra alta.', link: '' },
         { id: 's4', text: 'Revisión de Perfil de Enlaces (Backlinks)', completed: false, notes: 'Análisis de toxicidad y autoridad de dominio.', link: '' },
@@ -58,13 +52,7 @@ const projectTemplates = {
         { id: 'st3', text: 'Link Building: Digital PR & Outreach', completed: false, notes: 'Conseguir enlaces de sitios de nicho con DR > 40.', link: '' },
       ],
       tactics: [
-          { 
-              id: 't1', 
-              text: 'Matriz de Prioridad (Impacto vs Esfuerzo)', 
-              completed: false, 
-              notes: 'Clasificar hallazgos de la auditoría para definir Quick Wins.', 
-              link: 'https://jairoamaya.co/matriz-de-prioridad-seo/'
-          },
+          { id: 't1', text: 'Matriz de Prioridad (Impacto vs Esfuerzo)', completed: false, notes: 'Clasificar hallazgos de la auditoría para definir Quick Wins.', link: 'https://jairoamaya.co/matriz-de-prioridad-seo/' },
           { id: 't2', text: 'Optimización On-Page de 20 URLs Prioritarias', completed: false, notes: 'Ajuste de H-Tags y NLP.', link: '' },
           { id: 't3', text: 'Creación de 4 Artículos "Pilar" Mensuales', completed: false, notes: 'Contenido de >1500 palabras.', link: '' },
           { id: 't4', text: 'Implementación de Schema Markup', completed: false, notes: 'Product, FAQ y Organization.', link: '' },
@@ -164,7 +152,7 @@ export default function App() {
     name: '', client: '', industry: '', projectType: 'seo', startDate: new Date().toISOString().split('T')[0]
   });
 
-  // --- EFECTO: VERIFICAR SESIÓN AL INICIO ---
+  // --- SESIÓN Y CARGA ---
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -180,40 +168,33 @@ export default function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // --- FUNCIONES DE BASE DE DATOS (SUPABASE) ---
+  // --- BASE DE DATOS (SUPABASE) ---
   const fetchProjects = async () => {
     setLoadingProjects(true);
     const { data, error } = await supabase.from('projects').select('*').order('updated_at', { ascending: false });
     if (!error && data) {
-        // Parsear el JSON 'data' que viene de la DB
-        const parsedProjects = data.map(p => ({
-            ...p,
-            data: p.data // Supabase ya devuelve JSONB como objeto
-        }));
+        const parsedProjects = data.map(p => ({ ...p, data: p.data }));
         setProjects(parsedProjects);
     }
     setLoadingProjects(false);
   };
 
-  // Función de Guardado (Debounce o Manual)
   const saveProjectToCloud = useCallback(async (projectToSave) => {
     if (!session) return;
     setSaving(true);
     
-    const { id, created_at, ...updateData } = projectToSave; // Excluir campos inmutables
+    const { id, created_at, ...updateData } = projectToSave;
     
-    // Si tiene ID numérico (de Supabase), actualizamos. Si es temp (Date.now), insertamos.
     if (typeof id === 'number') {
         await supabase.from('projects').update({
             name: updateData.name,
             client: updateData.client,
             progress: updateData.progress,
-            data: updateData.data, // Guardamos toda la estructura SOSTAC
+            data: updateData.data,
             updated_at: new Date()
         }).eq('id', id);
     } else {
-        // Es nuevo, insertar
-        const { data, error } = await supabase.from('projects').insert([{
+        const { data } = await supabase.from('projects').insert([{
             name: updateData.name,
             client: updateData.client,
             industry: updateData.industry,
@@ -226,7 +207,6 @@ export default function App() {
         }]).select();
         
         if (data && data[0]) {
-            // Actualizar ID local con el real de la DB
             setProjects(prev => prev.map(p => p.id === id ? data[0] : p));
             setSelectedProject(data[0]);
         }
@@ -234,12 +214,8 @@ export default function App() {
     setSaving(false);
   }, [session]);
 
-  // --- MANEJO DE ESTADO LOCAL ---
   const updateProjectData = (newData) => {
-    // 1. Actualizar visualmente inmediato
     const updated = { ...selectedProject, data: newData };
-    
-    // Calcular progreso
     let total = 0, completed = 0;
     Object.values(newData).forEach(phase => {
         total += phase.length;
@@ -249,8 +225,6 @@ export default function App() {
 
     setSelectedProject(updated);
     setProjects(prev => prev.map(p => p.id === updated.id ? updated : p));
-
-    // 2. Guardar en Nube (Debounce manual simple: guardar a los 2s)
     saveProjectToCloud(updated);
   };
 
@@ -258,11 +232,8 @@ export default function App() {
     e.preventDefault();
     setAuthLoading(true);
     const { error } = await supabase.auth.signInWithOtp({ email });
-    if (error) {
-        alert('Error: ' + error.message);
-    } else {
-        setLoginMessage('¡Enlace mágico enviado! Revisa tu correo.');
-    }
+    if (error) alert('Error: ' + error.message);
+    else setLoginMessage('¡Enlace mágico enviado! Revisa tu correo.');
     setAuthLoading(false);
   };
 
@@ -273,10 +244,10 @@ export default function App() {
     setSelectedProject(null);
   };
 
-  // --- LÓGICA DE GESTIÓN (IGUAL A V8) ---
+  // --- LÓGICA DE NEGOCIO ---
   const createNewProject = async () => {
     const template = projectTemplates[newProjectData.projectType];
-    const tempId = Date.now(); // ID temporal
+    const tempId = Date.now();
     const newProject = {
       id: tempId,
       ...newProjectData,
@@ -284,14 +255,28 @@ export default function App() {
       progress: 0,
       data: JSON.parse(JSON.stringify(template.data))
     };
-    
-    // UI Optimistic Update
     setProjects([newProject, ...projects]);
     setShowNewProject(false);
     setNewProjectData({ name: '', client: '', industry: '', projectType: 'seo', startDate: new Date().toISOString().split('T')[0] });
-    
-    // Guardar en DB
     await saveProjectToCloud(newProject);
+  };
+
+  const generateDemoProject = async () => {
+      const template = projectTemplates['seo'];
+      const demoProject = {
+          name: 'Demo: Tech Growth Strategy',
+          client: 'SaaS Unicorn Inc.',
+          industry: 'Software / B2B',
+          projectType: 'seo',
+          startDate: new Date().toISOString().split('T')[0],
+          status: 'active',
+          progress: 13,
+          data: JSON.parse(JSON.stringify(template.data))
+      };
+      // Forzar ID temp para inserción
+      const { id, ...cleanDemo } = demoProject; 
+      await saveProjectToCloud({ id: Date.now(), ...cleanDemo });
+      await fetchProjects();
   };
 
   const toggleTask = (taskId) => {
@@ -329,105 +314,52 @@ export default function App() {
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     
-    // Header Dark
-    doc.setFillColor(15, 23, 42); // slate-950
+    doc.setFillColor(15, 23, 42); 
     doc.rect(0, 0, pageWidth, 40, 'F');
-    
-    // Logo & Titulo
-    doc.setTextColor(245, 158, 11); // amber-500
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(22);
+    doc.setTextColor(245, 158, 11);
+    doc.setFont("helvetica", "bold"); doc.setFontSize(22);
     doc.text('SOSTAC FLOW', 20, 20);
-    
-    // Subtitle
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.text('REPORTE EJECUTIVO DE ESTRATEGIA', 20, 30);
+    doc.setTextColor(255, 255, 255); doc.setFontSize(10); doc.setFont("helvetica", "normal");
+    doc.text('REPORTE EJECUTIVO', 20, 30);
 
-    // Info del Proyecto
-    doc.setTextColor(50, 50, 50);
-    doc.setFontSize(16);
-    doc.setFont("helvetica", "bold");
+    doc.setTextColor(50, 50, 50); doc.setFontSize(16); doc.setFont("helvetica", "bold");
     doc.text(selectedProject.name, 20, 55);
-
-    doc.setFontSize(10);
-    doc.setTextColor(100, 100, 100);
-    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10); doc.setTextColor(100, 100, 100); doc.setFont("helvetica", "normal");
     doc.text(`Cliente: ${selectedProject.client}`, 20, 62);
-    doc.text(`Industria: ${selectedProject.industry}`, 20, 67);
-    doc.text(`Fecha: ${selectedProject.startDate}`, 150, 62);
     doc.text(`Progreso: ${selectedProject.progress}%`, 150, 67);
+    doc.setDrawColor(200, 200, 200); doc.line(20, 75, pageWidth - 20, 75);
 
-    // Separator
-    doc.setDrawColor(200, 200, 200);
-    doc.line(20, 75, pageWidth - 20, 75);
-
-    // Content Loop
     let yPos = 85;
-
     phases.forEach(phase => {
         const tasks = selectedProject.data[phase.id] || [];
-        
-        // Phase Header
-        doc.setFillColor(245, 158, 11); // Amber pill
-        doc.roundedRect(20, yPos, 170, 8, 1, 1, 'F');
-        doc.setTextColor(0, 0, 0);
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(10);
+        doc.setFillColor(245, 158, 11); doc.roundedRect(20, yPos, 170, 8, 1, 1, 'F');
+        doc.setTextColor(0, 0, 0); doc.setFont("helvetica", "bold"); doc.setFontSize(10);
         doc.text(`${phase.name.toUpperCase()} PHASE`, 25, yPos + 5.5);
-        
         yPos += 15;
-
         if (tasks.length === 0) {
-            doc.setTextColor(150, 150, 150);
-            doc.setFont("helvetica", "italic");
-            doc.text("Sin items registrados en esta fase.", 25, yPos);
-            yPos += 10;
+            doc.setTextColor(150, 150, 150); doc.setFont("helvetica", "italic");
+            doc.text("Sin items.", 25, yPos); yPos += 10;
         } else {
             tasks.forEach(task => {
-                // Checkbox visual
                 doc.setDrawColor(0, 0, 0);
-                if(task.completed) {
-                    doc.setFillColor(34, 197, 94); // Green
-                    doc.rect(25, yPos - 3, 3, 3, 'F');
-                } else {
-                    doc.setFillColor(255, 255, 255);
-                    doc.rect(25, yPos - 3, 3, 3, 'S');
-                }
-
-                // Task Text
-                doc.setTextColor(0, 0, 0);
-                doc.setFont("helvetica", task.completed ? "normal" : "bold");
-                const splitText = doc.splitTextToSize(task.text, 150);
-                doc.text(splitText, 32, yPos);
-                
-                yPos += (splitText.length * 5); // Dynamic height
-
-                // Notes (if any)
+                task.completed ? doc.setFillColor(34, 197, 94) : doc.setFillColor(255, 255, 255);
+                doc.rect(25, yPos - 3, 3, 3, task.completed ? 'F' : 'S');
+                doc.setTextColor(0, 0, 0); doc.setFont("helvetica", task.completed ? "normal" : "bold");
+                doc.text(doc.splitTextToSize(task.text, 150), 32, yPos);
+                yPos += 8;
                 if(task.notes) {
-                    doc.setTextColor(100, 100, 100);
-                    doc.setFont("helvetica", "italic");
-                    doc.setFontSize(9);
+                    doc.setTextColor(100, 100, 100); doc.setFont("helvetica", "italic"); doc.setFontSize(9);
                     const splitNotes = doc.splitTextToSize(`Nota: ${task.notes}`, 140);
                     doc.text(splitNotes, 32, yPos);
                     yPos += (splitNotes.length * 4) + 2;
-                    doc.setFontSize(10); // Reset size
-                } else {
-                    yPos += 2;
+                    doc.setFontSize(10);
                 }
-
-                // Page Break Check
-                if (yPos > pageHeight - 30) {
-                    doc.addPage();
-                    yPos = 20;
-                }
+                if (yPos > pageHeight - 20) { doc.addPage(); yPos = 20; }
             });
         }
-        yPos += 5; // Spacing between phases
+        yPos += 5;
     });
-
-    // --- FOOTER BRANDING ---
+    // Footer
     const pageCount = doc.internal.getNumberOfPages();
     for(let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
@@ -438,15 +370,7 @@ export default function App() {
         doc.text('Generado con SOSTAC FLOW | Jairo Amaya - Full Stack Marketer', 20, pageHeight - 10);
         doc.text(`jairoamaya.co`, pageWidth - 40, pageHeight - 10);
     }
-
-    doc.save(`${selectedProject.client.replace(/\s+/g, '_')}_Strategy_Report.pdf`);
-  };
-
-  const handleHardReset = () => {
-    if(confirm('⚠️ ¿REINICIAR SISTEMA? \n\nAtención: Esta acción borrará todos los proyectos guardados localmente. Úsala solo si necesitas restaurar la versión original.')) {
-      localStorage.removeItem('ja_os_projects');
-      window.location.reload();
-    }
+    doc.save(`${selectedProject.client}_Report.pdf`);
   };
 
   const isInternalTool = (url) => url && url.includes('jairoamaya.co');
@@ -480,7 +404,7 @@ export default function App() {
                     {loginMessage}
                 </div>
             )}
-            <p className="mt-8 text-xs text-slate-600">v9.2.0 Cloud Edition (Full Content)</p>
+            <p className="mt-8 text-xs text-slate-600">v9.3.0 Cloud Edition (Full Content)</p>
         </div>
     </div>
   );
@@ -507,7 +431,7 @@ export default function App() {
             <p className={`text-slate-400 mt-2 ${styles.fontBody}`}>Gestión estratégica de proyectos de consultoría digital</p>
           </div>
           <div className="flex gap-4 items-center">
-            <span className="text-xs text-slate-500 font-mono hidden md:block">{session.user.email}</span>
+            <span className="text-xs text-slate-500 font-mono hidden md:block flex items-center gap-1"><Lock size={12} className="text-green-500"/> {session.user.email}</span>
             <button onClick={handleLogout} className="p-2 text-slate-500 hover:text-red-500 transition-colors" title="Cerrar Sesión"><LogOut size={20}/></button>
             <button 
               onClick={() => setShowNewProject(true)}
@@ -525,7 +449,10 @@ export default function App() {
                 <div className="lg:col-span-2 space-y-4">
                     {projects.length === 0 ? (
                         <div className="text-center py-20 bg-slate-900/40 border border-dashed border-slate-800 rounded-3xl">
-                            <p className="text-slate-500">No hay proyectos en la nube. Crea el primero.</p>
+                            <p className="text-slate-500 mb-4">No hay proyectos en la nube.</p>
+                            <button onClick={generateDemoProject} className="text-amber-500 hover:text-white underline text-sm">
+                                Cargar Proyecto de Ejemplo (Demo)
+                            </button>
                         </div>
                     ) : (
                         <div className="grid gap-4">
@@ -701,7 +628,7 @@ export default function App() {
         
         <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600">
             <p>© 2026 Jairo Amaya Full Stack Marketer. All rights reserved.</p>
-            <p className="font-mono">v9.2.0 CLOUD EDITION (FULL)</p>
+            <p className="font-mono">v9.3.0 CLOUD EDITION (FULL)</p>
         </div>
       </footer>
     </div>
@@ -961,7 +888,7 @@ export default function App() {
         
         <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600">
             <p>© 2026 Jairo Amaya Full Stack Marketer. All rights reserved.</p>
-            <p className="font-mono">v9.2.0 CLOUD EDITION (FULL)</p>
+            <p className="font-mono">v9.3.0 CLOUD EDITION (FULL)</p>
         </div>
       </footer>
     </div>
