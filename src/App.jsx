@@ -4,7 +4,8 @@ import {
   Save, X, Briefcase, Eye, EyeOff, LayoutDashboard, 
   ArrowLeft, ExternalLink, BarChart3, FileText, RefreshCw,
   Activity, Zap, Target, Layers, ArrowUpRight, Share2, 
-  Github, Twitter, Linkedin, Globe, HardDrive, Cpu, Terminal
+  Github, Twitter, Linkedin, Globe, HardDrive, Cpu, Terminal,
+  Database, Network
 } from 'lucide-react';
 
 // --- 1. CONFIGURACIÓN DE ESTILOS & BRANDING ---
@@ -19,88 +20,99 @@ const styles = {
   neonText: "text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-300 drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]"
 };
 
-// --- 2. DATA: TEMPLATES COMPLETOS (ECOSISTEMA) ---
+// --- 2. DATA: TEMPLATES ESTRATÉGICOS (NO OPERATIVOS) ---
 const projectTemplates = {
   seo: {
-    name: 'Consultoría SEO (Ecosistema)',
+    name: 'Ingeniería SEO (Core)',
     description: 'Diagnóstico + Estrategia + Priorización',
     data: {
       situation: [
         { 
             id: 's1', 
-            text: 'Ejecutar Auditoría Técnica Inicial', 
-            completed: false, 
-            notes: 'Usar la herramienta propietaria para detectar errores 404, LCP y redirecciones.', 
-            link: 'https://jairoamaya.co/auditor-seo-interactivo/' // LINK A TU HERRAMIENTA
+            text: 'Auditoría Técnica Profunda', 
+            completed: true, 
+            notes: 'Diagnóstico de salud del sitio usando herramienta propietaria (Crawl/Index).', 
+            link: 'https://jairoamaya.co/auditor-seo-interactivo/' // <--- LINK AUDITOR
         },
-        { id: 's2', text: 'Análisis de Competencia (Top 3 SERP)', completed: true, notes: 'Competidor A domina keywords informacionales. Oportunidad en transaccionales.', link: '' },
-        { id: 's3', text: 'Keyword Research Transaccional', completed: false, notes: 'Foco en long-tail keywords con intención de compra alta.', link: '' },
-        { id: 's4', text: 'Revisión de Perfil de Enlaces (Backlinks)', completed: false, notes: '', link: '' },
-        { id: 's5', text: 'Benchmark de Velocidad (Core Web Vitals)', completed: true, notes: 'LCP en móvil necesita optimización urgente (3.5s).', link: '' },
+        { id: 's2', text: 'Análisis de Brecha Semántica (Gap)', completed: true, notes: 'Identificar territorios de autoridad no reclamados por la competencia.', link: '' },
+        { id: 's3', text: 'Keyword Research Transaccional', completed: false, notes: 'Foco estricto en términos con intención de compra (Bottom of Funnel).', link: '' },
       ],
       objectives: [
-        { id: 'o1', text: '+40% Tráfico Orgánico YoY', completed: false, notes: 'Meta: 15,000 visitas/mes para Q3.', link: '' },
-        { id: 'o2', text: 'Posicionar 5 Keywords "Money" en Top 3', completed: false, notes: '', link: '' },
-        { id: 'o3', text: 'Mejorar Tasa de Conversión Orgánica (CRO)', completed: false, notes: 'Objetivo: Pasar del 1.2% al 2.0%.', link: '' },
+        { id: 'o1', text: '+40% Tráfico Orgánico Calificado', completed: false, notes: 'No solo visitas, sino tráfico con potencial de conversión.', link: '' },
+        { id: 'o2', text: 'Dominio de 5 Clusters Temáticos', completed: false, notes: '', link: '' },
       ],
       strategy: [
-        { id: 'st1', text: 'Content Hubs: Autoridad Temática', completed: false, notes: 'Crear clusters de contenido alrededor de productos core.', link: '' },
-        { id: 'st2', text: 'SEO Técnico: Fundación Sólida', completed: false, notes: 'Priorizar indexabilidad y velocidad de carga.', link: '' },
-        { id: 'st3', text: 'Link Building: Digital PR & Outreach', completed: false, notes: 'Conseguir enlaces de sitios de nicho con DR > 40.', link: '' },
+        { id: 'st1', text: 'Arquitectura de Información Silo', completed: false, notes: 'Reestructuración de URLs y enlazado interno.', link: '' },
+        { id: 'st2', text: 'Estrategia de Contenidos "Evergreen"', completed: false, notes: 'Activos digitales que ganan valor con el tiempo.', link: '' },
       ],
       tactics: [
           { 
               id: 't1', 
               text: 'Matriz de Prioridad (Impacto vs Esfuerzo)', 
               completed: false, 
-              notes: 'Clasificar hallazgos de la auditoría para definir Quick Wins.', 
-              link: 'https://jairoamaya.co/matriz-de-prioridad-seo/' // LINK A TU HERRAMIENTA
+              notes: 'Filtrado de acciones para ejecutar solo lo que mueve la aguja.', 
+              link: 'https://jairoamaya.co/matriz-de-prioridad-seo/' // <--- LINK MATRIZ
           },
-          { id: 't2', text: 'Optimización On-Page de 20 URLs Prioritarias', completed: false, notes: '', link: '' },
-          { id: 't3', text: 'Creación de 4 Artículos "Pilar" Mensuales', completed: false, notes: 'Contenido de >1500 palabras.', link: '' },
-          { id: 't4', text: 'Implementación de Schema Markup', completed: false, notes: '', link: '' },
+          { id: 't2', text: 'Optimización de Entidades (NLP)', completed: false, notes: 'Enriquecimiento semántico para Google Knowledge Graph.', link: '' },
       ],
       action: [
-        { id: 'a1', text: 'Semana 1: Fix Errores Técnicos Críticos', completed: false, notes: '', link: '' },
-        { id: 'a2', text: 'Semana 2: Optimización On-Page Categorías', completed: false, notes: '', link: '' },
-        { id: 'a3', text: 'Semana 3: Producción Contenido Blog', completed: false, notes: '', link: '' },
-        { id: 'a4', text: 'Semana 4: Revisión y Ajustes Mensuales', completed: false, notes: '', link: '' },
+        { id: 'a1', text: 'Sprint Técnico: Core Web Vitals', completed: false, notes: '', link: '' },
+        { id: 'a2', text: 'Despliegue de Contenidos Pilar', completed: false, notes: '', link: '' },
       ],
       control: [
-        { id: 'c1', text: 'Setup Dashboard GA4 + GSC', completed: false, notes: '', link: '' },
-        { id: 'c2', text: 'Tracking Semanal de Posiciones', completed: false, notes: '', link: '' },
-        { id: 'c3', text: 'Auditoría de Salud del Sitio (Mensual)', completed: false, notes: '', link: '' },
-        { id: 'c4', text: 'Revisión Trimestral de Estrategia', completed: false, notes: '', link: '' },
+        { id: 'c1', text: 'Dashboard de Rendimiento (Data Studio)', completed: false, notes: '', link: '' },
+        { id: 'c2', text: 'Auditoría de Calidad Trimestral', completed: false, notes: '', link: '' },
+      ]
+    }
+  },
+  smo: {
+    name: 'Social Growth Engineering',
+    description: 'Distribución y Arquitectura de Canales',
+    data: {
+      situation: [
+        { id: 'sm1', text: 'Mapeo de Ecosistema Digital', completed: false, notes: 'Análisis de dónde reside la atención real del usuario (JACN Method).', link: '' },
+        { id: 'sm2', text: 'Análisis de Fugas de Tráfico', completed: false, notes: '¿Dónde se pierden los usuarios entre redes y web?', link: '' },
+      ],
+      objectives: [
+        { id: 'mo1', text: 'Construcción de Activos Propios (Data)', completed: false, notes: 'Convertir seguidores (rentado) en base de datos (propio).', link: '' },
+        { id: 'mo2', text: 'Autoridad de Marca (Social Proof)', completed: false, notes: '', link: '' },
+      ],
+      strategy: [
+        { id: 'mst1', text: 'Distribución de Contenido Líquido', completed: false, notes: 'Un mensaje central, múltiples formatos de distribución.', link: '' },
+        { id: 'mst2', text: 'Funnel Social Inverso', completed: false, notes: 'Llevar tráfico de redes hacia activos de conversión.', link: '' },
+      ],
+      tactics: [
+        { id: 'mt1', text: 'Automatización de Flujos (ManyChat/Zapier)', completed: false, notes: 'Sistemas de respuesta y captura de leads automáticos.', link: '' },
+        { id: 'mt2', text: 'Reciclaje Estratégico de Contenido', completed: false, notes: '', link: '' },
+      ],
+      action: [
+        { id: 'ma1', text: 'Implementación de Pixels y Tracking', completed: false, notes: 'Medición exacta de la atribución social.', link: '' },
+      ],
+      control: [
+        { id: 'mc1', text: 'Informe de Atribución y Conversión', completed: false, notes: 'ROI real de los esfuerzos sociales.', link: '' },
       ]
     }
   },
   personal_brand: {
-    name: 'Marca Personal',
-    description: 'Posicionamiento de Líderes',
+    name: 'Marca Personal High-Ticket',
+    description: 'Posicionamiento de Autoridad',
     data: {
       situation: [
-        { id: 'pb1', text: 'Auditoría de Huella Digital Actual', completed: false, notes: 'Googlear nombre y analizar SERP.', link: '' },
-        { id: 'pb2', text: 'Definición de Arquetipo de Marca', completed: false, notes: '¿Sabio, Héroe o Gobernante?', link: '' },
-        { id: 'pb3', text: 'Análisis de Audiencia Objetivo', completed: false, notes: '', link: '' },
+        { id: 'pb1', text: 'Auditoría de Reputación Online', completed: false, notes: '', link: '' },
+        { id: 'pb2', text: 'Definición de Propuesta de Valor Única', completed: false, notes: '', link: '' },
       ],
       objectives: [
-        { id: 'po1', text: 'Ser Top of Mind en el nicho', completed: false, notes: '', link: '' },
-        { id: 'po2', text: 'Crecer 10k seguidores en LinkedIn', completed: false, notes: '', link: '' },
+        { id: 'po1', text: 'Convertirse en Referente de Industria', completed: false, notes: '', link: '' },
       ],
-      strategy: [], tactics: [], action: [], control: []
-    }
-  },
-  smo: {
-    name: 'SMO (Social Media)',
-    description: 'Optimización de Redes Sociales',
-    data: {
-      situation: [{ id: 'sm1', text: 'Auditoría de Canales Actuales', completed: false, notes: '', link: '' }],
-      objectives: [], strategy: [], tactics: [], action: [], control: []
+      strategy: [{ id: 'pst1', text: 'Metodología Propietaria', completed: false, notes: 'Empaquetar el conocimiento en un sistema vendible.', link: '' }],
+      tactics: [{ id: 'pt1', text: 'Networking Estratégico (B2B)', completed: false, notes: '', link: '' }],
+      action: [{ id: 'pa1', text: 'Optimización de Perfil LinkedIn (Landing Page)', completed: false, notes: '', link: '' }],
+      control: [{ id: 'pc1', text: 'Calidad de Inbound Leads', completed: false, notes: '', link: '' }]
     }
   },
   blank: {
     name: 'Proyecto en Blanco',
-    description: 'Personalizado',
+    description: 'Estrategia Personalizada',
     data: { situation: [], objectives: [], strategy: [], tactics: [], action: [], control: [] }
   }
 };
@@ -117,23 +129,23 @@ const phases = [
 export default function App() {
   const [viewMode, setViewMode] = useState('admin');
   
-  // --- 3. PERSISTENCIA + DEMO AUTOMÁTICA ---
+  // --- 3. PERSISTENCIA + DEMO ROBUSTA ---
   const [projects, setProjects] = useState(() => {
     const saved = localStorage.getItem('ja_os_projects');
     const parsed = saved ? JSON.parse(saved) : [];
     
-    // SIEMPRE que esté vacío, cargamos el DEMO SEO ROBUSTO
+    // DEMO INICIAL MEJORADA
     if (parsed.length === 0) {
       const demoData = JSON.parse(JSON.stringify(projectTemplates.seo.data));
       return [{
         id: 1,
-        name: 'Demo: E-commerce Growth',
-        client: 'TechStore Global',
-        industry: 'Retail',
+        name: 'Demo: Tech Growth Strategy',
+        client: 'SaaS Unicorn Inc.',
+        industry: 'Software / B2B',
         projectType: 'seo',
         startDate: new Date().toISOString().split('T')[0],
         status: 'active',
-        progress: 12,
+        progress: 20,
         data: demoData
       }];
     }
@@ -172,7 +184,7 @@ export default function App() {
 
   // --- 4. FUNCIONES LÓGICAS ---
   const handleHardReset = () => {
-    if(confirm('⚠️ ¿RESET DE FÁBRICA? \n\nSe borrarán todos los proyectos y se restaurará la Demo.')) {
+    if(confirm('⚠️ ¿REINICIAR SISTEMA? \n\nSe restaurarán las plantillas con la metodología Jairo Amaya actualizada.')) {
       localStorage.removeItem('ja_os_projects');
       window.location.reload();
     }
@@ -208,7 +220,7 @@ export default function App() {
   };
 
   const addTask = () => {
-    const newTask = { id: Date.now(), text: 'Nuevo item estratégico', completed: false, notes: '', link: '' };
+    const newTask = { id: Date.now(), text: 'Nueva acción estratégica', completed: false, notes: '', link: '' };
     const newData = { ...selectedProject.data };
     newData[activePhase] = [...newData[activePhase], newTask];
     updateProjectData(newData);
@@ -237,7 +249,7 @@ export default function App() {
 
   const isInternalTool = (url) => url && url.includes('jairoamaya.co');
 
-  // --- 5. RENDERIZADO: MODAL ---
+  // --- 5. RENDERIZADO: MODAL DE CREACIÓN ---
   if (showNewProject) return (
     <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
       <div className={`max-w-4xl w-full ${styles.glassCard} rounded-2xl p-8 border-amber-500/20 animate-in fade-in zoom-in duration-300`}>
@@ -282,7 +294,7 @@ export default function App() {
             </div>
 
             <div>
-                <label className="text-xs text-slate-400 uppercase font-bold mb-3 block">Selecciona un Framework</label>
+                <label className="text-xs text-slate-400 uppercase font-bold mb-3 block">Frameworks Disponibles</label>
                 <div className="grid gap-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                     {Object.entries(projectTemplates).map(([key, tpl]) => (
                     <div 
@@ -308,7 +320,7 @@ export default function App() {
     </div>
   );
 
-  // --- CALCULOS DASHBOARD ---
+  // --- CALCULOS ---
   const totalProjects = projects.length;
   const avgProgress = projects.length > 0 ? Math.round(projects.reduce((acc, curr) => acc + curr.progress, 0) / projects.length) : 0;
   const totalTasks = projects.reduce((acc, p) => {
@@ -317,12 +329,12 @@ export default function App() {
       return acc + count;
   }, 0);
 
-  // --- 6. RENDERIZADO: DASHBOARD (HOME) - ESTILO BENTO GRID V2.0 RESTAURADO ---
+  // --- 6. RENDERIZADO: DASHBOARD (HOME IMPACTANTE) ---
   if (!selectedProject) return (
     <div className="min-h-screen bg-slate-950 text-slate-200 p-4 md:p-8 font-sans selection:bg-amber-500/30 overflow-x-hidden flex flex-col">
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Raleway:wght@300;400;500;600&display=swap');`}</style>
       
-      {/* BACKGROUND ELEMENTS */}
+      {/* FONDO ANIMADO TECH */}
       <div className="fixed inset-0 z-0 pointer-events-none">
           <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[120px]"></div>
           <div className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-blue-500/10 rounded-full blur-[100px]"></div>
@@ -335,12 +347,12 @@ export default function App() {
           <div>
             <div className="flex items-center gap-3 mb-2">
                 <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
-                <span className="text-xs font-mono text-slate-400 tracking-widest uppercase">System Online // v5.0</span>
+                <span className="text-xs font-mono text-slate-400 tracking-widest uppercase">System Online // v6.0</span>
             </div>
             <h1 className={`text-5xl font-bold text-white tracking-tight ${styles.fontHeading}`}>
               SOSTAC <span className={styles.neonText}>FLOW</span>
             </h1>
-            <p className={`text-slate-400 mt-2 ${styles.fontBody}`}>Centro de Comando Estratégico</p>
+            <p className={`text-slate-400 mt-2 ${styles.fontBody}`}>Ingeniería de Marketing & Gestión Estratégica</p>
           </div>
           <div className="flex gap-4 mt-6 md:mt-0">
             <button 
@@ -358,44 +370,30 @@ export default function App() {
           </div>
         </header>
 
-        {/* BENTO GRID METRICS */}
+        {/* METRICS (BENTO GRID) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
             <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden group`}>
-                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <Layers size={80} />
-                </div>
+                <Layers size={80} className="absolute -right-4 -top-4 text-slate-800 opacity-50 group-hover:opacity-100 group-hover:text-amber-500/10 transition-all" />
                 <h3 className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Proyectos Activos</h3>
-                <div className="text-4xl font-bold text-white mb-2">{totalProjects}</div>
-                <div className="flex items-center gap-2 text-xs text-green-400">
-                    <ArrowUpRight size={14} /> <span>100% Operativo</span>
-                </div>
+                <div className="text-4xl font-bold text-white">{totalProjects}</div>
             </div>
-
             <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden group`}>
-                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <Activity size={80} />
-                </div>
+                <Activity size={80} className="absolute -right-4 -top-4 text-slate-800 opacity-50 group-hover:opacity-100 group-hover:text-amber-500/10 transition-all" />
                 <h3 className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Eficiencia Global</h3>
-                <div className="text-4xl font-bold text-white mb-2">{avgProgress}%</div>
+                <div className="text-4xl font-bold text-white">{avgProgress}%</div>
                 <div className="w-full bg-slate-700 h-1.5 rounded-full mt-2">
                     <div className="bg-amber-500 h-full rounded-full" style={{width: `${avgProgress}%`}}></div>
                 </div>
             </div>
-
             <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden group`}>
-                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <Target size={80} />
-                </div>
+                <Target size={80} className="absolute -right-4 -top-4 text-slate-800 opacity-50 group-hover:opacity-100 group-hover:text-amber-500/10 transition-all" />
                 <h3 className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Tareas en Radar</h3>
-                <div className="text-4xl font-bold text-white mb-2">{totalTasks}</div>
-                <div className="text-xs text-slate-500">Items estratégicos bajo gestión</div>
+                <div className="text-4xl font-bold text-white">{totalTasks}</div>
             </div>
         </div>
 
-        {/* MAIN LAYOUT: PROJECTS + SIDEBAR */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            {/* PROJECTS LIST */}
+        {/* PROJECTS & SIDEBAR */}
+        <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
                 <div className="flex justify-between items-center mb-2">
                     <h2 className={`text-xl font-bold text-white flex items-center gap-2 ${styles.fontHeading}`}>
@@ -404,9 +402,8 @@ export default function App() {
                 </div>
 
                 {projects.length === 0 ? (
-                    <div className="text-center py-20 bg-slate-900/50 rounded-3xl border border-dashed border-slate-700">
-                        <LayoutDashboard size={48} className="mx-auto text-slate-600 mb-4" />
-                        <p className="text-slate-500">Sistema en espera. Inicie una nueva estrategia.</p>
+                    <div className="text-center py-20 bg-slate-900/40 border border-dashed border-slate-800 rounded-3xl">
+                        <p className="text-slate-500">No hay operaciones activas.</p>
                     </div>
                 ) : (
                     <div className="grid gap-4">
@@ -421,31 +418,25 @@ export default function App() {
                             <div className="flex justify-between items-start mb-4">
                                 <div>
                                     <h3 className={`text-lg font-bold text-white mb-1 group-hover:text-amber-400 transition-colors ${styles.fontHeading}`}>{project.name}</h3>
-                                    <p className="text-sm text-slate-400">{project.client} • {projectTemplates[project.projectType]?.name}</p>
+                                    <div className="flex items-center gap-2 text-xs text-slate-400">
+                                        <span>{project.client}</span>
+                                        <span className="w-1 h-1 bg-slate-600 rounded-full"></span>
+                                        <span className="text-amber-500 uppercase font-bold">{projectTemplates[project.projectType]?.name}</span>
+                                    </div>
                                 </div>
-                                <div className="text-2xl font-bold text-slate-700 group-hover:text-white transition-colors">
+                                <div className="text-xl font-bold text-slate-700 group-hover:text-white transition-colors">
                                     {project.progress}%
                                 </div>
                             </div>
                             
-                            {/* PHASE DOTS VISUALIZER */}
-                            <div className="flex gap-1 mb-2">
+                            <div className="flex gap-1 mt-4">
                                 {phases.map((ph, idx) => {
                                     const pTasks = project.data[ph.id] || [];
-                                    const isComplete = pTasks.length > 0 && pTasks.every(t => t.completed);
                                     const hasProgress = pTasks.some(t => t.completed);
-                                    
-                                    let colorClass = "bg-slate-800";
-                                    if (isComplete) colorClass = "bg-green-500";
-                                    else if (hasProgress) colorClass = "bg-amber-500";
-                                    
                                     return (
-                                        <div key={idx} className={`h-1 flex-1 rounded-full ${colorClass}`} title={ph.name}></div>
+                                        <div key={idx} className={`h-1 flex-1 rounded-full ${hasProgress ? 'bg-amber-500' : 'bg-slate-800'}`}></div>
                                     )
                                 })}
-                            </div>
-                            <div className="flex justify-between text-[10px] text-slate-500 font-mono uppercase">
-                                <span>S</span><span>O</span><span>S</span><span>T</span><span>A</span><span>C</span>
                             </div>
                         </div>
                         ))}
@@ -453,7 +444,6 @@ export default function App() {
                 )}
             </div>
 
-            {/* QUICK ACTIONS SIDEBAR */}
             <div className="space-y-6">
                  <div className="flex justify-between items-center mb-2">
                     <h2 className={`text-xl font-bold text-white flex items-center gap-2 ${styles.fontHeading}`}>
@@ -464,54 +454,42 @@ export default function App() {
                 <div className={`${styles.glassCard} p-6 rounded-2xl`}>
                     <div className="space-y-4">
                         <button onClick={() => setShowNewProject(true)} className="w-full text-left p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-amber-500/50 transition-all flex items-center gap-3 group">
-                            <div className="p-2 bg-amber-500/10 rounded-md text-amber-500 group-hover:text-white group-hover:bg-amber-500 transition-colors">
-                                <Plus size={16} />
-                            </div>
+                            <div className="p-2 bg-amber-500/10 rounded-md text-amber-500 group-hover:text-white group-hover:bg-amber-500 transition-colors"><Plus size={16} /></div>
                             <div>
                                 <div className="text-sm font-bold text-white">Nueva Estrategia</div>
                                 <div className="text-xs text-slate-500">Crear desde template</div>
                             </div>
                         </button>
-
                         <button className="w-full text-left p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 transition-all flex items-center gap-3 group">
-                            <div className="p-2 bg-blue-500/10 rounded-md text-blue-500 group-hover:text-white group-hover:bg-blue-500 transition-colors">
-                                <FileText size={16} />
-                            </div>
+                            <div className="p-2 bg-blue-500/10 rounded-md text-blue-500 group-hover:text-white group-hover:bg-blue-500 transition-colors"><Database size={16} /></div>
                             <div>
-                                <div className="text-sm font-bold text-white">Exportar Reportes</div>
-                                <div className="text-xs text-slate-500">Generar PDF global</div>
+                                <div className="text-sm font-bold text-white">Backups Locales</div>
+                                <div className="text-xs text-slate-500">Gestión de datos</div>
                             </div>
                         </button>
                     </div>
 
                     <div className="mt-8 pt-6 border-t border-slate-800">
-                        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Estado del Sistema</h4>
+                        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Integraciones</h4>
                         <div className="space-y-3">
                              <div className="flex justify-between items-center text-xs">
-                                <span className="text-slate-400">Database</span>
-                                <span className="text-green-400 font-mono">LOCAL_STORAGE OK</span>
-                            </div>
-                             <div className="flex justify-between items-center text-xs">
-                                <span className="text-slate-400">Version</span>
-                                <span className="text-slate-300 font-mono">v5.0 (Ultimate)</span>
+                                <span className="text-slate-400">JairoAmaya.co</span>
+                                <span className="text-green-400 font-mono flex items-center gap-1"><CheckCircle size={10} /> CONNECTED</span>
                             </div>
                             <div className="flex justify-between items-center text-xs">
-                                <span className="text-slate-400">License</span>
-                                <span className="text-amber-500 font-mono">JAIRO AMAYA PRO</span>
+                                <span className="text-slate-400">JACN Legacy</span>
+                                <span className="text-amber-500 font-mono">METHODOLOGY LOADED</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
       </div>
 
-      {/* FOOTER V4.0 (FULL STACK MARKETER) */}
+      {/* FOOTER: JAIRO AMAYA BRANDING */}
       <footer className="relative z-10 border-t border-slate-800 bg-slate-950/80 backdrop-blur-md pt-12 pb-12 mt-12">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
-            
-            {/* BRAND */}
             <div className="md:col-span-2">
                 <h4 className={`text-2xl font-bold text-white mb-2 ${styles.fontHeading}`}>JAIRO AMAYA</h4>
                 <div className="flex items-center gap-2">
@@ -519,21 +497,19 @@ export default function App() {
                     <p className="text-amber-500 font-bold text-sm tracking-wider uppercase">Full Stack Marketer</p>
                 </div>
                 <p className="text-slate-500 text-sm mt-4 max-w-sm leading-relaxed">
-                    Transformando negocios mediante ingeniería de marketing y estrategias orientadas a resultados tangibles.
+                   Consultoría estratégica y desarrollo de negocios digitales. Transformando datos en arquitecturas de crecimiento.
                 </p>
             </div>
             
-            {/* ECOSISTEMA LINKS */}
             <div>
                 <h5 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Ecosistema</h5>
                 <ul className="space-y-2 text-sm text-slate-500">
                     <li><a href="https://jairoamaya.co/auditor-seo-interactivo/" target="_blank" className="hover:text-amber-500 transition-colors">Auditor SEO</a></li>
                     <li><a href="https://jairoamaya.co/matriz-de-prioridad-seo/" target="_blank" className="hover:text-amber-500 transition-colors">Matriz de Prioridad</a></li>
-                    <li><a href="#" className="hover:text-amber-500 transition-colors">Consultoría</a></li>
+                    <li><a href="https://jacncreativenetwork.com/" target="_blank" className="hover:text-amber-500 transition-colors">JACN Network</a></li>
                 </ul>
             </div>
 
-            {/* STATUS & SOCIAL */}
             <div className="flex flex-col md:items-end">
                  <h5 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Estado</h5>
                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 mb-4">
@@ -550,7 +526,7 @@ export default function App() {
         
         <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600">
             <p>© 2026 Jairo Amaya. All rights reserved.</p>
-            <p className="font-mono">v5.0.0 BUILD 2026</p>
+            <p className="font-mono">v6.0.0 BUILD 2026</p>
         </div>
       </footer>
     </div>
@@ -598,7 +574,7 @@ export default function App() {
 
       <div className="max-w-7xl mx-auto px-4 py-8 w-full flex-1">
         
-        {/* PHASE NAVIGATOR (Metro Line) */}
+        {/* PHASE NAVIGATOR (METRO LINE) */}
         <div className="mb-8 overflow-x-auto pb-4 scrollbar-hide">
           <div className="flex min-w-max gap-3 p-1">
           {phases.map((phase, idx) => {
@@ -695,7 +671,7 @@ export default function App() {
                                             />
                                         </div>
 
-                                        {/* ACTION BUTTON (INTELLIGENT LINK) */}
+                                        {/* LINK / RECURSO (CON BOTÓN INTELIGENTE) */}
                                         {(viewMode === 'admin' || task.link) && (
                                             <div className="flex items-center gap-2 mt-3 pt-2 border-t border-slate-800/50">
                                                 {task.link && (
@@ -770,7 +746,7 @@ export default function App() {
                     <p className="text-amber-500 font-bold text-sm tracking-wider uppercase">Full Stack Marketer</p>
                 </div>
                 <p className="text-slate-500 text-sm mt-4 max-w-sm leading-relaxed">
-                    Transformando marcas con estrategias orientadas a resultados tangibles.
+                   Consultoría estratégica y desarrollo de negocios digitales. Transformando datos en arquitecturas de crecimiento.
                 </p>
             </div>
             
@@ -779,7 +755,7 @@ export default function App() {
                 <ul className="space-y-2 text-sm text-slate-500">
                     <li><a href="https://jairoamaya.co/auditor-seo-interactivo/" target="_blank" className="hover:text-amber-500 transition-colors">Auditor SEO</a></li>
                     <li><a href="https://jairoamaya.co/matriz-de-prioridad-seo/" target="_blank" className="hover:text-amber-500 transition-colors">Matriz de Prioridad</a></li>
-                    <li><a href="#" className="hover:text-amber-500 transition-colors">Consultoría</a></li>
+                    <li><a href="https://jacncreativenetwork.com/" target="_blank" className="hover:text-amber-500 transition-colors">JACN Network</a></li>
                 </ul>
             </div>
 
@@ -798,8 +774,8 @@ export default function App() {
         </div>
         
         <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600">
-            <p>© 2026 Jairo Amaya - Full Stack Marketer. All rights reserved.</p>
-            <p className="font-mono">v5.0.0 BUILD 2026</p>
+            <p>© 2026 Jairo Amaya. All rights reserved.</p>
+            <p className="font-mono">v6.0.0 BUILD 2026</p>
         </div>
       </footer>
     </div>
