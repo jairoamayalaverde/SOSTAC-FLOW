@@ -7,6 +7,7 @@ import {
   Github, Twitter, Linkedin, Globe, HardDrive, Cpu, Terminal,
   Database, Network, Download
 } from 'lucide-react';
+import jsPDF from 'jspdf'; // IMPORTANTE: Requiere npm install jspdf
 
 // --- 1. CONFIGURACIÓN DE ESTILOS & BRANDING ---
 const styles = {
@@ -20,7 +21,7 @@ const styles = {
   neonText: "text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-300 drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]"
 };
 
-// --- 2. DATA: TEMPLATES ROBUSTOS ---
+// --- 2. DATA: TEMPLATES (TUS TEXTOS EXACTOS) ---
 const projectTemplates = {
   seo: {
     name: 'Consultoría SEO',
@@ -139,12 +140,9 @@ const phases = [
 export default function App() {
   const [viewMode, setViewMode] = useState('admin');
   
-  // --- 3. PERSISTENCIA + DEMO ROBUSTA ---
   const [projects, setProjects] = useState(() => {
     const saved = localStorage.getItem('ja_os_projects');
     const parsed = saved ? JSON.parse(saved) : [];
-    
-    // DEMO INICIAL MEJORADA
     if (parsed.length === 0) {
       const demoData = JSON.parse(JSON.stringify(projectTemplates.seo.data));
       return [{
@@ -166,7 +164,6 @@ export default function App() {
   const [activePhase, setActivePhase] = useState('situation');
   const [showNewProject, setShowNewProject] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
-  
   const [newProjectData, setNewProjectData] = useState({
     name: '', client: '', industry: '', projectType: 'seo', startDate: new Date().toISOString().split('T')[0]
   });
@@ -192,7 +189,120 @@ export default function App() {
     }
   }, [selectedProject?.data]);
 
-  // --- 4. FUNCIONES LÓGICAS ---
+  // --- MOTOR PDF (NUEVO) ---
+  const generatePDF = () => {
+    if (!selectedProject) return;
+
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    
+    // Header Dark
+    doc.setFillColor(15, 23, 42); // slate-950
+    doc.rect(0, 0, pageWidth, 40, 'F');
+    
+    // Logo & Titulo
+    doc.setTextColor(245, 158, 11); // amber-500
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(22);
+    doc.text('SOSTAC FLOW', 20, 20);
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text('REPORTE EJECUTIVO DE ESTRATEGIA', 20, 30);
+
+    // Info del Proyecto
+    doc.setTextColor(50, 50, 50);
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text(selectedProject.name, 20, 55);
+
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Cliente: ${selectedProject.client}`, 20, 62);
+    doc.text(`Industria: ${selectedProject.industry}`, 20, 67);
+    doc.text(`Fecha: ${selectedProject.startDate}`, 150, 62);
+    doc.text(`Progreso: ${selectedProject.progress}%`, 150, 67);
+
+    doc.setDrawColor(200, 200, 200);
+    doc.line(20, 75, pageWidth - 20, 75);
+
+    // Loop de Fases
+    let yPos = 85;
+
+    phases.forEach(phase => {
+        const tasks = selectedProject.data[phase.id] || [];
+        
+        doc.setFillColor(245, 158, 11); // Amber pill
+        doc.roundedRect(20, yPos, 170, 8, 1, 1, 'F');
+        doc.setTextColor(0, 0, 0);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.text(`${phase.name.toUpperCase()} PHASE`, 25, yPos + 5.5);
+        
+        yPos += 15;
+
+        if (tasks.length === 0) {
+            doc.setTextColor(150, 150, 150);
+            doc.setFont("helvetica", "italic");
+            doc.text("Sin items registrados en esta fase.", 25, yPos);
+            yPos += 10;
+        } else {
+            tasks.forEach(task => {
+                doc.setDrawColor(0, 0, 0);
+                if(task.completed) {
+                    doc.setFillColor(34, 197, 94); // Green
+                    doc.rect(25, yPos - 3, 3, 3, 'F');
+                } else {
+                    doc.setFillColor(255, 255, 255);
+                    doc.rect(25, yPos - 3, 3, 3, 'S');
+                }
+
+                doc.setTextColor(0, 0, 0);
+                doc.setFont("helvetica", task.completed ? "normal" : "bold");
+                const splitText = doc.splitTextToSize(task.text, 150);
+                doc.text(splitText, 32, yPos);
+                
+                yPos += (splitText.length * 5); 
+
+                if(task.notes) {
+                    doc.setTextColor(100, 100, 100);
+                    doc.setFont("helvetica", "italic");
+                    doc.setFontSize(9);
+                    const splitNotes = doc.splitTextToSize(`Nota: ${task.notes}`, 140);
+                    doc.text(splitNotes, 32, yPos);
+                    yPos += (splitNotes.length * 4) + 2;
+                    doc.setFontSize(10);
+                } else {
+                    yPos += 2;
+                }
+
+                if (yPos > pageHeight - 30) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+            });
+        }
+        yPos += 5;
+    });
+
+    // Footer en PDF
+    const pageCount = doc.internal.getNumberOfPages();
+    for(let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFillColor(240, 240, 240);
+        doc.rect(0, pageHeight - 20, pageWidth, 20, 'F');
+        doc.setTextColor(100, 100, 100);
+        doc.setFontSize(8);
+        doc.text('Generado con SOSTAC FLOW | Jairo Amaya - Full Stack Marketer', 20, pageHeight - 10);
+        doc.text(`jairoamaya.co`, pageWidth - 40, pageHeight - 10);
+    }
+
+    doc.save(`${selectedProject.client.replace(/\s+/g, '_')}_Strategy_Report.pdf`);
+  };
+
   const handleHardReset = () => {
     if(confirm('⚠️ ¿REINICIAR SISTEMA? \n\nAtención: Esta acción borrará todos los proyectos guardados localmente. Úsala solo si necesitas restaurar la versión original.')) {
       localStorage.removeItem('ja_os_projects');
@@ -259,7 +369,6 @@ export default function App() {
 
   const isInternalTool = (url) => url && url.includes('jairoamaya.co');
 
-  // --- 5. RENDERIZADO: MODAL ---
   if (showNewProject) return (
     <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
       <div className={`max-w-4xl w-full ${styles.glassCard} rounded-2xl p-8 border-amber-500/20 animate-in fade-in zoom-in duration-300`}>
@@ -299,7 +408,7 @@ export default function App() {
                     disabled={!newProjectData.name}
                     className={`w-full py-4 rounded-xl font-bold mt-4 ${styles.primaryBtn} ${!newProjectData.name ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                    Inicia con SOSTAC
+                    Lanzar Protocolo SOSTAC
                 </button>
             </div>
 
@@ -330,7 +439,6 @@ export default function App() {
     </div>
   );
 
-  // --- CALCULOS ---
   const totalProjects = projects.length;
   const avgProgress = projects.length > 0 ? Math.round(projects.reduce((acc, curr) => acc + curr.progress, 0) / projects.length) : 0;
   const totalTasks = projects.reduce((acc, p) => {
@@ -339,12 +447,10 @@ export default function App() {
       return acc + count;
   }, 0);
 
-  // --- 6. RENDERIZADO: DASHBOARD (HOME) ---
   if (!selectedProject) return (
     <div className="min-h-screen bg-slate-950 text-slate-200 p-4 md:p-8 font-sans selection:bg-amber-500/30 overflow-x-hidden flex flex-col">
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Raleway:wght@300;400;500;600&display=swap');`}</style>
       
-      {/* FONDO ANIMADO TECH */}
       <div className="fixed inset-0 z-0 pointer-events-none">
           <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[120px]"></div>
           <div className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-blue-500/10 rounded-full blur-[100px]"></div>
@@ -352,13 +458,13 @@ export default function App() {
 
       <div className="max-w-7xl mx-auto w-full relative z-10 flex-1">
         
-        {/* HEADER LIMPIO */}
+        {/* HEADER LIMPIO - SIN SYSTEM ONLINE */}
         <header className="flex flex-col md:flex-row justify-between items-end mb-10 border-b border-slate-800 pb-6">
           <div>
             <h1 className={`text-5xl font-bold text-white tracking-tight ${styles.fontHeading}`}>
               SOSTAC <span className={styles.neonText}>FLOW</span>
             </h1>
-           <p className={`text-slate-400 mt-2 ${styles.fontBody}`}>Gestión estratégica de proyectos de consultoría digital</p>
+            <p className={`text-slate-400 mt-2 ${styles.fontBody}`}>Gestión estratégica de proyectos de consultoría digital</p>
           </div>
           <div className="flex gap-4 mt-6 md:mt-0">
             <button 
@@ -370,7 +476,6 @@ export default function App() {
           </div>
         </header>
 
-        {/* METRICS (BENTO GRID) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
             <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden group`}>
                 <Layers size={80} className="absolute -right-4 -top-4 text-slate-800 opacity-50 group-hover:opacity-100 group-hover:text-amber-500/10 transition-all" />
@@ -398,7 +503,6 @@ export default function App() {
             </div>
         </div>
 
-        {/* PROJECTS & SIDEBAR */}
         <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
                 <div className="flex justify-between items-center mb-2">
@@ -474,7 +578,8 @@ export default function App() {
                                 <div className="text-xs text-slate-500">Crear desde template</div>
                             </div>
                         </button>
-                        <button onClick={() => alert('Generando reporte PDF del dashboard actual... (Funcionalidad Demo)')} className="w-full text-left p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 transition-all flex items-center gap-3 group">
+                        {/* GENERAR PDF SIDEBAR BUTTON */}
+                        <button onClick={generatePDF} className="w-full text-left p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 transition-all flex items-center gap-3 group">
                             <div className="p-2 bg-blue-500/10 rounded-md text-blue-500 group-hover:text-white group-hover:bg-blue-500 transition-colors"><Download size={16} /></div>
                             <div>
                                 <div className="text-sm font-bold text-white">Generar Reporte PDF</div>
@@ -546,13 +651,13 @@ export default function App() {
         
         <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600">
             <p>© 2026 Jairo Amaya Full Stack Marketer. All rights reserved.</p>
-            <p className="font-mono">v7.6.0 STABLE</p>
+            <p className="font-mono">v8.0.0 PDF ENABLED</p>
         </div>
       </footer>
     </div>
   );
 
-  // --- 7. RENDERIZADO: VISTA DE PROYECTO (COCKPIT - AHORA CON FOOTER) ---
+  // --- RENDERIZADO: VISTA DE PROYECTO (COCKPIT) ---
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-amber-500/30 flex flex-col justify-between">
       
@@ -587,6 +692,10 @@ export default function App() {
                 }`}
             >
                 {viewMode === 'admin' ? 'MODO EDITOR' : 'VISTA CLIENTE'}
+            </button>
+            {/* PDF GENERATOR BUTTON IN PROJECT HEADER */}
+            <button onClick={generatePDF} className="p-2 text-amber-500 hover:text-white transition-colors" title="Descargar Reporte PDF">
+                <Download size={18} />
             </button>
           </div>
         </div>
@@ -756,7 +865,7 @@ export default function App() {
         </div>
       </div>
 
-      {/* FOOTER EN VISTA DE PROYECTO (RESTORED) */}
+      {/* FOOTER (REPLICADO EN VISTA PROYECTO) */}
       <footer className="relative z-10 border-t border-slate-800 bg-slate-950/80 backdrop-blur-md pt-12 pb-12 mt-12">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="md:col-span-2">
@@ -767,7 +876,9 @@ export default function App() {
                         <p className="text-amber-500 font-bold text-sm tracking-wider uppercase group-hover:text-white transition-colors">Full Stack Marketer</p>
                     </div>
                 </a>
-               <p className={`text-slate-400 mt-2 ${styles.fontBody}`}>Gestión estratégica de proyectos de consultoría digital</p>
+                <p className="text-slate-500 text-sm mt-4 max-w-sm leading-relaxed">
+                   Acciones estratégicas orientadas a resultados tangibles.
+                </p>
             </div>
             
             <div>
@@ -802,8 +913,8 @@ export default function App() {
         </div>
         
         <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600">
-            <p>© 2026 Jairo Amaya. All rights reserved.</p>
-            <p className="font-mono">v7.6.0 STABLE</p>
+            <p>© 2026 Jairo Amaya Full Stack Marketer. All rights reserved.</p>
+            <p className="font-mono">v8.0.0 PDF ENABLED</p>
         </div>
       </footer>
     </div>
