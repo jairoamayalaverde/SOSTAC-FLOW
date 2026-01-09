@@ -352,12 +352,12 @@ export default function App() {
 
       <div className="max-w-7xl mx-auto w-full relative z-10 flex-1">
         
-        {/* HEADER LIMPIO (SIN BOTÓN RESET) */}
+        {/* HEADER LIMPIO */}
         <header className="flex flex-col md:flex-row justify-between items-end mb-10 border-b border-slate-800 pb-6">
           <div>
             <div className="flex items-center gap-3 mb-2">
                 <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
-                <span className="text-xs font-mono text-slate-400 tracking-widest uppercase">System Online // v7.5</span>
+                <span className="text-xs font-mono text-slate-400 tracking-widest uppercase">System Online // v7.6</span>
             </div>
             <h1 className={`text-5xl font-bold text-white tracking-tight ${styles.fontHeading}`}>
               SOSTAC <span className={styles.neonText}>FLOW</span>
@@ -448,7 +448,6 @@ export default function App() {
                                     )
                                 })}
                             </div>
-                            {/* SOSTAC LABELS RESTAURADOS */}
                             <div className="flex justify-between text-[10px] text-slate-500 font-mono uppercase mt-2 px-1">
                                 <span title="Situation">S</span>
                                 <span title="Objectives">O</span>
@@ -479,7 +478,6 @@ export default function App() {
                                 <div className="text-xs text-slate-500">Crear desde template</div>
                             </div>
                         </button>
-                        {/* BOTÓN PDF ACTUALIZADO */}
                         <button onClick={() => alert('Generando reporte PDF del dashboard actual... (Funcionalidad Demo)')} className="w-full text-left p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 transition-all flex items-center gap-3 group">
                             <div className="p-2 bg-blue-500/10 rounded-md text-blue-500 group-hover:text-white group-hover:bg-blue-500 transition-colors"><Download size={16} /></div>
                             <div>
@@ -503,7 +501,7 @@ export default function App() {
         </div>
       </div>
 
-      {/* FOOTER: JAIRO AMAYA BRANDING */}
+      {/* FOOTER */}
       <footer className="relative z-10 border-t border-slate-800 bg-slate-950/80 backdrop-blur-md pt-12 pb-12 mt-12">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="md:col-span-2">
@@ -540,7 +538,6 @@ export default function App() {
                     <a href="https://jairoamaya.co" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Globe size={18} /></a>
                 </div>
 
-                {/* BOTÓN RESET SEGURO (SOLO PARA DEV) */}
                 <button 
                     onClick={handleHardReset}
                     className="text-[10px] text-slate-700 hover:text-red-500 transition-colors flex items-center gap-1 font-mono uppercase"
@@ -553,13 +550,13 @@ export default function App() {
         
         <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600">
             <p>© 2026 Jairo Amaya. All rights reserved.</p>
-            <p className="font-mono">v7.5.0 STABLE</p>
+            <p className="font-mono">v7.6.0 STABLE</p>
         </div>
       </footer>
     </div>
   );
 
-  // --- 7. RENDERIZADO: VISTA DE PROYECTO (COCKPIT) ---
+  // --- 7. RENDERIZADO: VISTA DE PROYECTO (COCKPIT - AHORA CON FOOTER) ---
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-amber-500/30 flex flex-col justify-between">
       
@@ -762,6 +759,59 @@ export default function App() {
             </div>
         </div>
       </div>
+
+      {/* FOOTER EN VISTA DE PROYECTO (RESTORED) */}
+      <footer className="relative z-10 border-t border-slate-800 bg-slate-950/80 backdrop-blur-md pt-12 pb-12 mt-12">
+        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="md:col-span-2">
+                <a href="https://jairoamaya.co" target="_blank" rel="noopener noreferrer" className="group block">
+                    <h4 className={`text-2xl font-bold text-white mb-2 group-hover:text-amber-500 transition-colors ${styles.fontHeading}`}>JAIRO AMAYA</h4>
+                    <div className="flex items-center gap-2">
+                        <span className="h-0.5 w-8 bg-amber-500"></span>
+                        <p className="text-amber-500 font-bold text-sm tracking-wider uppercase group-hover:text-white transition-colors">Full Stack Marketer</p>
+                    </div>
+                </a>
+                <p className="text-slate-500 text-sm mt-4 max-w-sm leading-relaxed">
+                   Ingeniería de marketing y estrategias orientadas a resultados tangibles.
+                </p>
+            </div>
+            
+            <div>
+                <h5 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Recursos</h5>
+                <ul className="space-y-2 text-sm text-slate-500">
+                    <li><a href="https://jairoamaya.co/auditor-seo-interactivo/" target="_blank" className="hover:text-amber-500 transition-colors">Auditor SEO</a></li>
+                    <li><a href="https://jairoamaya.co/matriz-de-prioridad-seo/" target="_blank" className="hover:text-amber-500 transition-colors">Matriz de Prioridad</a></li>
+                </ul>
+            </div>
+
+            <div className="flex flex-col md:items-end">
+                 <h5 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Estado</h5>
+                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 mb-4">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
+                    <span className="text-xs text-green-500 font-mono font-bold">SYSTEM OPERATIONAL</span>
+                 </div>
+                 
+                 <div className="flex gap-4 mb-4">
+                    <a href="https://www.linkedin.com/in/jairoamayalaverde/" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Linkedin size={18} /></a>
+                    <a href="https://twitter.com/JAIROAMAYA" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Twitter size={18} /></a>
+                    <a href="https://jairoamaya.co" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Globe size={18} /></a>
+                </div>
+
+                <button 
+                    onClick={handleHardReset}
+                    className="text-[10px] text-slate-700 hover:text-red-500 transition-colors flex items-center gap-1 font-mono uppercase"
+                    title="Restaurar valores de fábrica"
+                >
+                    <RefreshCw size={10} /> [ DEV MODE: RESET DATA ]
+                </button>
+            </div>
+        </div>
+        
+        <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600">
+            <p>© 2026 Jairo Amaya. All rights reserved.</p>
+            <p className="font-mono">v7.6.0 STABLE</p>
+        </div>
+      </footer>
     </div>
   );
 }
