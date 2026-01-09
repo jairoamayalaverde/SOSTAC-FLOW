@@ -23,7 +23,7 @@ const styles = {
 // --- 2. DATA: TEMPLATES ROBUSTOS ---
 const projectTemplates = {
   seo: {
-    name: 'Ingeniería SEO (Core)',
+    name: 'Consultoría SEO',
     description: 'Diagnóstico + Estrategia + Priorización',
     data: {
       situation: [
@@ -264,7 +264,7 @@ export default function App() {
     <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
       <div className={`max-w-4xl w-full ${styles.glassCard} rounded-2xl p-8 border-amber-500/20 animate-in fade-in zoom-in duration-300`}>
         <div className="flex justify-between items-center mb-8">
-          <h2 className={`text-3xl text-white ${styles.fontHeading}`}>Inicializar Nueva Estrategia</h2>
+          <h2 className={`text-3xl text-white ${styles.fontHeading}`}>Iniciar Nueva Estrategia</h2>
           <button onClick={() => setShowNewProject(false)} className="text-slate-400 hover:text-white"><X /></button>
         </div>
         
@@ -299,7 +299,7 @@ export default function App() {
                     disabled={!newProjectData.name}
                     className={`w-full py-4 rounded-xl font-bold mt-4 ${styles.primaryBtn} ${!newProjectData.name ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                    Lanzar Protocolo SOSTAC
+                    Inicia con SOSTAC
                 </button>
             </div>
 
@@ -355,10 +355,6 @@ export default function App() {
         {/* HEADER LIMPIO */}
         <header className="flex flex-col md:flex-row justify-between items-end mb-10 border-b border-slate-800 pb-6">
           <div>
-            <div className="flex items-center gap-3 mb-2">
-                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
-                <span className="text-xs font-mono text-slate-400 tracking-widest uppercase">System Online // v7.6</span>
-            </div>
             <h1 className={`text-5xl font-bold text-white tracking-tight ${styles.fontHeading}`}>
               SOSTAC <span className={styles.neonText}>FLOW</span>
             </h1>
