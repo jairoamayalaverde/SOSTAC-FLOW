@@ -5,7 +5,7 @@ import {
   ArrowLeft, ExternalLink, BarChart3, FileText, RefreshCw,
   Activity, Zap, Target, Layers, ArrowUpRight, Share2, 
   Github, Twitter, Linkedin, Globe, HardDrive, Cpu, Terminal,
-  Database, Network
+  Database, Network, Download
 } from 'lucide-react';
 
 // --- 1. CONFIGURACIÓN DE ESTILOS & BRANDING ---
@@ -32,7 +32,7 @@ const projectTemplates = {
             text: 'Ejecutar Auditoría Técnica Inicial', 
             completed: true, 
             notes: 'Diagnóstico de salud del sitio usando herramienta propietaria (Crawl/Index).', 
-            link: 'https://jairoamaya.co/auditor-seo-interactivo/' // <--- LINK AUDITOR
+            link: 'https://jairoamaya.co/auditor-seo-interactivo/' 
         },
         { id: 's2', text: 'Análisis de Competencia (Top 3 SERP)', completed: true, notes: 'Competidor A domina keywords informacionales. Oportunidad en transaccionales.', link: '' },
         { id: 's3', text: 'Keyword Research Transaccional', completed: false, notes: 'Foco en long-tail keywords con intención de compra alta.', link: '' },
@@ -55,7 +55,7 @@ const projectTemplates = {
               text: 'Matriz de Prioridad (Impacto vs Esfuerzo)', 
               completed: false, 
               notes: 'Clasificar hallazgos de la auditoría para definir Quick Wins.', 
-              link: 'https://jairoamaya.co/matriz-de-prioridad-seo/' // <--- LINK MATRIZ
+              link: 'https://jairoamaya.co/matriz-de-prioridad-seo/'
           },
           { id: 't2', text: 'Optimización On-Page de 20 URLs Prioritarias', completed: false, notes: 'Ajuste de H-Tags y NLP.', link: '' },
           { id: 't3', text: 'Creación de 4 Artículos "Pilar" Mensuales', completed: false, notes: 'Contenido de >1500 palabras.', link: '' },
@@ -144,7 +144,7 @@ export default function App() {
     const saved = localStorage.getItem('ja_os_projects');
     const parsed = saved ? JSON.parse(saved) : [];
     
-    // SIEMPRE que esté vacío, cargamos el DEMO SEO COMPLETO
+    // DEMO INICIAL MEJORADA
     if (parsed.length === 0) {
       const demoData = JSON.parse(JSON.stringify(projectTemplates.seo.data));
       return [{
@@ -194,7 +194,7 @@ export default function App() {
 
   // --- 4. FUNCIONES LÓGICAS ---
   const handleHardReset = () => {
-    if(confirm('⚠️ ¿REINICIAR SISTEMA? \n\nSe restaurarán las plantillas con la metodología Jairo Amaya actualizada.')) {
+    if(confirm('⚠️ ¿REINICIAR SISTEMA? \n\nAtención: Esta acción borrará todos los proyectos guardados localmente. Úsala solo si necesitas restaurar la versión original.')) {
       localStorage.removeItem('ja_os_projects');
       window.location.reload();
     }
@@ -259,7 +259,7 @@ export default function App() {
 
   const isInternalTool = (url) => url && url.includes('jairoamaya.co');
 
-  // --- 5. RENDERIZADO: MODAL DE CREACIÓN ---
+  // --- 5. RENDERIZADO: MODAL ---
   if (showNewProject) return (
     <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
       <div className={`max-w-4xl w-full ${styles.glassCard} rounded-2xl p-8 border-amber-500/20 animate-in fade-in zoom-in duration-300`}>
@@ -339,7 +339,7 @@ export default function App() {
       return acc + count;
   }, 0);
 
-  // --- 6. RENDERIZADO: DASHBOARD (HOME IMPACTANTE) ---
+  // --- 6. RENDERIZADO: DASHBOARD (HOME) ---
   if (!selectedProject) return (
     <div className="min-h-screen bg-slate-950 text-slate-200 p-4 md:p-8 font-sans selection:bg-amber-500/30 overflow-x-hidden flex flex-col">
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Raleway:wght@300;400;500;600&display=swap');`}</style>
@@ -352,12 +352,12 @@ export default function App() {
 
       <div className="max-w-7xl mx-auto w-full relative z-10 flex-1">
         
-        {/* HEADER */}
+        {/* HEADER LIMPIO (SIN BOTÓN RESET) */}
         <header className="flex flex-col md:flex-row justify-between items-end mb-10 border-b border-slate-800 pb-6">
           <div>
             <div className="flex items-center gap-3 mb-2">
                 <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
-                <span className="text-xs font-mono text-slate-400 tracking-widest uppercase">System Online // v7.2</span>
+                <span className="text-xs font-mono text-slate-400 tracking-widest uppercase">System Online // v7.5</span>
             </div>
             <h1 className={`text-5xl font-bold text-white tracking-tight ${styles.fontHeading}`}>
               SOSTAC <span className={styles.neonText}>FLOW</span>
@@ -365,12 +365,6 @@ export default function App() {
             <p className={`text-slate-400 mt-2 ${styles.fontBody}`}>Ingeniería de Marketing & Gestión Estratégica</p>
           </div>
           <div className="flex gap-4 mt-6 md:mt-0">
-            <button 
-              onClick={handleHardReset}
-              className="px-4 py-2 rounded-lg flex items-center gap-2 font-bold text-xs bg-red-500/10 text-red-500 border border-red-500/30 hover:bg-red-500 hover:text-white transition-all"
-            >
-              <RefreshCw size={14} /> RESET DB
-            </button>
             <button 
               onClick={() => setShowNewProject(true)}
               className={`px-6 py-3 rounded-xl flex items-center gap-2 font-bold text-sm ${styles.primaryBtn}`}
@@ -485,11 +479,12 @@ export default function App() {
                                 <div className="text-xs text-slate-500">Crear desde template</div>
                             </div>
                         </button>
-                        <button className="w-full text-left p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 transition-all flex items-center gap-3 group">
-                            <div className="p-2 bg-blue-500/10 rounded-md text-blue-500 group-hover:text-white group-hover:bg-blue-500 transition-colors"><Database size={16} /></div>
+                        {/* BOTÓN PDF ACTUALIZADO */}
+                        <button onClick={() => alert('Generando reporte PDF del dashboard actual... (Funcionalidad Demo)')} className="w-full text-left p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 transition-all flex items-center gap-3 group">
+                            <div className="p-2 bg-blue-500/10 rounded-md text-blue-500 group-hover:text-white group-hover:bg-blue-500 transition-colors"><Download size={16} /></div>
                             <div>
-                                <div className="text-sm font-bold text-white">Backups Locales</div>
-                                <div className="text-xs text-slate-500">Gestión de datos</div>
+                                <div className="text-sm font-bold text-white">Generar Reporte PDF</div>
+                                <div className="text-xs text-slate-500">Descargar estado actual</div>
                             </div>
                         </button>
                     </div>
@@ -508,7 +503,7 @@ export default function App() {
         </div>
       </div>
 
-      {/* FOOTER: JAIRO AMAYA BRANDING (LINKS REALES) */}
+      {/* FOOTER: JAIRO AMAYA BRANDING */}
       <footer className="relative z-10 border-t border-slate-800 bg-slate-950/80 backdrop-blur-md pt-12 pb-12 mt-12">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="md:col-span-2">
@@ -538,18 +533,27 @@ export default function App() {
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
                     <span className="text-xs text-green-500 font-mono font-bold">SYSTEM OPERATIONAL</span>
                  </div>
-                 <div className="flex gap-4">
-                    {/* LINKS REALES */}
+                 
+                 <div className="flex gap-4 mb-4">
                     <a href="https://www.linkedin.com/in/jairoamayalaverde/" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Linkedin size={18} /></a>
                     <a href="https://twitter.com/JAIROAMAYA" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Twitter size={18} /></a>
                     <a href="https://jairoamaya.co" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Globe size={18} /></a>
                 </div>
+
+                {/* BOTÓN RESET SEGURO (SOLO PARA DEV) */}
+                <button 
+                    onClick={handleHardReset}
+                    className="text-[10px] text-slate-700 hover:text-red-500 transition-colors flex items-center gap-1 font-mono uppercase"
+                    title="Restaurar valores de fábrica"
+                >
+                    <RefreshCw size={10} /> [ DEV MODE: RESET DATA ]
+                </button>
             </div>
         </div>
         
         <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600">
             <p>© 2026 Jairo Amaya. All rights reserved.</p>
-            <p className="font-mono">v7.2.0 GOLD BUILD</p>
+            <p className="font-mono">v7.5.0 STABLE</p>
         </div>
       </footer>
     </div>
