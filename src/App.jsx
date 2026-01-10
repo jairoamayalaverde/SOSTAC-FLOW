@@ -488,7 +488,16 @@ const [showAnalytics, setShowAnalytics] = useState(false);
       return acc + count;
   }, 0);
   const avgProgress = projects.length > 0 ? Math.round(projects.reduce((acc, curr) => acc + curr.progress, 0) / projects.length) : 0;
-
+  
+// --- PUERTA DE ACCESO A ANALYTICS ---
+  if (showAnalytics && selectedProject) {
+    return (
+      <DashboardAnalytics 
+        proyecto={selectedProject} 
+        onClose={() => setShowAnalytics(false)} 
+      />
+    );
+  }
   // --- RENDER: LOGIN SCREEN ---
   if (authLoading) return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-amber-500 font-bold animate-pulse">Cargando Sistema...</div>;
 
