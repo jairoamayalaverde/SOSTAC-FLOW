@@ -664,14 +664,14 @@ const [showAnalytics, setShowAnalytics] = useState(false);
                                 <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Integraciones</h4>
                                 <div className="space-y-3">
                                     <div className="flex justify-between items-center text-xs"><span className="text-slate-400">JairoAmaya.co</span><span className="text-green-400 font-mono flex items-center gap-1"><CheckCircle size={10} /> CONNECTED</span></div>
-                               </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        )
-      } 
-    </div>
-      
-  
+        )}
+      </div>
       
     {/* MODAL CREAR */}
     {showNewProject && (
@@ -961,11 +961,11 @@ const [showAnalytics, setShowAnalytics] = useState(false);
             </div>
         </div>
         
-      <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600">
+        <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600">
             <p>© 2026 Jairo Amaya Full Stack Marketer. All rights reserved.</p>
             <p className="font-mono">v10.0.0 CLOUD + ANALYTICS</p>
         </div>
-    </footer>
+      </footer>
     </div>
   );
 }
