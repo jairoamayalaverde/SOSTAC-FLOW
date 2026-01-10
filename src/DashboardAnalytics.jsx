@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { 
   TrendingUp, TrendingDown, AlertCircle, CheckCircle, 
   Calendar, Target, Zap, Activity, BarChart3, 
@@ -11,6 +11,8 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   Area, AreaChart
 } from 'recharts';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 // ESTILOS (Heredados de tu App)
 const styles = {
@@ -30,6 +32,10 @@ const fases = [
 ];
 
 export default function DashboardAnalytics({ proyecto, onClose }) {
+  const radarChartRef = useRef(null);
+  const burndownChartRef = useRef(null);
+  const activityChartRef = useRef(null);
+
   // CÁLCULO DE MÉTRICAS
   const metricas = useMemo(() => {
     if (!proyecto) return {};
@@ -74,7 +80,9 @@ export default function DashboardAnalytics({ proyecto, onClose }) {
       tasaCompletitud: Math.round(tasaCompletitud),
       diasSinActividad,
       tareasConEnlaces,
-      tareasConNotas
+      tareasConNotas,
+      balanceFases: Math.round(balanceFases),
+      puntajeActividad: Math.round(puntajeActividad)
     };
   }, [proyecto]);
 
@@ -126,13 +134,12 @@ export default function DashboardAnalytics({ proyecto, onClose }) {
     }));
   }, [proyecto]);
 
-  // Insights de IA (generados dinámicamente basados en datos reales)
+  // Insights de IA
   const insights = useMemo(() => {
     if (!proyecto) return [];
     
     const resultado = [];
     
-    // Insight 1: Control Phase
     const tareasControl = proyecto.data.control?.length || 0;
     const completadasControl = proyecto.data.control?.filter(t => t.completed).length || 0;
     const progresoControl = tareasControl > 0 ? (completadasControl / tareasControl) * 100 : 0;
@@ -150,7 +157,6 @@ export default function DashboardAnalytics({ proyecto, onClose }) {
       });
     }
     
-    // Insight 2: Situation Phase
     const tareasSituation = proyecto.data.situation?.length || 0;
     const completadasSituation = proyecto.data.situation?.filter(t => t.completed).length || 0;
     const progresoSituation = tareasSituation > 0 ? (completadasSituation / tareasSituation) * 100 : 0;
@@ -168,7 +174,6 @@ export default function DashboardAnalytics({ proyecto, onClose }) {
       });
     }
     
-    // Insight 3: Balance Estrategia/Tácticas
     const tareasStrategy = proyecto.data.strategy?.length || 0;
     const tareasTactics = proyecto.data.tactics?.length || 0;
     const ratio = tareasStrategy > 0 ? (tareasTactics / tareasStrategy).toFixed(1) : 0;
@@ -186,7 +191,6 @@ export default function DashboardAnalytics({ proyecto, onClose }) {
       });
     }
     
-    // Si no hay suficientes insights, agregar uno genérico
     if (resultado.length < 3) {
       resultado.push({
         tipo: 'info',
@@ -202,6 +206,273 @@ export default function DashboardAnalytics({ proyecto, onClose }) {
     
     return resultado.slice(0, 3);
   }, [proyecto, metricas]);
+
+  // ============================================
+  // 🔥 FUNCIÓN DE EXPORTACIÓN A PDF
+  // ============================================
+  const generateAnalyticsPDF = async () => {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    let yPos = 20;
+
+    // ===== PÁGINA 1: PORTADA Y MÉTRICAS =====
+    // Header Dark
+    doc.setFillColor(15, 23, 42);
+    doc.rect(0, 0, pageWidth, 50, 'F');
+    
+    // Logo & Titulo
+    doc.setTextColor(245, 158, 11);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(24);
+    doc.text('SOSTAC FLOW', 20, 25);
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text('REPORTE DE ANALÍTICAS ESTRATÉGICAS', 20, 38);
+
+    // Info del Proyecto
+    yPos = 65;
+    doc.setTextColor(50, 50, 50);
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.text(proyecto.name, 20, yPos);
+
+    yPos += 8;
+    doc.setFontSize(11);
+    doc.setTextColor(100, 100, 100);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Cliente: ${proyecto.client}`, 20, yPos);
+    doc.text(`Fecha: ${new Date().toLocaleDateString('es-ES')}`, 150, yPos);
+
+    yPos += 5;
+    doc.text(`Industria: ${proyecto.industry}`, 20, yPos);
+    doc.text(`Tipo: ${proyecto.projectType.toUpperCase()}`, 150, yPos);
+
+    // Línea separadora
+    yPos += 5;
+    doc.setDrawColor(200, 200, 200);
+    doc.line(20, yPos, pageWidth - 20, yPos);
+
+    // ===== MÉTRICAS PRINCIPALES =====
+    yPos += 15;
+    doc.setFillColor(245, 158, 11);
+    doc.roundedRect(20, yPos, pageWidth - 40, 10, 2, 2, 'F');
+    doc.setTextColor(0, 0, 0);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.text('MÉTRICAS PRINCIPALES', 25, yPos + 7);
+
+    yPos += 20;
+    
+    // Grid de métricas 2x2
+    const metricBoxWidth = (pageWidth - 50) / 2;
+    const metricBoxHeight = 30;
+    
+    // Velocity Score
+    doc.setFillColor(51, 65, 85);
+    doc.roundedRect(20, yPos, metricBoxWidth, metricBoxHeight, 3, 3, 'F');
+    doc.setTextColor(148, 163, 184);
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    doc.text('PUNTAJE DE VELOCIDAD™', 25, yPos + 8);
+    doc.setTextColor(245, 158, 11);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(24);
+    doc.text(`${metricas.velocityScore}`, 25, yPos + 22);
+    doc.setFontSize(10);
+    doc.setTextColor(148, 163, 184);
+    doc.text('/100', 45, yPos + 22);
+
+    // Tareas Completadas
+    doc.setFillColor(51, 65, 85);
+    doc.roundedRect(20 + metricBoxWidth + 10, yPos, metricBoxWidth, metricBoxHeight, 3, 3, 'F');
+    doc.setTextColor(148, 163, 184);
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    doc.text('TAREAS COMPLETADAS', 25 + metricBoxWidth + 10, yPos + 8);
+    doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(20);
+    doc.text(`${metricas.tareasCompletadas}/${metricas.totalTareas}`, 25 + metricBoxWidth + 10, yPos + 22);
+
+    yPos += metricBoxHeight + 10;
+
+    // Salud del Proyecto
+    doc.setFillColor(51, 65, 85);
+    doc.roundedRect(20, yPos, metricBoxWidth, metricBoxHeight, 3, 3, 'F');
+    doc.setTextColor(148, 163, 184);
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    doc.text('SALUD DEL PROYECTO', 25, yPos + 8);
+    doc.setTextColor(34, 197, 94);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(24);
+    doc.text(`${metricas.puntajeSalud}`, 25, yPos + 22);
+    doc.setFontSize(10);
+    doc.setTextColor(148, 163, 184);
+    doc.text('/10', 40, yPos + 22);
+
+    // Progreso General
+    doc.setFillColor(51, 65, 85);
+    doc.roundedRect(20 + metricBoxWidth + 10, yPos, metricBoxWidth, metricBoxHeight, 3, 3, 'F');
+    doc.setTextColor(148, 163, 184);
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    doc.text('PROGRESO GENERAL', 25 + metricBoxWidth + 10, yPos + 8);
+    doc.setTextColor(245, 158, 11);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(24);
+    doc.text(`${metricas.tasaCompletitud}%`, 25 + metricBoxWidth + 10, yPos + 22);
+
+    // ===== ESTADÍSTICAS DETALLADAS =====
+    yPos += metricBoxHeight + 20;
+    doc.setFillColor(245, 158, 11);
+    doc.roundedRect(20, yPos, pageWidth - 40, 10, 2, 2, 'F');
+    doc.setTextColor(0, 0, 0);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.text('ESTADÍSTICAS DETALLADAS', 25, yPos + 7);
+
+    yPos += 18;
+    doc.setTextColor(100, 100, 100);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    
+    const stats = [
+      { label: 'Días sin actividad:', value: metricas.diasSinActividad, color: metricas.diasSinActividad === 0 ? [34, 197, 94] : [239, 68, 68] },
+      { label: 'Tareas con recursos:', value: metricas.tareasConEnlaces, color: [139, 92, 246] },
+      { label: 'Tareas con notas:', value: metricas.tareasConNotas, color: [245, 158, 11] },
+      { label: 'Balance entre fases:', value: `${metricas.balanceFases}%`, color: [59, 130, 246] },
+    ];
+
+    stats.forEach((stat, idx) => {
+      doc.setTextColor(100, 100, 100);
+      doc.text(stat.label, 25, yPos + (idx * 10));
+      doc.setTextColor(...stat.color);
+      doc.setFont("helvetica", "bold");
+      doc.text(String(stat.value), 120, yPos + (idx * 10));
+      doc.setFont("helvetica", "normal");
+    });
+
+    // ===== CAPTURAR GRÁFICOS =====
+    yPos += 50;
+    
+    // Mensaje de "Generando..."
+    doc.setTextColor(150, 150, 150);
+    doc.setFont("helvetica", "italic");
+    doc.setFontSize(9);
+    doc.text('Capturando gráficos...', 20, yPos);
+
+    // ===== PÁGINA 2: GRÁFICOS =====
+    doc.addPage();
+    yPos = 20;
+
+    doc.setFillColor(245, 158, 11);
+    doc.roundedRect(20, yPos, pageWidth - 40, 10, 2, 2, 'F');
+    doc.setTextColor(0, 0, 0);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.text('VISUALIZACIONES Y GRÁFICOS', 25, yPos + 7);
+
+    yPos += 20;
+
+    try {
+      // Capturar Radar Chart
+      if (radarChartRef.current) {
+        const radarCanvas = await html2canvas(radarChartRef.current, {
+          backgroundColor: '#0f172a',
+          scale: 2
+        });
+        const radarImg = radarCanvas.toDataURL('image/png');
+        doc.addImage(radarImg, 'PNG', 20, yPos, pageWidth - 40, 80);
+        yPos += 90;
+      }
+
+      // Capturar Burndown Chart
+      if (burndownChartRef.current && yPos + 80 < pageHeight - 20) {
+        const burndownCanvas = await html2canvas(burndownChartRef.current, {
+          backgroundColor: '#0f172a',
+          scale: 2
+        });
+        const burndownImg = burndownCanvas.toDataURL('image/png');
+        doc.addImage(burndownImg, 'PNG', 20, yPos, (pageWidth - 50) / 2, 70);
+      }
+
+      // Capturar Activity Chart
+      if (activityChartRef.current && yPos + 80 < pageHeight - 20) {
+        const activityCanvas = await html2canvas(activityChartRef.current, {
+          backgroundColor: '#0f172a',
+          scale: 2
+        });
+        const activityImg = activityCanvas.toDataURL('image/png');
+        doc.addImage(activityImg, 'PNG', 20 + (pageWidth - 50) / 2 + 10, yPos, (pageWidth - 50) / 2, 70);
+      }
+    } catch (error) {
+      console.error('Error capturando gráficos:', error);
+      doc.setTextColor(239, 68, 68);
+      doc.setFontSize(10);
+      doc.text('Error al capturar gráficos. Ver dashboard para visualizaciones.', 25, yPos);
+    }
+
+    // ===== PÁGINA 3: INSIGHTS =====
+    doc.addPage();
+    yPos = 20;
+
+    doc.setFillColor(245, 158, 11);
+    doc.roundedRect(20, yPos, pageWidth - 40, 10, 2, 2, 'F');
+    doc.setTextColor(0, 0, 0);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.text('INSIGHTS CON INTELIGENCIA ARTIFICIAL', 25, yPos + 7);
+
+    yPos += 20;
+
+    insights.forEach((insight, idx) => {
+      if (yPos > pageHeight - 50) {
+        doc.addPage();
+        yPos = 20;
+      }
+
+      doc.setFillColor(51, 65, 85);
+      doc.roundedRect(20, yPos, pageWidth - 40, 40, 3, 3, 'F');
+      
+      doc.setTextColor(245, 158, 11);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(11);
+      doc.text(insight.titulo, 25, yPos + 10);
+
+      doc.setTextColor(148, 163, 184);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      const mensajeSplit = doc.splitTextToSize(insight.mensaje, pageWidth - 50);
+      doc.text(mensajeSplit, 25, yPos + 18);
+
+      doc.setTextColor(100, 100, 100);
+      doc.setFont("helvetica", "italic");
+      doc.setFontSize(8);
+      doc.text(`→ ${insight.accion}`, 25, yPos + 35);
+
+      yPos += 48;
+    });
+
+    // ===== FOOTER EN TODAS LAS PÁGINAS =====
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFillColor(240, 240, 240);
+      doc.rect(0, pageHeight - 20, pageWidth, 20, 'F');
+      doc.setTextColor(100, 100, 100);
+      doc.setFontSize(8);
+      doc.text('Generado con SOSTAC FLOW | Jairo Amaya - Full Stack Marketer', 20, pageHeight - 10);
+      doc.text(`Página ${i} de ${pageCount}`, pageWidth - 40, pageHeight - 10);
+    }
+
+    // Guardar PDF
+    const fileName = `${proyecto.client.replace(/\s+/g, '_')}_Analytics_Report_${new Date().toISOString().split('T')[0]}.pdf`;
+    doc.save(fileName);
+  };
 
   if (!proyecto) return null;
 
@@ -232,7 +503,10 @@ export default function DashboardAnalytics({ proyecto, onClose }) {
           </div>
           
           <div className="flex gap-3 items-center">
-            <button className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold rounded-lg transition-all flex items-center gap-2">
+            <button 
+              onClick={generateAnalyticsPDF}
+              className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold rounded-lg transition-all flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105"
+            >
               <Download size={18} /> Exportar PDF
             </button>
             <button onClick={onClose} className="p-2 text-slate-500 hover:text-white transition-colors">
@@ -311,7 +585,7 @@ export default function DashboardAnalytics({ proyecto, onClose }) {
         <div className="grid lg:grid-cols-3 gap-8 mb-8">
           
           {/* DISTRIBUCIÓN FASES SOSTAC (RADAR) */}
-          <div className={`${styles.glassCard} p-6 rounded-2xl lg:col-span-2`}>
+          <div ref={radarChartRef} className={`${styles.glassCard} p-6 rounded-2xl lg:col-span-2`}>
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-bold text-white flex items-center gap-2">
                 <BarChart3 className="text-amber-500" size={20} />
@@ -420,7 +694,7 @@ export default function DashboardAnalytics({ proyecto, onClose }) {
         <div className="grid lg:grid-cols-2 gap-8 mb-8">
           
           {/* GRÁFICA BURNDOWN */}
-          <div className={`${styles.glassCard} p-6 rounded-2xl`}>
+          <div ref={burndownChartRef} className={`${styles.glassCard} p-6 rounded-2xl`}>
             <h3 className="text-xl font-bold text-white flex items-center gap-2 mb-6">
               <TrendingDown className="text-blue-400" size={20} />
               Gráfica de Avance
@@ -484,7 +758,7 @@ export default function DashboardAnalytics({ proyecto, onClose }) {
           </div>
 
           {/* DISTRIBUCIÓN DE ACTIVIDAD */}
-          <div className={`${styles.glassCard} p-6 rounded-2xl`}>
+          <div ref={activityChartRef} className={`${styles.glassCard} p-6 rounded-2xl`}>
             <h3 className="text-xl font-bold text-white flex items-center gap-2 mb-6">
               <BarChart3 className="text-purple-400" size={20} />
               Distribución de Actividad
