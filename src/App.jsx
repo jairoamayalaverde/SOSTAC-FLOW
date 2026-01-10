@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import {
   Plus, Edit2, Trash2, CheckCircle, Circle, Calendar, 
   Save, X, Briefcase, Eye, EyeOff, LayoutDashboard, 
   ArrowLeft, ExternalLink, BarChart3, FileText, RefreshCw,
