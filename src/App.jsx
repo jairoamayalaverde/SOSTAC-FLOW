@@ -621,19 +621,22 @@ export default function App() {
                                             <div className="flex items-center gap-2 text-xs text-slate-400"><span>{project.client}</span><span className="w-1 h-1 bg-slate-600 rounded-full"></span><span className="text-amber-500 uppercase font-bold">{projectTemplates[project.projectType]?.name}</span></div>
                                         </div>
                                         
-                                        {/* 👇 4. AQUÍ ESTÁ EL NUEVO BOTÓN PARA VER ANALÍTICAS 👇 */}
                                         <div className="flex items-center gap-4">
                                             <div className="text-xl font-bold text-slate-700 group-hover:text-white transition-colors">{project.progress}%</div>
                                             
+                                            {/* BOTÓN FERRARI - AJUSTADO PARA MÁXIMA VISIBILIDAD */}
                                             <button 
                                                 onClick={(e) => {
-                                                    e.stopPropagation(); // Evitar que se abra el editor
+                                                    e.preventDefault();
+                                                    e.stopPropagation(); 
                                                     setAnalyzingProject(project);
                                                 }}
-                                                className="p-2 bg-slate-800/80 hover:bg-amber-500 text-amber-500 hover:text-slate-900 rounded-lg border border-slate-700 hover:border-amber-400 transition-all z-20 relative shadow-lg"
-                                                title="Ver Dashboard Analítico"
+                                                className="ml-4 p-3 bg-amber-500 text-slate-900 rounded-xl border-2 border-white shadow-[0_0_15px_rgba(245,158,11,0.6)] z-[100] relative hover:scale-110 active:scale-95 transition-all"
                                             >
-                                                <BarChart3 size={20} />
+                                                <div className="flex items-center gap-2 font-bold text-[10px]">
+                                                   <BarChart3 size={18} />
+                                                   <span>MÉTRICAS</span>
+                                                </div>
                                             </button>
                                         </div>
                                     </div>
@@ -707,266 +710,6 @@ export default function App() {
             <div className="flex flex-col md:items-end"><h5 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Estado</h5><div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 mb-4"><div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div><span className="text-xs text-green-500 font-mono font-bold">SYSTEM OPERATIONAL</span></div><div className="flex gap-4 mb-4"><a href="https://www.linkedin.com/in/jairoamayalaverde/" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Linkedin size={18} /></a><a href="https://twitter.com/JAIROAMAYA" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Twitter size={18} /></a><a href="https://jairoamaya.co" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Globe size={18} /></a></div></div>
         </div>
         <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600"><p>© 2026 Jairo Amaya Full Stack Marketer. All rights reserved.</p><p className="font-mono">v9.8.0 CLOUD EDITION (MASTER)</p></div>
-      </footer>
-    </div>
-  );
-
-  // --- RENDER: VISTA DE PROYECTO (COCKPIT) ---
-  return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-amber-500/30 flex flex-col justify-between">
-      
-      {/* HEADER STICKY (CON BOTÓN PDF Y SIN COMPARTIR) */}
-      <div className="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-md border-b border-slate-800 shadow-xl">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <button onClick={() => setSelectedProject(null)} className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all">
-              <ArrowLeft size={20} />
-            </button>
-            <div>
-              <h1 className={`text-lg font-bold text-white ${styles.fontHeading}`}>{selectedProject.name}</h1>
-              <div className="flex items-center gap-2 text-xs text-slate-500">
-                <span>{selectedProject.client}</span>
-                <span className="w-1 h-1 bg-slate-600 rounded-full"></span>
-                <span className="text-amber-500 font-bold">{projectTemplates[selectedProject.projectType]?.name}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-             <button 
-                onClick={() => setViewMode(viewMode === 'admin' ? 'client' : 'admin')}
-                className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all border ${
-                    viewMode === 'admin' 
-                    ? 'bg-slate-800 border-slate-700 text-slate-300' 
-                    : 'bg-green-500/10 border-green-500/50 text-green-500'
-                }`}
-            >
-                {viewMode === 'admin' ? 'MODO EDITOR' : 'VISTA CLIENTE'}
-            </button>
-            
-            {/* BOTÓN PDF ACTIVO */}
-            <button onClick={generatePDF} className="p-2 text-amber-500 hover:text-white transition-colors" title="Descargar Reporte PDF">
-                <Download size={18} />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 py-8 w-full flex-1">
-        
-        {/* PHASE NAVIGATOR (METRO LINE) */}
-        <div className="mb-8 overflow-x-auto pb-4 scrollbar-hide">
-          <div className="flex min-w-max gap-3 p-1">
-          {phases.map((phase, idx) => {
-            const isActive = activePhase === phase.id;
-            const tasks = selectedProject.data[phase.id] || [];
-            const completedCount = tasks.filter(t => t.completed).length;
-            const progress = tasks.length > 0 ? (completedCount / tasks.length) * 100 : 0;
-            const isPhaseComplete = progress === 100;
-            
-            return (
-              <button
-                key={phase.id}
-                onClick={() => setActivePhase(phase.id)}
-                className={`flex flex-col items-center gap-2 min-w-[100px] p-3 rounded-2xl border transition-all relative ${
-                    isActive 
-                    ? 'bg-slate-900 border-amber-500 shadow-lg scale-105 z-10' 
-                    : 'bg-slate-900/40 border-slate-800 hover:bg-slate-800'
-                }`}
-              >
-                <div className={`text-2xl ${isActive ? 'text-amber-500 scale-110 transition-transform' : isPhaseComplete ? 'text-green-500' : 'text-slate-600'}`}>
-                    {isPhaseComplete ? <CheckCircle size={24} /> : phase.icon}
-                </div>
-                <span className={`text-[10px] font-bold uppercase ${isActive ? 'text-white' : 'text-slate-500'}`}>{phase.name}</span>
-                <div className="w-full bg-slate-800 h-1 rounded-full overflow-hidden mt-1">
-                    <div className={`${progress === 100 ? 'bg-green-500' : 'bg-amber-500'} h-full transition-all`} style={{width: `${progress}%`}}></div>
-                </div>
-              </button>
-            )
-          })}
-          </div>
-        </div>
-
-        {/* WORKSPACE GRID */}
-        <div className="grid lg:grid-cols-3 gap-8">
-            {/* TASKS LIST */}
-            <div className="lg:col-span-2 space-y-4">
-                <div className="flex justify-between items-center mb-2">
-                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                        {phases.find(p => p.id === activePhase).icon} Tareas & Entregables
-                    </h2>
-                    {viewMode === 'admin' && (
-                        <button onClick={addTask} className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 ${styles.primaryBtn}`}>
-                            <Plus size={14} /> AGREGAR
-                        </button>
-                    )}
-                </div>
-
-                {selectedProject.data[activePhase]?.length === 0 ? (
-                    <div className="p-12 border-2 border-dashed border-slate-800 rounded-2xl text-center text-slate-600">
-                        No hay items configurados en esta fase.
-                    </div>
-                ) : (
-                    <div className="space-y-3">
-                        {selectedProject.data[activePhase]?.map(task => (
-                            <div key={task.id} className={`group bg-slate-900/50 border border-slate-800 p-5 rounded-xl hover:border-slate-600 transition-all ${task.completed ? 'opacity-70' : ''}`}>
-                                <div className="flex items-start gap-4">
-                                    <button 
-                                        onClick={() => toggleTask(task.id)}
-                                        disabled={viewMode === 'client'}
-                                        className={`mt-1 ${task.completed ? 'text-green-500' : 'text-slate-600 hover:text-amber-500'}`}
-                                    >
-                                        {task.completed ? <CheckCircle size={22} /> : <Circle size={22} />}
-                                    </button>
-                                    
-                                    <div className="flex-1 space-y-2">
-                                        {/* Task Title */}
-                                        {editingTask === task.id ? (
-                                            <input 
-                                                autoFocus
-                                                className="w-full bg-slate-950 text-white p-2 rounded border border-amber-500 outline-none"
-                                                defaultValue={task.text}
-                                                onBlur={(e) => updateTaskField(task.id, 'text', e.target.value)}
-                                                onKeyDown={(e) => e.key === 'Enter' && setEditingTask(null)}
-                                            />
-                                        ) : (
-                                            <div 
-                                                onClick={() => viewMode === 'admin' && setEditingTask(task.id)}
-                                                className={`text-lg font-medium ${task.completed ? 'line-through text-slate-500' : 'text-slate-200'} ${viewMode === 'admin' ? 'cursor-pointer hover:text-amber-400' : ''}`}
-                                            >
-                                                {task.text}
-                                            </div>
-                                        )}
-                                        
-                                        {/* Notes */}
-                                        <div className={`flex items-start gap-2 ${!task.notes && viewMode === 'client' ? 'hidden' : ''}`}>
-                                            <FileText size={14} className="text-slate-600 mt-1 flex-shrink-0" />
-                                            <textarea 
-                                                placeholder={viewMode === 'admin' ? "Notas o detalles..." : ""}
-                                                value={task.notes}
-                                                readOnly={viewMode === 'client'}
-                                                onChange={(e) => updateTaskField(task.id, 'notes', e.target.value)}
-                                                className="w-full bg-transparent text-sm text-slate-400 outline-none resize-none placeholder-slate-700"
-                                                rows={task.notes ? Math.max(1, task.notes.split('\n').length) : 1}
-                                            />
-                                        </div>
-
-                                        {/* LINK / RECURSO (CON BOTÓN INTELIGENTE) */}
-                                        {(viewMode === 'admin' || task.link) && (
-                                            <div className="flex items-center gap-2 mt-3 pt-2 border-t border-slate-800/50">
-                                                {task.link && (
-                                                    <a href={task.link} target="_blank" rel="noreferrer" className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-lg transition-all border shadow-lg ${
-                                                        isInternalTool(task.link) 
-                                                        ? 'bg-amber-500 text-slate-900 border-amber-400 hover:bg-amber-400 hover:scale-105' 
-                                                        : 'bg-slate-800 text-blue-400 border-slate-700 hover:bg-slate-700 hover:text-white'
-                                                    }`}>
-                                                        {isInternalTool(task.link) ? <Cpu size={14} /> : <ExternalLink size={14} />}
-                                                        {isInternalTool(task.link) ? 'EJECUTAR HERRAMIENTA' : 'ABRIR RECURSO'}
-                                                    </a>
-                                                )}
-                                                
-                                                {viewMode === 'admin' && (
-                                                    <div className="flex-1 flex items-center gap-2 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800 focus-within:border-slate-600 transition-colors">
-                                                        <HardDrive size={12} className="text-slate-600" />
-                                                        <input 
-                                                            placeholder="Pegar URL (Drive, JairoAmaya.co, etc)..."
-                                                            value={task.link || ''}
-                                                            onChange={(e) => updateTaskField(task.id, 'link', e.target.value)}
-                                                            className="w-full bg-transparent text-xs text-blue-300 outline-none placeholder-slate-700"
-                                                        />
-                                                    </div>
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    {viewMode === 'admin' && (
-                                        <button onClick={() => deleteTask(task.id)} className="opacity-0 group-hover:opacity-100 text-slate-600 hover:text-red-500 p-2">
-                                            <Trash2 size={18} />
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
-
-            {/* SIDEBAR INFO */}
-            <div className="space-y-6">
-                <div className={`${styles.glassCard} p-6 rounded-2xl`}>
-                    <h3 className="text-white font-bold mb-4 flex items-center gap-2">
-                        <Zap size={18} className="text-amber-500" /> Stats de Fase
-                    </h3>
-                    <div className="space-y-4">
-                        <div className="flex justify-between text-sm text-slate-400">
-                            <span>Completado</span>
-                            <span className="text-white font-bold">{selectedProject.data[activePhase]?.filter(t => t.completed).length} items</span>
-                        </div>
-                        <div className="flex justify-between text-sm text-slate-400">
-                            <span>Total</span>
-                            <span className="text-white font-bold">{selectedProject.data[activePhase]?.length} items</span>
-                        </div>
-                        <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
-                            <div className="bg-amber-500 h-full" style={{width: `${selectedProject.data[activePhase]?.length > 0 ? (selectedProject.data[activePhase]?.filter(t => t.completed).length / selectedProject.data[activePhase]?.length) * 100 : 0}%`}}></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-      </div>
-
-      {/* FOOTER (REPLICADO EN VISTA PROYECTO) */}
-      <footer className="relative z-10 border-t border-slate-800 bg-slate-950/80 backdrop-blur-md pt-12 pb-12 mt-12">
-        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="md:col-span-2">
-                <a href="https://jairoamaya.co" target="_blank" rel="noopener noreferrer" className="group block">
-                    <h4 className={`text-2xl font-bold text-white mb-2 group-hover:text-amber-500 transition-colors ${styles.fontHeading}`}>JAIRO AMAYA</h4>
-                    <div className="flex items-center gap-2">
-                        <span className="h-0.5 w-8 bg-amber-500"></span>
-                        <p className="text-amber-500 font-bold text-sm tracking-wider uppercase group-hover:text-white transition-colors">Full Stack Marketer</p>
-                    </div>
-                </a>
-                <p className="text-slate-500 text-sm mt-4 max-w-sm leading-relaxed">
-                   Gestión estratégica de proyectos de consultoría digital.
-                </p>
-            </div>
-            
-            <div>
-                <h5 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Recursos</h5>
-                <ul className="space-y-2 text-sm text-slate-500">
-                    <li><a href="https://jairoamaya.co/auditor-seo-interactivo/" target="_blank" className="hover:text-amber-500 transition-colors">Auditor SEO</a></li>
-                    <li><a href="https://jairoamaya.co/matriz-de-prioridad-seo/" target="_blank" className="hover:text-amber-500 transition-colors">Matriz de Prioridad</a></li>
-                </ul>
-            </div>
-
-            <div className="flex flex-col md:items-end">
-                 <h5 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Estado</h5>
-                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 mb-4">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
-                    <span className="text-xs text-green-500 font-mono font-bold">SYSTEM OPERATIONAL</span>
-                 </div>
-                 
-                 <div className="flex gap-4 mb-4">
-                    <a href="https://www.linkedin.com/in/jairoamayalaverde/" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Linkedin size={18} /></a>
-                    <a href="https://twitter.com/JAIROAMAYA" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Twitter size={18} /></a>
-                    <a href="https://jairoamaya.co" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Globe size={18} /></a>
-                </div>
-
-                <button 
-                    onClick={handleHardReset}
-                    className="text-[10px] text-slate-700 hover:text-red-500 transition-colors flex items-center gap-1 font-mono uppercase"
-                    title="Restaurar valores de fábrica"
-                >
-                    <RefreshCw size={10} /> [ DEV MODE: RESET DATA ]
-                </button>
-            </div>
-        </div>
-        
-        <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600">
-            <p>© 2026 Jairo Amaya Full Stack Marketer. All rights reserved.</p>
-            <p className="font-mono">v9.8.0 CLOUD EDITION (MASTER)</p>
-        </div>
       </footer>
     </div>
   );
