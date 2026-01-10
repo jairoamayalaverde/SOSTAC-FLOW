@@ -622,13 +622,13 @@ const [showAnalytics, setShowAnalytics] = useState(false);
       }}
       className="p-3 bg-amber-500 text-slate-900 rounded-xl font-bold text-[10px] z-[100] relative border-2 border-white shadow-xl hover:scale-105 transition-all"
   >
-      MÉTRICAS
-  </button>
+              MÉTRICAS
+        </button>
+      </div>
+    ))} 
+  </div>
+  )}
 </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
 
                     {/* COLUMNA DERECHA: SIDEBAR DE ACCIONES (RESTAURADO) */}
                     <div className="space-y-6">
