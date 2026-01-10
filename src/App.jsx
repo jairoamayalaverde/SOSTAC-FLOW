@@ -566,14 +566,15 @@ const [showAnalytics, setShowAnalytics] = useState(false);
         </header>
 
         {/* LOADING O BENTO GRID */}
+       {/* CARGA O CONTENIDO PRINCIPAL */}
         {loadingProjects || onboarding ? (
             <div className="text-center py-20 animate-pulse">
                 <div className="text-amber-500 font-bold text-xl mb-2">Inicializando Espacio de Trabajo...</div>
                 <div className="text-slate-500 text-sm">Configurando base de datos segura y creando proyecto demo.</div>
             </div>
         ) : (
-            <>
-                {/* --- RESTAURADO: BENTO GRID SUPERIOR (CON RADAR) --- */}
+            <div className="w-full">
+                {/* BENTO GRID SUPERIOR */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
                     <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden group`}>
                         <Layers size={80} className="absolute -right-4 -top-4 text-slate-800 opacity-50 group-hover:opacity-100 group-hover:text-amber-500/10 transition-all" />
@@ -595,41 +596,54 @@ const [showAnalytics, setShowAnalytics] = useState(false);
                     </div>
                 </div>
 
+                {/* CUERPO DEL DASHBOARD */}
                 <div className="grid lg:grid-cols-3 gap-8">
-                    {/* COLUMNA IZQUIERDA: PROYECTOS */}
                     <div className="lg:col-span-2 space-y-4">
                         <div className="flex justify-between items-center mb-2">
                             <h2 className={`text-xl font-bold text-white flex items-center gap-2 ${styles.fontHeading}`}><Briefcase size={20} className="text-amber-500" /> Proyectos en Curso</h2>
                         </div>
+                        
                         {projects.length === 0 ? (
-                            <div className="text-center py-20 bg-slate-900/40 border border-dashed border-slate-800 rounded-3xl"><p className="text-slate-500">Tu espacio está listo. Crea tu primera estrategia.</p></div>
+                            <div className="text-center py-20 bg-slate-900/40 border border-dashed border-slate-800 rounded-3xl">
+                                <p className="text-slate-500">Tu espacio está listo. Crea tu primera estrategia.</p>
+                            </div>
                         ) : (
                             <div className="grid gap-4">
                                 {projects.map(project => (
-                                <div key={project.id} onClick={() => setSelectedProject(project)} className="group cursor-pointer rounded-xl p-6 transition-all border border-slate-800 bg-slate-900/40 hover:bg-slate-800 hover:border-amber-500/50 hover:shadow-lg relative overflow-hidden">
-                                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                   <div className="flex items-center gap-4">
-  <div className="text-xl font-bold text-slate-700 group-hover:text-white transition-colors">
-    {project.progress}%
-  </div>
-  
-  {/* BOTÓN MÉTRICAS NARANJA */}
-  <button 
-      onClick={(e) => {
-          e.stopPropagation(); 
-          setSelectedProject(project);
-          setShowAnalytics(true);
-      }}
-      className="p-3 bg-amber-500 text-slate-900 rounded-xl font-bold text-[10px] z-[100] relative border-2 border-white shadow-xl hover:scale-105 transition-all"
-  >
-              MÉTRICAS
-        </button>
-      </div>
-    ))} 
-  </div>
-  )}
-</div>
-
+                                    <div key={project.id} onClick={() => setSelectedProject(project)} className="group cursor-pointer rounded-xl p-6 transition-all border border-slate-800 bg-slate-900/40 hover:bg-slate-800 hover:border-amber-500/50 hover:shadow-lg relative overflow-hidden">
+                                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div>
+                                                <h3 className={`text-lg font-bold text-white mb-1 group-hover:text-amber-400 transition-colors ${styles.fontHeading}`}>{project.name}</h3>
+                                                <div className="flex items-center gap-2 text-xs text-slate-400">
+                                                    <span>{project.client}</span>
+                                                    <span className="w-1 h-1 bg-slate-600 rounded-full"></span>
+                                                    <span className="text-amber-500 uppercase font-bold">{projectTemplates[project.projectType]?.name}</span>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-4">
+                                                <div className="text-xl font-bold text-slate-700 group-hover:text-white transition-colors">{project.progress}%</div>
+                                                <button 
+                                                    onClick={(e) => { e.stopPropagation(); setSelectedProject(project); setShowAnalytics(true); }}
+                                                    className="p-3 bg-amber-500 text-slate-900 rounded-xl font-bold text-[10px] z-[100] relative border-2 border-white shadow-xl hover:scale-105 transition-all"
+                                                >
+                                                    MÉTRICAS
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-1 mt-4">
+                                            {phases.map((ph, idx) => { 
+                                                const pTasks = project.data[ph.id] || []; 
+                                                const hasProgress = pTasks.some(t => t.completed); 
+                                                return (<div key={idx} className={`h-1 flex-1 rounded-full ${hasProgress ? 'bg-amber-500' : 'bg-slate-800'}`}></div>) 
+                                            })}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                    
                     {/* COLUMNA DERECHA: SIDEBAR DE ACCIONES (RESTAURADO) */}
                     <div className="space-y-6">
                         <div className="flex justify-between items-center mb-2">
