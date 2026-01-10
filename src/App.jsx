@@ -947,9 +947,9 @@ const [showAnalytics, setShowAnalytics] = useState(false);
             </div>
         </div>
         
-        <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600">
+       <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600">
             <p>© 2026 Jairo Amaya Full Stack Marketer. All rights reserved.</p>
-            <p className="font-mono">v9.8.0 CLOUD EDITION (MASTER)</p>
+            <p className="font-mono">v10.0.0 CLOUD + ANALYTICS</p>
         </div>
       </footer>
     </div>
