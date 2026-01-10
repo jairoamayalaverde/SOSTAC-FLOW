@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import { createClient } from '@supabase/supabase-js';
+import ProjectAnalytics from './components/ProjectAnalytics';
 
 // --- 0. CONFIGURACIÓN SUPABASE (TUS CREDENCIALES) ---
 const SUPABASE_URL = 'https://hompawsonronlgrvujjb.supabase.co';
@@ -160,6 +161,7 @@ export default function App() {
   const [activePhase, setActivePhase] = useState('situation');
   const [showNewProject, setShowNewProject] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
+  const [selectedProject, setSelectedProject] = useState(null);
   
   const [newProjectData, setNewProjectData] = useState({
     name: '', client: '', industry: '', projectType: 'seo', startDate: new Date().toISOString().split('T')[0]
