@@ -669,7 +669,6 @@ const [showAnalytics, setShowAnalytics] = useState(false);
                         </div>
                     </div>
                 </div>
-            </>
         )}
       </div>
       
