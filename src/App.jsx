@@ -664,16 +664,16 @@ const [showAnalytics, setShowAnalytics] = useState(false);
                                 <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Integraciones</h4>
                                 <div className="space-y-3">
                                     <div className="flex justify-between items-center text-xs"><span className="text-slate-400">JairoAmaya.co</span><span className="text-green-400 font-mono flex items-center gap-1"><CheckCircle size={10} /> CONNECTED</span></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-        )}
-      </div>
+                                </div> {/* Cierra el contenido interno de la columna derecha */}
+                </div> {/* Cierra la columna derecha (space-y-6) */}
+            </div> {/* Cierra el grid principal (lg:grid-cols-3) */}
+        </div> {/* Cierra el div (w-full) que envuelve todo el contenido post-carga */}
+      ) /* <--- ESTE PARÉNTESIS ES EL QUE FALTA Y CAUSA EL ERROR */
+      } 
+    </div> {/* Cierra el max-w-7xl que envuelve todo el Dashboard */}
       
-      {/* MODAL CREAR */}
-      {showNewProject && (
+    {/* MODAL CREAR */}
+    {showNewProject && (
         <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
             <div className={`max-w-4xl w-full ${styles.glassCard} p-8 rounded-2xl`}>
                 <div className="flex justify-between mb-6"><h2 className="text-2xl text-white font-bold">Nuevo Proyecto</h2><button onClick={() => setShowNewProject(false)}><X className="text-slate-400 hover:text-white"/></button></div>
