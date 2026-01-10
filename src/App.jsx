@@ -608,16 +608,23 @@ const [showAnalytics, setShowAnalytics] = useState(false);
                                 {projects.map(project => (
                                 <div key={project.id} onClick={() => setSelectedProject(project)} className="group cursor-pointer rounded-xl p-6 transition-all border border-slate-800 bg-slate-900/40 hover:bg-slate-800 hover:border-amber-500/50 hover:shadow-lg relative overflow-hidden">
                                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                    <div className="flex justify-between items-start mb-4">
-                                        <div>
-                                            <h3 className={`text-lg font-bold text-white mb-1 group-hover:text-amber-400 transition-colors ${styles.fontHeading}`}>{project.name}</h3>
-                                            <div className="flex items-center gap-2 text-xs text-slate-400"><span>{project.client}</span><span className="w-1 h-1 bg-slate-600 rounded-full"></span><span className="text-amber-500 uppercase font-bold">{projectTemplates[project.projectType]?.name}</span></div>
-                                        </div>
-                                        <div className="text-xl font-bold text-slate-700 group-hover:text-white transition-colors">{project.progress}%</div>
-                                    </div>
-                                    <div className="flex gap-1 mt-4">{phases.map((ph, idx) => { const pTasks = project.data[ph.id] || []; const hasProgress = pTasks.some(t => t.completed); return (<div key={idx} className={`h-1 flex-1 rounded-full ${hasProgress ? 'bg-amber-500' : 'bg-slate-800'}`}></div>) })}</div>
-                                    <div className="flex justify-between text-[10px] text-slate-500 font-mono uppercase mt-2 px-1"><span title="Situation">S</span><span title="Objectives">O</span><span title="Strategy">S</span><span title="Tactics">T</span><span title="Action">A</span><span title="Control">C</span></div>
-                                </div>
+                                   <div className="flex items-center gap-4">
+  <div className="text-xl font-bold text-slate-700 group-hover:text-white transition-colors">
+    {project.progress}%
+  </div>
+  
+  {/* BOTÓN MÉTRICAS NARANJA */}
+  <button 
+      onClick={(e) => {
+          e.stopPropagation(); 
+          setSelectedProject(project);
+          setShowAnalytics(true);
+      }}
+      className="p-3 bg-amber-500 text-slate-900 rounded-xl font-bold text-[10px] z-[100] relative border-2 border-white shadow-xl hover:scale-105 transition-all"
+  >
+      MÉTRICAS
+  </button>
+</div>
                                 ))}
                             </div>
                         )}
