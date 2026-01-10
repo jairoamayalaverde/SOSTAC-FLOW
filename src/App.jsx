@@ -664,13 +664,15 @@ const [showAnalytics, setShowAnalytics] = useState(false);
                                 <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Integraciones</h4>
                                 <div className="space-y-3">
                                     <div className="flex justify-between items-center text-xs"><span className="text-slate-400">JairoAmaya.co</span><span className="text-green-400 font-mono flex items-center gap-1"><CheckCircle size={10} /> CONNECTED</span></div>
-                                </div> {/* Cierra el contenido interno de la columna derecha */}
-                </div> {/* Cierra la columna derecha (space-y-6) */}
-            </div> {/* Cierra el grid principal (lg:grid-cols-3) */}
-        </div> {/* Cierra el div (w-full) que envuelve todo el contenido post-carga */}
-      ) /* <--- ESTE PARÉNTESIS ES EL QUE FALTA Y CAUSA EL ERROR */
+                               </div>
+                </div>
+            </div>
+        )
       } 
-    </div> {/* Cierra el max-w-7xl que envuelve todo el Dashboard */}
+    </div>
+      
+    {/* MODAL CREAR */}
+    {showNewProject && (
       
     {/* MODAL CREAR */}
     {showNewProject && (
