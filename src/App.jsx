@@ -965,7 +965,10 @@ const [showAnalytics, setShowAnalytics] = useState(false);
             <p>© 2026 Jairo Amaya Full Stack Marketer. All rights reserved.</p>
             <p className="font-mono">v10.0.0 CLOUD + ANALYTICS</p>
         </div>
-      </footer>
+     </footer>
+    </div>
+    </div>
+    </div>
     </div>
   );
 }
