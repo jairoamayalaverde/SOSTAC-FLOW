@@ -671,8 +671,7 @@ const [showAnalytics, setShowAnalytics] = useState(false);
       } 
     </div>
       
-    {/* MODAL CREAR */}
-    {showNewProject && (
+  
       
     {/* MODAL CREAR */}
     {showNewProject && (
