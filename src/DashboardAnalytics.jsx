@@ -236,18 +236,9 @@ export default function DashboardAnalytics({ proyecto, onClose }) {
             </div>
           </div>
           
-          <div className="flex gap-3 items-center">
-            <button 
-              disabled
-              className="px-4 py-2 bg-slate-700 text-slate-400 font-bold rounded-lg flex items-center gap-2 cursor-not-allowed opacity-60"
-              title="Función disponible próximamente"
-            >
-              <Lock size={18} /> Exportar PDF - Próximamente
-            </button>
-            <button onClick={onClose} className="p-2 text-slate-500 hover:text-white transition-colors">
-              <X size={20} />
-            </button>
-          </div>
+          <button onClick={onClose} className="p-3 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all">
+            <X size={24} />
+          </button>
         </header>
 
         {/* MÉTRICAS PRINCIPALES */}
@@ -288,8 +279,11 @@ export default function DashboardAnalytics({ proyecto, onClose }) {
                 {metricas.tareasCompletadas}<span className="text-xl text-slate-500">/{metricas.totalTareas}</span>
               </div>
               <div className="flex items-center gap-2 text-xs">
-                <div className={metricas.tasaCompletitud >= 50 ? 'text-green-400' : 'text-slate-500'}>
-                  {metricas.tasaCompletitud}% de progreso
+                <div 
+                  className={metricas.tasaCompletitud >= 50 ? 'text-green-400' : 'text-slate-500'}
+                  title="Progreso global considerando todas las fases SOSTAC"
+                >
+                  {metricas.tasaCompletitud}% de progreso global
                 </div>
               </div>
             </div>
