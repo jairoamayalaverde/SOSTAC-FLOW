@@ -5,7 +5,8 @@ import {
 } from 'lucide-react';
 
 const ExecutiveReport = ({ proyecto, metricas, config, onClose }) => {
-  if (!proyecto || !config) return null;
+  // ESCUDO NIVEL 1: Si no hay datos fundamentales, no renderizamos nada
+  if (!proyecto || !config || !proyecto.data) return null;
 
   // PROCESAMIENTO DE DATOS SOSTAC
   const reportData = useMemo(() => {
@@ -19,20 +20,21 @@ const ExecutiveReport = ({ proyecto, metricas, config, onClose }) => {
     ];
 
     const fasesProcessed = fasesConfig.map(f => {
-      const tareas = proyecto.data[f.id] || [];
+      // Usamos el encadenamiento opcional ?. para evitar crashes
+      const tareas = proyecto?.data?.[f.id] || [];
       const completadas = tareas.filter(t => t.completed).length;
       return {
         ...f,
         total: tareas.length,
         completadas,
         completitud: tareas.length > 0 ? Math.round((completadas / tareas.length) * 100) : 0,
-        tareas: tareas.slice(0, 5) // Mostramos hasta 5 tareas por fase
+        tareas: tareas.slice(0, 5)
       };
     });
 
     const recomendaciones = [];
-    if (metricas.velocityScore < 50) recomendaciones.push("Optimizar flujo de trabajo: El ritmo actual sugiere cuellos de botella técnicos.");
-    if (fasesProcessed.find(f => f.id === 'control').completitud < 20) recomendaciones.push("Fortalecer mecanismos de medición: Sin datos de control, la estrategia carece de feedback.");
+    if (metricas?.velocityScore < 50) recomendaciones.push("Optimizar flujo de trabajo: El ritmo actual sugiere cuellos de botella técnicos.");
+    if (fasesProcessed.find(f => f.id === 'control')?.completitud < 20) recomendaciones.push("Fortalecer mecanismos de medición: Sin datos de control, la estrategia carece de feedback.");
 
     return { fases: fasesProcessed, recomendaciones };
   }, [proyecto, metricas]);
@@ -62,17 +64,17 @@ const ExecutiveReport = ({ proyecto, metricas, config, onClose }) => {
 
       <div className="max-w-[950px] mx-auto bg-white shadow-2xl report-sheet min-h-screen transition-all">
         
-        {/* HEADER PERSONALIZADO (Modal Config) */}
+        {/* HEADER */}
         <header className="p-8 border-b-4 border-amber-500 flex justify-between items-center">
           <div className="flex items-center gap-4">
-            {config.logo ? (
+            {config?.logo ? (
               <img src={config.logo} alt="Consultant Logo" className="h-14 object-contain" />
             ) : (
               <div className="bg-black text-amber-500 w-12 h-12 flex items-center justify-center rounded font-bold text-2xl">J</div>
             )}
             <div>
-              <div className="font-bold text-lg tracking-tight uppercase">{config.consultantName || 'Jairo Amaya'}</div>
-              <div className="text-[10px] text-slate-500 uppercase tracking-widest">{config.consultantTitle || 'Full Stack Marketer'}</div>
+              <div className="font-bold text-lg tracking-tight uppercase">{config?.consultantName || 'Jairo Amaya'}</div>
+              <div className="text-[10px] text-slate-500 uppercase tracking-widest">{config?.consultantTitle || 'Full Stack Marketer'}</div>
             </div>
           </div>
           <div className="text-right">
@@ -81,26 +83,26 @@ const ExecutiveReport = ({ proyecto, metricas, config, onClose }) => {
           </div>
         </header>
 
-        {/* PORTADA IMPACTANTE */}
+        {/* PORTADA CON ESCUDO ?. */}
         <section className="hero-black text-white p-16 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/5 rounded-full -mr-20 -mt-20 blur-3xl"></div>
           <div className="relative z-10">
             <span className="text-amber-500 font-bold text-xs uppercase tracking-[0.4em] mb-4 block">Confidencial / Strategic Roadmap</span>
-            <h1 className="text-5xl font-bold mb-6 leading-[1.1]">{proyecto.name.toUpperCase()}</h1>
+            <h1 className="text-5xl font-bold mb-6 leading-[1.1]">{proyecto?.name?.toUpperCase() || 'PROYECTO'}</h1>
             <p className="text-xl text-slate-400 font-light border-l-2 border-amber-500 pl-6">
-              Preparado para: <span className="text-white font-bold">{proyecto.client}</span>
+              Preparado para: <span className="text-white font-bold">{proyecto?.client || 'Cliente'}</span>
             </p>
           </div>
         </section>
 
-        {/* MÉTRICAS (Condicional) */}
-        {config.includeSections.metrics && (
+        {/* MÉTRICAS */}
+        {config?.includeSections?.metrics && (
           <section className="grid grid-cols-4 bg-slate-50 border-b border-slate-100">
             {[
-              { label: 'Velocity Score', val: metricas.velocityScore, color: 'text-amber-500' },
-              { label: 'Completion', val: `${proyecto.progress}%`, color: 'text-black' },
-              { label: 'Health Index', val: `${metricas.puntajeSalud}/10`, color: 'text-green-600' },
-              { label: 'Execution Days', val: Math.floor((new Date() - new Date(proyecto.created_at)) / (1000*60*60*24)), color: 'text-black' }
+              { label: 'Velocity Score', val: metricas?.velocityScore || 0, color: 'text-amber-500' },
+              { label: 'Completion', val: `${proyecto?.progress || 0}%`, color: 'text-black' },
+              { label: 'Health Index', val: `${metricas?.puntajeSalud || 0}/10`, color: 'text-green-600' },
+              { label: 'Execution Days', val: proyecto?.created_at ? Math.floor((new Date() - new Date(proyecto.created_at)) / (1000*60*60*24)) : 0, color: 'text-black' }
             ].map((m, i) => (
               <div key={i} className="p-8 text-center border-r border-slate-200 last:border-0">
                 <div className="text-[9px] text-slate-400 font-black uppercase mb-1">{m.label}</div>
@@ -110,8 +112,8 @@ const ExecutiveReport = ({ proyecto, metricas, config, onClose }) => {
           </section>
         )}
 
-        {/* FASES SOSTAC (Condicional) */}
-        {config.includeSections.sostacPhases && (
+        {/* FASES SOSTAC */}
+        {config?.includeSections?.sostacPhases && (
           <section className="p-12">
             <h2 className="text-xl font-bold mb-8 flex items-center gap-2">
               <BarChart3 className="text-amber-500" size={20} /> Análisis de Madurez SOSTAC
@@ -135,41 +137,8 @@ const ExecutiveReport = ({ proyecto, metricas, config, onClose }) => {
           </section>
         )}
 
-        {/* TABLA DE TAREAS (Condicional) */}
-        {config.includeSections.tasks && (
-          <section className="p-12 bg-white">
-             <h2 className="text-xl font-bold mb-6 flex items-center gap-2 uppercase tracking-tighter">
-               <Target size={20} className="text-amber-500"/> Hoja de Ruta Ejecutiva
-             </h2>
-             <table className="w-full text-left border-collapse">
-               <thead>
-                 <tr className="border-b-2 border-black text-[10px] uppercase font-black text-slate-400">
-                   <th className="py-4">Fase</th>
-                   <th className="py-4">Iniciativa Estratégica</th>
-                   <th className="py-4">Estatus</th>
-                 </tr>
-               </thead>
-               <tbody>
-                 {reportData.fases.filter(f => f.total > 0).map(f => (
-                   f.tareas.map((t, idx) => (
-                     <tr key={t.id} className="border-b border-slate-100 text-sm">
-                       <td className="py-3 font-bold text-[10px] text-amber-600">{idx === 0 ? f.name : ''}</td>
-                       <td className="py-3 text-slate-700">{t.text}</td>
-                       <td className="py-3">
-                         <span className={`text-[9px] font-bold px-2 py-0.5 rounded ${t.completed ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}>
-                           {t.completed ? 'LOGRADO' : 'EN PROCESO'}
-                         </span>
-                       </td>
-                     </tr>
-                   ))
-                 ))}
-               </tbody>
-             </table>
-          </section>
-        )}
-
-        {/* RECOMENDACIONES (Condicional) */}
-        {config.includeSections.recommendations && (
+        {/* RECOMENDACIONES */}
+        {config?.includeSections?.recommendations && (
           <section className="p-12 mx-8 bg-black text-white rounded-3xl mb-12 shadow-xl">
              <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-amber-500">
                <Lightbulb size={20}/> Insights del Consultor
@@ -189,11 +158,11 @@ const ExecutiveReport = ({ proyecto, metricas, config, onClose }) => {
         {/* FOOTER CORPORATIVO */}
         <footer className="mt-auto bg-slate-50 p-12 flex justify-between items-end border-t border-slate-200">
            <div>
-             <div className="font-bold text-lg mb-1">{config.consultantName}</div>
-             <div className="text-xs text-slate-500 max-w-[250px] mb-4">{config.consultantServices}</div>
+             <div className="font-bold text-lg mb-1">{config?.consultantName}</div>
+             <div className="text-xs text-slate-500 max-w-[250px] mb-4">{config?.consultantServices}</div>
              <div className="flex gap-4 text-xs text-amber-600 font-bold">
-               {config.consultantWebsite && <span className="flex items-center gap-1"><Globe size={10}/> {config.consultantWebsite}</span>}
-               {config.consultantEmail && <span className="flex items-center gap-1"><Mail size={10}/> {config.consultantEmail}</span>}
+               {config?.consultantWebsite && <span className="flex items-center gap-1"><Globe size={10}/> {config.consultantWebsite}</span>}
+               {config?.consultantEmail && <span className="flex items-center gap-1"><Mail size={10}/> {config.consultantEmail}</span>}
              </div>
            </div>
            <div className="text-right">
