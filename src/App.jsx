@@ -10,7 +10,8 @@ import {
 import jsPDF from 'jspdf';
 import { createClient } from '@supabase/supabase-js';
 import DashboardAnalytics from './DashboardAnalytics';
-
+import ExecutiveReport from './ExecutiveReport';
+import ReportModal from './ReportModal';
 
 // --- 0. CONFIGURACIÓN SUPABASE (TUS CREDENCIALES) ---
 const SUPABASE_URL = 'https://hompawsonronlgrvujjb.supabase.co';
@@ -167,6 +168,11 @@ export default function App() {
     name: '', client: '', industry: '', projectType: 'seo', startDate: new Date().toISOString().split('T')[0]
   });
 const [showAnalytics, setShowAnalytics] = useState(false);
+  // --- ESTADOS PARA REPORTE EJECUTIVO ---
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [showExecutiveReport, setShowExecutiveReport] = useState(false);
+  const [reportConfig, setReportConfig] = useState(null);
+  
   const initializedRef = useRef(false);
 
   // --- SESIÓN Y CARGA INICIAL ---
@@ -498,6 +504,20 @@ const [showAnalytics, setShowAnalytics] = useState(false);
       />
     );
   }
+  // --- NUEVA: PUERTA DE ACCESO AL REPORTE EJECUTIVO (ESTILO VICTORY SHOES) ---
+if (showExecutiveReport && selectedProject) {
+  return (
+    <ExecutiveReport 
+      proyecto={selectedProject} 
+      metricas={{ 
+        velocityScore: projects.find(p => p.id === selectedProject.id)?.progress || 0, // Usamos el progreso real como base
+        puntajeSalud: ((projects.find(p => p.id === selectedProject.id)?.progress || 0) / 10).toFixed(1) 
+      }}
+      config={reportConfig}
+      onClose={() => setShowExecutiveReport(false)} 
+    />
+  );
+}
   // --- RENDER: LOGIN SCREEN ---
   if (authLoading) return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-amber-500 font-bold animate-pulse">Cargando Sistema...</div>;
 
@@ -696,6 +716,16 @@ const [showAnalytics, setShowAnalytics] = useState(false);
             </div>
         </div>
       )}
+{/* --- COMPONENTE DE CONFIGURACIÓN DE REPORTE --- */}
+      <ReportModal 
+        isOpen={isReportModalOpen} 
+        proyecto={selectedProject}
+        onClose={() => setIsReportModalOpen(false)}
+        onGenerate={(config) => {
+          setReportConfig(config);
+          setShowExecutiveReport(true);
+        }}
+      />
 
       {/* FOOTER */}
       <footer className="relative z-10 border-t border-slate-800 bg-slate-950/80 backdrop-blur-md pt-12 pb-12 mt-12">
@@ -742,15 +772,26 @@ const [showAnalytics, setShowAnalytics] = useState(false);
                 {viewMode === 'admin' ? 'MODO EDITOR' : 'VISTA CLIENTE'}
             </button>
             
-            {/* BOTÓN PDF ACTIVO */}
-            <button onClick={generatePDF} className="p-2 text-amber-500 hover:text-white transition-colors" title="Descargar Reporte PDF">
-                <Download size={18} />
+            {/* BOTÓN PDF CLÁSICO */}
+            <button 
+              onClick={generatePDF} 
+              className="p-2 text-amber-500 hover:text-white transition-colors" 
+              title="Descargar Reporte PDF"
+            >
+              <Download size={18} />
+            </button>
+
+            {/* NUEVO: BOTÓN MODO PRESENTACIÓN (ESTILO VICTORY) */}
+            <button 
+              onClick={() => setIsReportModalOpen(true)} 
+              className="p-2 text-amber-500 hover:text-white transition-colors border-l border-slate-800 ml-1 pl-3" 
+              title="Modo Presentación Ejecutivo"
+            >
+              <FileText size={18} />
             </button>
           </div>
         </div>
       </div>
-
-      <div className="max-w-7xl mx-auto px-4 py-8 w-full flex-1">
         
         {/* PHASE NAVIGATOR (METRO LINE) */}
         <div className="mb-8 overflow-x-auto pb-4 scrollbar-hide">
