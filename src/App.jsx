@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { 
+import {
   Plus, Edit2, Trash2, CheckCircle, Circle, Calendar, 
   Save, X, Briefcase, Eye, EyeOff, LayoutDashboard, 
   ArrowLeft, ExternalLink, BarChart3, FileText, RefreshCw,
@@ -9,6 +9,9 @@ import {
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import { createClient } from '@supabase/supabase-js';
+import DashboardAnalytics from './DashboardAnalytics';
+import ExecutiveReport from './ExecutiveReport';
+import ReportModal from './ReportModal';
 
 // --- 0. CONFIGURACIÓN SUPABASE (TUS CREDENCIALES) ---
 const SUPABASE_URL = 'https://hompawsonronlgrvujjb.supabase.co';
@@ -164,7 +167,12 @@ export default function App() {
   const [newProjectData, setNewProjectData] = useState({
     name: '', client: '', industry: '', projectType: 'seo', startDate: new Date().toISOString().split('T')[0]
   });
-
+const [showAnalytics, setShowAnalytics] = useState(false);
+  // --- ESTADOS PARA REPORTE EJECUTIVO ---
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [showExecutiveReport, setShowExecutiveReport] = useState(false);
+  const [reportConfig, setReportConfig] = useState(null);
+  
   const initializedRef = useRef(false);
 
   // --- SESIÓN Y CARGA INICIAL ---
@@ -486,7 +494,30 @@ export default function App() {
       return acc + count;
   }, 0);
   const avgProgress = projects.length > 0 ? Math.round(projects.reduce((acc, curr) => acc + curr.progress, 0) / projects.length) : 0;
-
+  
+// --- PUERTA DE ACCESO A ANALYTICS ---
+  if (showAnalytics && selectedProject) {
+    return (
+      <DashboardAnalytics 
+        proyecto={selectedProject} 
+        onClose={() => setShowAnalytics(false)} 
+      />
+    );
+  }
+  // --- NUEVA: PUERTA DE ACCESO AL REPORTE EJECUTIVO (ESTILO VICTORY SHOES) ---
+if (showExecutiveReport && selectedProject) {
+  return (
+    <ExecutiveReport 
+      proyecto={selectedProject} 
+      metricas={{ 
+        velocityScore: projects.find(p => p.id === selectedProject.id)?.progress || 0, // Usamos el progreso real como base
+        puntajeSalud: ((projects.find(p => p.id === selectedProject.id)?.progress || 0) / 10).toFixed(1) 
+      }}
+      config={reportConfig}
+      onClose={() => setShowExecutiveReport(false)} 
+    />
+  );
+}
   // --- RENDER: LOGIN SCREEN ---
   if (authLoading) return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-amber-500 font-bold animate-pulse">Cargando Sistema...</div>;
 
@@ -555,14 +586,15 @@ export default function App() {
         </header>
 
         {/* LOADING O BENTO GRID */}
+       {/* CARGA O CONTENIDO PRINCIPAL */}
         {loadingProjects || onboarding ? (
             <div className="text-center py-20 animate-pulse">
                 <div className="text-amber-500 font-bold text-xl mb-2">Inicializando Espacio de Trabajo...</div>
                 <div className="text-slate-500 text-sm">Configurando base de datos segura y creando proyecto demo.</div>
             </div>
         ) : (
-            <>
-                {/* --- RESTAURADO: BENTO GRID SUPERIOR (CON RADAR) --- */}
+            <div className="w-full">
+                {/* BENTO GRID SUPERIOR */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
                     <div className={`${styles.glassCard} p-6 rounded-2xl relative overflow-hidden group`}>
                         <Layers size={80} className="absolute -right-4 -top-4 text-slate-800 opacity-50 group-hover:opacity-100 group-hover:text-amber-500/10 transition-all" />
@@ -584,34 +616,54 @@ export default function App() {
                     </div>
                 </div>
 
+                {/* CUERPO DEL DASHBOARD */}
                 <div className="grid lg:grid-cols-3 gap-8">
-                    {/* COLUMNA IZQUIERDA: PROYECTOS */}
                     <div className="lg:col-span-2 space-y-4">
                         <div className="flex justify-between items-center mb-2">
                             <h2 className={`text-xl font-bold text-white flex items-center gap-2 ${styles.fontHeading}`}><Briefcase size={20} className="text-amber-500" /> Proyectos en Curso</h2>
                         </div>
+                        
                         {projects.length === 0 ? (
-                            <div className="text-center py-20 bg-slate-900/40 border border-dashed border-slate-800 rounded-3xl"><p className="text-slate-500">Tu espacio está listo. Crea tu primera estrategia.</p></div>
+                            <div className="text-center py-20 bg-slate-900/40 border border-dashed border-slate-800 rounded-3xl">
+                                <p className="text-slate-500">Tu espacio está listo. Crea tu primera estrategia.</p>
+                            </div>
                         ) : (
                             <div className="grid gap-4">
                                 {projects.map(project => (
-                                <div key={project.id} onClick={() => setSelectedProject(project)} className="group cursor-pointer rounded-xl p-6 transition-all border border-slate-800 bg-slate-900/40 hover:bg-slate-800 hover:border-amber-500/50 hover:shadow-lg relative overflow-hidden">
-                                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                    <div className="flex justify-between items-start mb-4">
-                                        <div>
-                                            <h3 className={`text-lg font-bold text-white mb-1 group-hover:text-amber-400 transition-colors ${styles.fontHeading}`}>{project.name}</h3>
-                                            <div className="flex items-center gap-2 text-xs text-slate-400"><span>{project.client}</span><span className="w-1 h-1 bg-slate-600 rounded-full"></span><span className="text-amber-500 uppercase font-bold">{projectTemplates[project.projectType]?.name}</span></div>
+                                    <div key={project.id} onClick={() => setSelectedProject(project)} className="group cursor-pointer rounded-xl p-6 transition-all border border-slate-800 bg-slate-900/40 hover:bg-slate-800 hover:border-amber-500/50 hover:shadow-lg relative overflow-hidden">
+                                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div>
+                                                <h3 className={`text-lg font-bold text-white mb-1 group-hover:text-amber-400 transition-colors ${styles.fontHeading}`}>{project.name}</h3>
+                                                <div className="flex items-center gap-2 text-xs text-slate-400">
+                                                    <span>{project.client}</span>
+                                                    <span className="w-1 h-1 bg-slate-600 rounded-full"></span>
+                                                    <span className="text-amber-500 uppercase font-bold">{projectTemplates[project.projectType]?.name}</span>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-4">
+                                                <div className="text-xl font-bold text-slate-700 group-hover:text-white transition-colors">{project.progress}%</div>
+                                                <button 
+                                                    onClick={(e) => { e.stopPropagation(); setSelectedProject(project); setShowAnalytics(true); }}
+                                                    className="p-3 bg-amber-500 text-slate-900 rounded-xl font-bold text-[10px] z-[100] relative border-2 border-white shadow-xl hover:scale-105 transition-all"
+                                                >
+                                                    MÉTRICAS
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div className="text-xl font-bold text-slate-700 group-hover:text-white transition-colors">{project.progress}%</div>
+                                        <div className="flex gap-1 mt-4">
+                                            {phases.map((ph, idx) => { 
+                                                const pTasks = project.data[ph.id] || []; 
+                                                const hasProgress = pTasks.some(t => t.completed); 
+                                                return (<div key={idx} className={`h-1 flex-1 rounded-full ${hasProgress ? 'bg-amber-500' : 'bg-slate-800'}`}></div>) 
+                                            })}
+                                        </div>
                                     </div>
-                                    <div className="flex gap-1 mt-4">{phases.map((ph, idx) => { const pTasks = project.data[ph.id] || []; const hasProgress = pTasks.some(t => t.completed); return (<div key={idx} className={`h-1 flex-1 rounded-full ${hasProgress ? 'bg-amber-500' : 'bg-slate-800'}`}></div>) })}</div>
-                                    <div className="flex justify-between text-[10px] text-slate-500 font-mono uppercase mt-2 px-1"><span title="Situation">S</span><span title="Objectives">O</span><span title="Strategy">S</span><span title="Tactics">T</span><span title="Action">A</span><span title="Control">C</span></div>
-                                </div>
                                 ))}
                             </div>
                         )}
                     </div>
-
+                    
                     {/* COLUMNA DERECHA: SIDEBAR DE ACCIONES (RESTAURADO) */}
                     <div className="space-y-6">
                         <div className="flex justify-between items-center mb-2">
@@ -637,12 +689,12 @@ export default function App() {
                         </div>
                     </div>
                 </div>
-            </>
+            </div>
         )}
       </div>
       
-      {/* MODAL CREAR */}
-      {showNewProject && (
+    {/* MODAL CREAR */}
+    {showNewProject && (
         <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
             <div className={`max-w-4xl w-full ${styles.glassCard} p-8 rounded-2xl`}>
                 <div className="flex justify-between mb-6"><h2 className="text-2xl text-white font-bold">Nuevo Proyecto</h2><button onClick={() => setShowNewProject(false)}><X className="text-slate-400 hover:text-white"/></button></div>
@@ -664,18 +716,16 @@ export default function App() {
             </div>
         </div>
       )}
-
-      {/* FOOTER */}
-      <footer className="relative z-10 border-t border-slate-800 bg-slate-950/80 backdrop-blur-md pt-12 pb-12 mt-12">
-        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="md:col-span-2"><a href="https://jairoamaya.co" target="_blank" rel="noopener noreferrer" className="group block"><h4 className={`text-2xl font-bold text-white mb-2 group-hover:text-amber-500 transition-colors ${styles.fontHeading}`}>JAIRO AMAYA</h4><div className="flex items-center gap-2"><span className="h-0.5 w-8 bg-amber-500"></span><p className="text-amber-500 font-bold text-sm tracking-wider uppercase group-hover:text-white transition-colors">Full Stack Marketer</p></div></a><p className="text-slate-500 text-sm mt-4 max-w-sm leading-relaxed">Gestión estratégica de proyectos de consultoría digital.</p></div>
-            <div><h5 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Recursos</h5><ul className="space-y-2 text-sm text-slate-500"><li><a href="https://jairoamaya.co/auditor-seo-interactivo/" target="_blank" className="hover:text-amber-500 transition-colors">Auditor SEO</a></li><li><a href="https://jairoamaya.co/matriz-de-prioridad-seo/" target="_blank" className="hover:text-amber-500 transition-colors">Matriz de Prioridad</a></li></ul></div>
-            <div className="flex flex-col md:items-end"><h5 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Estado</h5><div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 mb-4"><div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div><span className="text-xs text-green-500 font-mono font-bold">SYSTEM OPERATIONAL</span></div><div className="flex gap-4 mb-4"><a href="https://www.linkedin.com/in/jairoamayalaverde/" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Linkedin size={18} /></a><a href="https://twitter.com/JAIROAMAYA" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Twitter size={18} /></a><a href="https://jairoamaya.co" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Globe size={18} /></a></div></div>
-        </div>
-        <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600"><p>© 2026 Jairo Amaya Full Stack Marketer. All rights reserved.</p><p className="font-mono">v9.8.0 CLOUD EDITION (MASTER)</p></div>
-      </footer>
-    </div>
-  );
+{/* --- COMPONENTE DE CONFIGURACIÓN DE REPORTE --- */}
+      <ReportModal 
+        isOpen={isReportModalOpen} 
+        proyecto={selectedProject}
+        onClose={() => setIsReportModalOpen(false)}
+        onGenerate={(config) => {
+          setReportConfig(config);
+          setShowExecutiveReport(true);
+        }}
+      />
 
   // --- RENDER: VISTA DE PROYECTO (COCKPIT) ---
   return (
@@ -710,15 +760,26 @@ export default function App() {
                 {viewMode === 'admin' ? 'MODO EDITOR' : 'VISTA CLIENTE'}
             </button>
             
-            {/* BOTÓN PDF ACTIVO */}
-            <button onClick={generatePDF} className="p-2 text-amber-500 hover:text-white transition-colors" title="Descargar Reporte PDF">
-                <Download size={18} />
+            {/* BOTÓN PDF CLÁSICO */}
+            <button 
+              onClick={generatePDF} 
+              className="p-2 text-amber-500 hover:text-white transition-colors" 
+              title="Descargar Reporte PDF"
+            >
+              <Download size={18} />
+            </button>
+
+            {/* NUEVO: BOTÓN MODO PRESENTACIÓN (ESTILO VICTORY) */}
+            <button 
+              onClick={() => setIsReportModalOpen(true)} 
+              className="p-2 text-amber-500 hover:text-white transition-colors border-l border-slate-800 ml-1 pl-3" 
+              title="Modo Presentación Ejecutivo"
+            >
+              <FileText size={18} />
             </button>
           </div>
         </div>
       </div>
-
-      <div className="max-w-7xl mx-auto px-4 py-8 w-full flex-1">
         
         {/* PHASE NAVIGATOR (METRO LINE) */}
         <div className="mb-8 overflow-x-auto pb-4 scrollbar-hide">
@@ -931,7 +992,7 @@ export default function App() {
         
         <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600">
             <p>© 2026 Jairo Amaya Full Stack Marketer. All rights reserved.</p>
-            <p className="font-mono">v9.8.0 CLOUD EDITION (MASTER)</p>
+            <p className="font-mono">v10.0.0 CLOUD + ANALYTICS</p>
         </div>
       </footer>
     </div>
