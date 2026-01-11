@@ -504,14 +504,15 @@ const [showAnalytics, setShowAnalytics] = useState(false);
       />
     );
   }
-  // --- PUERTA DE ACCESO LIMPIA ---
-  if (showExecutiveReport && selectedProject) {
+ // --- PUERTA DE ACCESO DE EMERGENCIA ---
+  // Solo se activa si explícitamente pedimos el reporte y el proyecto existe.
+  if (showExecutiveReport === true && selectedProject !== null && typeof selectedProject === 'object') {
     return (
       <ExecutiveReport 
         proyecto={selectedProject} 
         metricas={{ 
-          velocityScore: selectedProject.progress || 0,
-          puntajeSalud: ((selectedProject.progress || 0) / 10).toFixed(1) 
+          velocityScore: selectedProject?.progress || 0,
+          puntajeSalud: ((selectedProject?.progress || 0) / 10).toFixed(1) 
         }}
         config={reportConfig}
         onClose={() => setShowExecutiveReport(false)} 
