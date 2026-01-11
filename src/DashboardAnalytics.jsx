@@ -1,11 +1,9 @@
-// VERSIÓN DE DIAGNÓSTICO - Copia este código completo en tu DashboardAnalytics.jsx
-
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo } from 'react';
 import { 
   TrendingUp, TrendingDown, AlertCircle, CheckCircle, 
   Calendar, Target, Zap, Activity, BarChart3, 
-  Download, ArrowLeft, Brain, Sparkles, Clock,
-  Award, ExternalLink, FileText, X
+  ArrowLeft, Brain, Sparkles, Clock,
+  Award, ExternalLink, FileText, X, Lock
 } from 'lucide-react';
 import { 
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
@@ -13,8 +11,6 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   Area, AreaChart
 } from 'recharts';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 
 // ESTILOS
 const styles = {
@@ -34,10 +30,7 @@ const fases = [
 ];
 
 export default function DashboardAnalytics({ proyecto, onClose }) {
-  const radarChartRef = useRef(null);
-  const burndownChartRef = useRef(null);
-  const activityChartRef = useRef(null);
-
+  
   // CÁLCULO DE MÉTRICAS
   const metricas = useMemo(() => {
     if (!proyecto) return {};
@@ -98,8 +91,11 @@ export default function DashboardAnalytics({ proyecto, onClose }) {
       
       return {
         fase: fase.name,
+        icon: fase.icon,
         completitud,
         total,
+        completadas,
+        pendientes: total - completadas,
         maximo: 100
       };
     });
@@ -127,6 +123,7 @@ export default function DashboardAnalytics({ proyecto, onClose }) {
     if (!proyecto) return [];
     return fases.map(fase => ({
       nombre: fase.name.substring(0, 3),
+      nombreCompleto: fase.name,
       tareas: proyecto.data[fase.id]?.length || 0,
       completadas: proyecto.data[fase.id]?.filter(t => t.completed).length || 0,
       color: fase.color
@@ -205,309 +202,6 @@ export default function DashboardAnalytics({ proyecto, onClose }) {
     return resultado.slice(0, 3);
   }, [proyecto, metricas]);
 
-  // ============================================
-  // 🔍 FUNCIÓN DE EXPORTACIÓN CON DIAGNÓSTICO
-  // ============================================
-  const generateAnalyticsPDF = async () => {
-    console.log('🔍 DIAGNÓSTICO: Función generateAnalyticsPDF iniciada');
-    
-    // TEST 1: Verificar que la función se ejecuta
-    alert('✅ TEST 1: La función se está ejecutando correctamente');
-    
-    // TEST 2: Verificar que html2canvas está disponible
-    if (typeof html2canvas === 'undefined') {
-      alert('❌ ERROR: html2canvas NO está cargado');
-      console.error('html2canvas no está disponible');
-      return;
-    } else {
-      console.log('✅ html2canvas está disponible');
-    }
-    
-    // TEST 3: Verificar que jsPDF está disponible
-    if (typeof jsPDF === 'undefined') {
-      alert('❌ ERROR: jsPDF NO está cargado');
-      console.error('jsPDF no está disponible');
-      return;
-    } else {
-      console.log('✅ jsPDF está disponible');
-    }
-    
-    // TEST 4: Verificar refs
-    console.log('Refs disponibles:', {
-      radar: radarChartRef.current ? 'OK' : 'NULL',
-      burndown: burndownChartRef.current ? 'OK' : 'NULL',
-      activity: activityChartRef.current ? 'OK' : 'NULL'
-    });
-    
-    try {
-      const doc = new jsPDF();
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
-      let yPos = 20;
-
-      console.log('📄 Generando página 1...');
-
-      // ===== PÁGINA 1: PORTADA Y MÉTRICAS =====
-      doc.setFillColor(15, 23, 42);
-      doc.rect(0, 0, pageWidth, 50, 'F');
-      
-      doc.setTextColor(245, 158, 11);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(24);
-      doc.text('SOSTAC FLOW', 20, 25);
-      
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(12);
-      doc.setFont("helvetica", "normal");
-      doc.text('REPORTE DE ANALÍTICAS ESTRATÉGICAS', 20, 38);
-
-      yPos = 65;
-      doc.setTextColor(50, 50, 50);
-      doc.setFontSize(18);
-      doc.setFont("helvetica", "bold");
-      doc.text(proyecto.name, 20, yPos);
-
-      yPos += 8;
-      doc.setFontSize(11);
-      doc.setTextColor(100, 100, 100);
-      doc.setFont("helvetica", "normal");
-      doc.text(`Cliente: ${proyecto.client}`, 20, yPos);
-      doc.text(`Fecha: ${new Date().toLocaleDateString('es-ES')}`, 150, yPos);
-
-      yPos += 5;
-      doc.text(`Industria: ${proyecto.industry}`, 20, yPos);
-      doc.text(`Tipo: ${proyecto.projectType.toUpperCase()}`, 150, yPos);
-
-      yPos += 5;
-      doc.setDrawColor(200, 200, 200);
-      doc.line(20, yPos, pageWidth - 20, yPos);
-
-      yPos += 15;
-      doc.setFillColor(245, 158, 11);
-      doc.roundedRect(20, yPos, pageWidth - 40, 10, 2, 2, 'F');
-      doc.setTextColor(0, 0, 0);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(12);
-      doc.text('MÉTRICAS PRINCIPALES', 25, yPos + 7);
-
-      yPos += 20;
-      const metricBoxWidth = (pageWidth - 50) / 2;
-      const metricBoxHeight = 30;
-      
-      // Velocity Score
-      doc.setFillColor(51, 65, 85);
-      doc.roundedRect(20, yPos, metricBoxWidth, metricBoxHeight, 3, 3, 'F');
-      doc.setTextColor(148, 163, 184);
-      doc.setFontSize(9);
-      doc.setFont("helvetica", "normal");
-      doc.text('PUNTAJE DE VELOCIDAD™', 25, yPos + 8);
-      doc.setTextColor(245, 158, 11);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(24);
-      doc.text(`${metricas.velocityScore}`, 25, yPos + 22);
-      doc.setFontSize(10);
-      doc.setTextColor(148, 163, 184);
-      doc.text('/100', 45, yPos + 22);
-
-      // Tareas Completadas
-      doc.setFillColor(51, 65, 85);
-      doc.roundedRect(20 + metricBoxWidth + 10, yPos, metricBoxWidth, metricBoxHeight, 3, 3, 'F');
-      doc.setTextColor(148, 163, 184);
-      doc.setFontSize(9);
-      doc.setFont("helvetica", "normal");
-      doc.text('TAREAS COMPLETADAS', 25 + metricBoxWidth + 10, yPos + 8);
-      doc.setTextColor(255, 255, 255);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(20);
-      doc.text(`${metricas.tareasCompletadas}/${metricas.totalTareas}`, 25 + metricBoxWidth + 10, yPos + 22);
-
-      yPos += metricBoxHeight + 10;
-
-      // Salud del Proyecto
-      doc.setFillColor(51, 65, 85);
-      doc.roundedRect(20, yPos, metricBoxWidth, metricBoxHeight, 3, 3, 'F');
-      doc.setTextColor(148, 163, 184);
-      doc.setFontSize(9);
-      doc.setFont("helvetica", "normal");
-      doc.text('SALUD DEL PROYECTO', 25, yPos + 8);
-      doc.setTextColor(34, 197, 94);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(24);
-      doc.text(`${metricas.puntajeSalud}`, 25, yPos + 22);
-      doc.setFontSize(10);
-      doc.setTextColor(148, 163, 184);
-      doc.text('/10', 40, yPos + 22);
-
-      // Progreso General
-      doc.setFillColor(51, 65, 85);
-      doc.roundedRect(20 + metricBoxWidth + 10, yPos, metricBoxWidth, metricBoxHeight, 3, 3, 'F');
-      doc.setTextColor(148, 163, 184);
-      doc.setFontSize(9);
-      doc.setFont("helvetica", "normal");
-      doc.text('PROGRESO GENERAL', 25 + metricBoxWidth + 10, yPos + 8);
-      doc.setTextColor(245, 158, 11);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(24);
-      doc.text(`${metricas.tasaCompletitud}%`, 25 + metricBoxWidth + 10, yPos + 22);
-
-      yPos += metricBoxHeight + 20;
-      doc.setFillColor(245, 158, 11);
-      doc.roundedRect(20, yPos, pageWidth - 40, 10, 2, 2, 'F');
-      doc.setTextColor(0, 0, 0);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(12);
-      doc.text('ESTADÍSTICAS DETALLADAS', 25, yPos + 7);
-
-      yPos += 18;
-      doc.setTextColor(100, 100, 100);
-      doc.setFontSize(10);
-      doc.setFont("helvetica", "normal");
-      
-      const stats = [
-        { label: 'Días sin actividad:', value: metricas.diasSinActividad, color: metricas.diasSinActividad === 0 ? [34, 197, 94] : [239, 68, 68] },
-        { label: 'Tareas con recursos:', value: metricas.tareasConEnlaces, color: [139, 92, 246] },
-        { label: 'Tareas con notas:', value: metricas.tareasConNotas, color: [245, 158, 11] },
-        { label: 'Balance entre fases:', value: `${metricas.balanceFases}%`, color: [59, 130, 246] },
-      ];
-
-      stats.forEach((stat, idx) => {
-        doc.setTextColor(100, 100, 100);
-        doc.text(stat.label, 25, yPos + (idx * 10));
-        doc.setTextColor(...stat.color);
-        doc.setFont("helvetica", "bold");
-        doc.text(String(stat.value), 120, yPos + (idx * 10));
-        doc.setFont("helvetica", "normal");
-      });
-
-      console.log('📊 Capturando gráficos...');
-      
-      // ===== PÁGINA 2: GRÁFICOS =====
-      doc.addPage();
-      yPos = 20;
-
-      doc.setFillColor(245, 158, 11);
-      doc.roundedRect(20, yPos, pageWidth - 40, 10, 2, 2, 'F');
-      doc.setTextColor(0, 0, 0);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(12);
-      doc.text('VISUALIZACIONES Y GRÁFICOS', 25, yPos + 7);
-
-      yPos += 20;
-
-      try {
-        // Capturar Radar Chart
-        if (radarChartRef.current) {
-          console.log('Capturando Radar Chart...');
-          const radarCanvas = await html2canvas(radarChartRef.current, {
-            backgroundColor: '#0f172a',
-            scale: 2,
-            logging: true
-          });
-          const radarImg = radarCanvas.toDataURL('image/png');
-          doc.addImage(radarImg, 'PNG', 20, yPos, pageWidth - 40, 80);
-          yPos += 90;
-          console.log('✅ Radar Chart capturado');
-        } else {
-          console.warn('⚠️ radarChartRef.current es null');
-        }
-
-        // Capturar Burndown Chart
-        if (burndownChartRef.current && yPos + 80 < pageHeight - 20) {
-          console.log('Capturando Burndown Chart...');
-          const burndownCanvas = await html2canvas(burndownChartRef.current, {
-            backgroundColor: '#0f172a',
-            scale: 2
-          });
-          const burndownImg = burndownCanvas.toDataURL('image/png');
-          doc.addImage(burndownImg, 'PNG', 20, yPos, (pageWidth - 50) / 2, 70);
-          console.log('✅ Burndown Chart capturado');
-        }
-
-        // Capturar Activity Chart
-        if (activityChartRef.current && yPos + 80 < pageHeight - 20) {
-          console.log('Capturando Activity Chart...');
-          const activityCanvas = await html2canvas(activityChartRef.current, {
-            backgroundColor: '#0f172a',
-            scale: 2
-          });
-          const activityImg = activityCanvas.toDataURL('image/png');
-          doc.addImage(activityImg, 'PNG', 20 + (pageWidth - 50) / 2 + 10, yPos, (pageWidth - 50) / 2, 70);
-          console.log('✅ Activity Chart capturado');
-        }
-      } catch (captureError) {
-        console.error('❌ Error al capturar gráficos:', captureError);
-        alert(`Error al capturar gráficos: ${captureError.message}`);
-        doc.setTextColor(239, 68, 68);
-        doc.setFontSize(10);
-        doc.text('Error al capturar gráficos. Ver consola para detalles.', 25, yPos);
-      }
-
-      // ===== PÁGINA 3: INSIGHTS =====
-      doc.addPage();
-      yPos = 20;
-
-      doc.setFillColor(245, 158, 11);
-      doc.roundedRect(20, yPos, pageWidth - 40, 10, 2, 2, 'F');
-      doc.setTextColor(0, 0, 0);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(12);
-      doc.text('INSIGHTS CON INTELIGENCIA ARTIFICIAL', 25, yPos + 7);
-
-      yPos += 20;
-
-      insights.forEach((insight, idx) => {
-        if (yPos > pageHeight - 50) {
-          doc.addPage();
-          yPos = 20;
-        }
-
-        doc.setFillColor(51, 65, 85);
-        doc.roundedRect(20, yPos, pageWidth - 40, 40, 3, 3, 'F');
-        
-        doc.setTextColor(245, 158, 11);
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(11);
-        doc.text(insight.titulo, 25, yPos + 10);
-
-        doc.setTextColor(148, 163, 184);
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(9);
-        const mensajeSplit = doc.splitTextToSize(insight.mensaje, pageWidth - 50);
-        doc.text(mensajeSplit, 25, yPos + 18);
-
-        doc.setTextColor(100, 100, 100);
-        doc.setFont("helvetica", "italic");
-        doc.setFontSize(8);
-        doc.text(`→ ${insight.accion}`, 25, yPos + 35);
-
-        yPos += 48;
-      });
-
-      // Footer
-      const pageCount = doc.internal.getNumberOfPages();
-      for (let i = 1; i <= pageCount; i++) {
-        doc.setPage(i);
-        doc.setFillColor(240, 240, 240);
-        doc.rect(0, pageHeight - 20, pageWidth, 20, 'F');
-        doc.setTextColor(100, 100, 100);
-        doc.setFontSize(8);
-        doc.text('Generado con SOSTAC FLOW | Jairo Amaya - Full Stack Marketer', 20, pageHeight - 10);
-        doc.text(`Página ${i} de ${pageCount}`, pageWidth - 40, pageHeight - 10);
-      }
-
-      console.log('💾 Guardando PDF...');
-      const fileName = `${proyecto.client.replace(/\s+/g, '_')}_Analytics_Report_${new Date().toISOString().split('T')[0]}.pdf`;
-      doc.save(fileName);
-      
-      console.log('✅ PDF generado exitosamente');
-      alert('✅ PDF generado y descargado correctamente!');
-      
-    } catch (error) {
-      console.error('❌ Error fatal:', error);
-      alert(`❌ ERROR: ${error.message}\n\nRevisa la consola para más detalles`);
-    }
-  };
-
   if (!proyecto) return null;
 
   return (
@@ -536,10 +230,11 @@ export default function DashboardAnalytics({ proyecto, onClose }) {
           
           <div className="flex gap-3 items-center">
             <button 
-              onClick={generateAnalyticsPDF}
-              className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold rounded-lg transition-all flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105"
+              disabled
+              className="px-4 py-2 bg-slate-700 text-slate-400 font-bold rounded-lg flex items-center gap-2 cursor-not-allowed opacity-60"
+              title="Función disponible próximamente"
             >
-              <Download size={18} /> Exportar PDF (DIAGNÓSTICO)
+              <Lock size={18} /> Exportar PDF - Próximamente
             </button>
             <button onClick={onClose} className="p-2 text-slate-500 hover:text-white transition-colors">
               <X size={20} />
@@ -612,7 +307,7 @@ export default function DashboardAnalytics({ proyecto, onClose }) {
 
         <div className="grid lg:grid-cols-3 gap-8 mb-8">
           
-          <div ref={radarChartRef} className={`${styles.glassCard} p-6 rounded-2xl lg:col-span-2`}>
+          <div className={`${styles.glassCard} p-6 rounded-2xl lg:col-span-2`}>
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-bold text-white flex items-center gap-2">
                 <BarChart3 className="text-amber-500" size={20} />
@@ -654,7 +349,7 @@ export default function DashboardAnalytics({ proyecto, onClose }) {
             <div className="grid grid-cols-3 gap-4 mt-6">
               {datosFases.map((fase, idx) => (
                 <div key={idx} className="text-center">
-                  <div className="text-2xl mb-1">{fases[idx].icon}</div>
+                  <div className="text-2xl mb-1">{fase.icon}</div>
                   <div className="text-xs text-slate-500">{fase.fase}</div>
                   <div className="text-lg font-bold text-white">{fase.completitud}%</div>
                 </div>
@@ -718,7 +413,7 @@ export default function DashboardAnalytics({ proyecto, onClose }) {
 
         <div className="grid lg:grid-cols-2 gap-8 mb-8">
           
-          <div ref={burndownChartRef} className={`${styles.glassCard} p-6 rounded-2xl`}>
+          <div className={`${styles.glassCard} p-6 rounded-2xl`}>
             <h3 className="text-xl font-bold text-white flex items-center gap-2 mb-6">
               <TrendingDown className="text-blue-400" size={20} />
               Gráfica de Avance
@@ -781,7 +476,7 @@ export default function DashboardAnalytics({ proyecto, onClose }) {
             </ResponsiveContainer>
           </div>
 
-          <div ref={activityChartRef} className={`${styles.glassCard} p-6 rounded-2xl`}>
+          <div className={`${styles.glassCard} p-6 rounded-2xl`}>
             <h3 className="text-xl font-bold text-white flex items-center gap-2 mb-6">
               <BarChart3 className="text-purple-400" size={20} />
               Distribución de Actividad
