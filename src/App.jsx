@@ -504,14 +504,14 @@ const [showAnalytics, setShowAnalytics] = useState(false);
       />
     );
   }
-  // --- PUERTA DE ACCESO AL REPORTE EJECUTIVO (VERSIÓN BLINDADA) ---
-  if (showExecutiveReport && selectedProject && selectedProject.id) {
+  // --- PUERTA DE ACCESO LIMPIA ---
+  if (showExecutiveReport && selectedProject) {
     return (
       <ExecutiveReport 
         proyecto={selectedProject} 
         metricas={{ 
-          velocityScore: projects.find(p => p && p.id === selectedProject.id)?.progress || 0,
-          puntajeSalud: ((projects.find(p => p && p.id === selectedProject.id)?.progress || 0) / 10).toFixed(1) 
+          velocityScore: selectedProject.progress || 0,
+          puntajeSalud: ((selectedProject.progress || 0) / 10).toFixed(1) 
         }}
         config={reportConfig}
         onClose={() => setShowExecutiveReport(false)} 
