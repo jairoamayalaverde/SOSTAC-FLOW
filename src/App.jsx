@@ -461,6 +461,19 @@ export default function App() {
     doc.save(`${selectedProject.client.replace(/\s+/g, '_')}_Strategy_Report.pdf`);
   };
 
+  const handleBackToHome = () => {
+    // Limpiar todos los estados relacionados con el proyecto
+    setEditingTask(null);
+    setActivePhase('situation');
+    setViewMode('admin');
+    setIsReportModalOpen(false);
+    
+    // Usar setTimeout para asegurar que la limpieza ocurra antes del cambio de vista
+    setTimeout(() => {
+      setSelectedProject(null);
+    }, 0);
+  };
+
   const handleHardReset = () => {
     if(confirm('⚠️ ¿REINICIAR SISTEMA? \n\nAtención: Esta acción borrará todos los proyectos guardados localmente. Úsala solo si necesitas restaurar la versión original.')) {
       localStorage.removeItem('ja_os_projects');
@@ -641,12 +654,23 @@ export default function App() {
                                                   </button>
                                               </div>
                                           </div>
-                                          <div className="flex gap-1 mt-4">
-                                              {phases.map((ph, idx) => { 
-                                                  const pTasks = project.data[ph.id] || []; 
-                                                  const hasProgress = pTasks.some(t => t.completed); 
-                                                  return (<div key={idx} className={`h-1 flex-1 rounded-full ${hasProgress ? 'bg-amber-500' : 'bg-slate-800'}`}></div>) 
-                                              })}
+                                          <div className="mt-4">
+                                              <div className="flex gap-1 mb-1">
+                                                  {phases.map((ph, idx) => { 
+                                                      const pTasks = project.data[ph.id] || []; 
+                                                      const hasProgress = pTasks.some(t => t.completed); 
+                                                      return (<div key={idx} className={`h-1 flex-1 rounded-full ${hasProgress ? 'bg-amber-500' : 'bg-slate-800'}`}></div>) 
+                                                  })}
+                                              </div>
+                                              <div className="flex gap-1">
+                                                  {phases.map((ph, idx) => (
+                                                      <div key={idx} className="flex-1 text-center">
+                                                          <span className="text-[9px] font-bold text-slate-600 uppercase">
+                                                              {ph.name.charAt(0)}
+                                                          </span>
+                                                      </div>
+                                                  ))}
+                                              </div>
                                           </div>
                                       </div>
                                   ))}
@@ -780,7 +804,7 @@ export default function App() {
       <div className="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-md border-b border-slate-800 shadow-xl">
         <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <button onClick={() => setSelectedProject(null)} className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all">
+            <button onClick={handleBackToHome} className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all">
               <ArrowLeft size={20} />
             </button>
             <div>
