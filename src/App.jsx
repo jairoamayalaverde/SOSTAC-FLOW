@@ -824,6 +824,8 @@ export default function App() {
         </div>
       </div>
         
+        {/* CONTENEDOR CENTRADO PARA EL EDITOR */}
+        <div className="max-w-7xl mx-auto px-4">
         <div className="mb-8 overflow-x-auto pb-4 scrollbar-hide">
           <div className="flex min-w-max gap-3 p-1">
           {phases.map((phase, idx) => {
@@ -977,6 +979,8 @@ export default function App() {
                 </div>
             </div>
         </div>
+        </div>
+        {/* FIN DEL CONTENEDOR CENTRADO */}
 
       <footer className="relative z-10 border-t border-slate-800 bg-slate-950/80 backdrop-blur-md pt-12 pb-12 mt-12">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
