@@ -30,7 +30,7 @@ const fases = [
 ];
 
 export default function DashboardAnalytics({ proyecto, onClose }) {
-  // ✅ VALIDACIÓN DE SEGURIDAD
+  // ✅ VALIDACIÓN DE SEGURIDAD - Evita crash si proyecto es null
   if (!proyecto || !proyecto.data) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
@@ -38,8 +38,7 @@ export default function DashboardAnalytics({ proyecto, onClose }) {
       </div>
     );
   }
-
-  // ... resto de tu código existente (useMemo, etc.)
+  
   // CÁLCULO DE MÉTRICAS
   const metricas = useMemo(() => {
     if (!proyecto) return {};
