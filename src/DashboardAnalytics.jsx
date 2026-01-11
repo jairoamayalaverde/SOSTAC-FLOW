@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useRef } from 'react';
 import { 
   TrendingUp, TrendingDown, AlertCircle, CheckCircle, 
   Calendar, Target, Zap, Activity, BarChart3, 
@@ -38,6 +38,17 @@ export default function DashboardAnalytics({ proyecto, onClose }) {
       </div>
     );
   }
+
+  // 🛡️ REF PARA PREVENIR ACTUALIZACIONES DESPUÉS DEL UNMOUNT
+  const isMountedRef = useRef(true);
+  
+  useEffect(() => {
+    isMountedRef.current = true;
+    
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
   
   // CÁLCULO DE MÉTRICAS
   const metricas = useMemo(() => {
