@@ -504,20 +504,20 @@ const [showAnalytics, setShowAnalytics] = useState(false);
       />
     );
   }
-  // --- NUEVA: PUERTA DE ACCESO AL REPORTE EJECUTIVO (ESTILO VICTORY SHOES) ---
-if (showExecutiveReport && selectedProject) {
-  return (
-    <ExecutiveReport 
-      proyecto={selectedProject} 
-      metricas={{ 
-        velocityScore: projects.find(p => p.id === selectedProject.id)?.progress || 0, // Usamos el progreso real como base
-        puntajeSalud: ((projects.find(p => p.id === selectedProject.id)?.progress || 0) / 10).toFixed(1) 
-      }}
-      config={reportConfig}
-      onClose={() => setShowExecutiveReport(false)} 
-    />
-  );
-}
+  // --- PUERTA DE ACCESO AL REPORTE EJECUTIVO (VERSIÓN BLINDADA) ---
+  if (showExecutiveReport && selectedProject && selectedProject.id) {
+    return (
+      <ExecutiveReport 
+        proyecto={selectedProject} 
+        metricas={{ 
+          velocityScore: projects.find(p => p && p.id === selectedProject.id)?.progress || 0,
+          puntajeSalud: ((projects.find(p => p && p.id === selectedProject.id)?.progress || 0) / 10).toFixed(1) 
+        }}
+        config={reportConfig}
+        onClose={() => setShowExecutiveReport(false)} 
+      />
+    );
+  }
   // --- RENDER: LOGIN SCREEN ---
   if (authLoading) return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-amber-500 font-bold animate-pulse">Cargando Sistema...</div>;
 
