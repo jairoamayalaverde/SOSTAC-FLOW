@@ -727,18 +727,6 @@ if (showExecutiveReport && selectedProject) {
         }}
       />
 
-      {/* FOOTER */}
-      <footer className="relative z-10 border-t border-slate-800 bg-slate-950/80 backdrop-blur-md pt-12 pb-12 mt-12">
-        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="md:col-span-2"><a href="https://jairoamaya.co" target="_blank" rel="noopener noreferrer" className="group block"><h4 className={`text-2xl font-bold text-white mb-2 group-hover:text-amber-500 transition-colors ${styles.fontHeading}`}>JAIRO AMAYA</h4><div className="flex items-center gap-2"><span className="h-0.5 w-8 bg-amber-500"></span><p className="text-amber-500 font-bold text-sm tracking-wider uppercase group-hover:text-white transition-colors">Full Stack Marketer</p></div></a><p className="text-slate-500 text-sm mt-4 max-w-sm leading-relaxed">Gestión estratégica de proyectos de consultoría digital.</p></div>
-            <div><h5 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Recursos</h5><ul className="space-y-2 text-sm text-slate-500"><li><a href="https://jairoamaya.co/auditor-seo-interactivo/" target="_blank" className="hover:text-amber-500 transition-colors">Auditor SEO</a></li><li><a href="https://jairoamaya.co/matriz-de-prioridad-seo/" target="_blank" className="hover:text-amber-500 transition-colors">Matriz de Prioridad</a></li></ul></div>
-            <div className="flex flex-col md:items-end"><h5 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Estado</h5><div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 mb-4"><div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div><span className="text-xs text-green-500 font-mono font-bold">SYSTEM OPERATIONAL</span></div><div className="flex gap-4 mb-4"><a href="https://www.linkedin.com/in/jairoamayalaverde/" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Linkedin size={18} /></a><a href="https://twitter.com/JAIROAMAYA" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Twitter size={18} /></a><a href="https://jairoamaya.co" target="_blank" className="text-slate-500 hover:text-white transition-colors bg-slate-900 p-2 rounded-lg border border-slate-800 hover:border-slate-600"><Globe size={18} /></a></div></div>
-        </div>
-        <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600"><p>© 2026 Jairo Amaya Full Stack Marketer. All rights reserved.</p><p className="font-mono">v9.8.0 CLOUD EDITION (MASTER)</p></div>
-      </footer>
-    </div>
-  );
-
   // --- RENDER: VISTA DE PROYECTO (COCKPIT) ---
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-amber-500/30 flex flex-col justify-between">
