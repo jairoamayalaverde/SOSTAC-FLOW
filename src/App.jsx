@@ -348,6 +348,23 @@ export default function App() {
     }
   };
 
+  const deleteProject = async (projectId) => {
+    if (!confirm('¿Eliminar este proyecto permanentemente? Esta acción no se puede deshacer.')) return;
+    
+    // Eliminar de Supabase
+    if (session) {
+      await supabase.from('projects').delete().eq('id', projectId);
+    }
+    
+    // Eliminar localmente
+    setProjects(prev => prev.filter(p => p.id !== projectId));
+    
+    // Si el proyecto eliminado estaba seleccionado, volver al home
+    if (selectedProject && selectedProject.id === projectId) {
+      setSelectedProject(null);
+    }
+  };
+
   const updateTaskField = (taskId, field, value) => {
     const newData = { ...selectedProject.data };
     newData[activePhase] = newData[activePhase].map(t => t.id === taskId ? { ...t, [field]: value } : t);
@@ -651,6 +668,13 @@ export default function App() {
                                                       className="p-3 bg-amber-500 text-slate-900 rounded-xl font-bold text-[10px] z-[100] relative border-2 border-white shadow-xl hover:scale-105 transition-all"
                                                   >
                                                       MÉTRICAS
+                                                  </button>
+                                                  <button 
+                                                      onClick={(e) => { e.stopPropagation(); deleteProject(project.id); }}
+                                                      className="p-3 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-xl font-bold text-[10px] z-[100] relative border-2 border-red-500/50 hover:border-red-500 shadow-xl hover:scale-105 transition-all"
+                                                      title="Eliminar proyecto"
+                                                  >
+                                                      <Trash2 size={14} />
                                                   </button>
                                               </div>
                                           </div>
