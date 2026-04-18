@@ -149,7 +149,7 @@ const phases = [
   { id: 'control', name: 'Control', icon: '📈', color: 'text-cyan-400' }
 ];
 
-function AppContent() {
+export default function App() {
   const [session, setSession] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [email, setEmail] = useState('');
