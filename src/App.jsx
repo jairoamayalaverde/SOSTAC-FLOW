@@ -175,6 +175,18 @@ export default function App() {
   
   const initializedRef = useRef(false);
 
+  // --- CONFIG POR DEFECTO PARA "VISTA CLIENTE" (Executive Report directo) ---
+  const defaultReportConfig = {
+    consultantName: 'Jairo Amaya',
+    consultantTitle: 'Full Stack Marketer',
+    consultantEmail: session?.user?.email || '',
+    consultantWebsite: 'jairoamaya.co',
+    consultantServices: 'Consultoría Estratégica SOSTAC',
+    logo: null,
+    reportType: 'executive',
+    includeSections: { metrics: true, sostacPhases: true, tasks: true, insights: true, timeline: true, recommendations: true }
+  };
+
   // --- SESIÓN Y CARGA INICIAL ---
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -845,14 +857,10 @@ export default function App() {
 
           <div className="flex items-center gap-3">
              <button 
-                onClick={() => setViewMode(viewMode === 'admin' ? 'client' : 'admin')}
-                className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all border ${
-                    viewMode === 'admin' 
-                    ? 'bg-slate-800 border-slate-700 text-slate-300' 
-                    : 'bg-green-500/10 border-green-500/50 text-green-500'
-                }`}
+                onClick={() => { setReportConfig(defaultReportConfig); setShowExecutiveReport(true); }}
+                className="px-3 py-1.5 rounded-md text-xs font-bold transition-all border bg-green-500/10 border-green-500/50 text-green-500"
             >
-                {viewMode === 'admin' ? 'MODO EDITOR' : 'VISTA CLIENTE'}
+                VISTA CLIENTE
             </button>
             
             <button 
