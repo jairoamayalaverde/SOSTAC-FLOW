@@ -113,29 +113,32 @@ const ExecutiveReport = ({ proyecto, metricas, config, onClose }) => {
         )}
 
         {/* FASES SOSTAC */}
-        {config?.includeSections?.sostacPhases && (
-          <section className="p-12">
-            <h2 className="text-xl font-bold mb-8 flex items-center gap-2">
-              <BarChart3 className="text-amber-500" size={20} /> Análisis de Madurez SOSTAC
-            </h2>
-            <div className="grid grid-cols-2 gap-4">
-              {reportData.fases.map(f => (
-                <div key={f.id} className="p-5 rounded-xl bg-slate-50 border border-slate-100 flex items-center gap-4">
-                   <div className="text-3xl">{f.icon}</div>
-                   <div className="flex-1">
-                      <div className="flex justify-between text-xs font-bold mb-1">
-                        <span>{f.name}</span>
-                        <span>{f.completitud}%</span>
-                      </div>
-                      <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                        <div className="bg-amber-500 h-full" style={{width: `${f.completitud}%`}}></div>
-                      </div>
-                   </div>
+{config?.includeSections?.sostacPhases && (
+  <section className="p-12">
+    <h2 className="text-xl font-bold mb-8 flex items-center gap-2">
+      <BarChart3 className="text-amber-500" size={20} /> Análisis de Madurez SOSTAC
+    </h2>
+    <div className="grid grid-cols-2 gap-4">
+      {reportData.fases.map(f => (
+        <div key={f.id} className="p-5 rounded-xl bg-slate-50 border border-slate-100 flex items-center gap-4">
+           <div className="text-3xl">{f.icon}</div>
+           <div className="flex-1">
+              <div className="flex justify-between items-baseline mb-1">
+                <div>
+                  <div className="text-sm font-bold text-slate-900">{f.clientLabel}</div>
+                  <div className="text-[10px] text-amber-600 font-bold uppercase tracking-wider">SOSTAC · {f.name}</div>
                 </div>
-              ))}
-            </div>
-          </section>
-        )}
+                <span className="text-xs font-bold text-slate-500">{f.completitud}%</span>
+              </div>
+              <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                <div className="bg-amber-500 h-full" style={{width: `${f.completitud}%`}}></div>
+              </div>
+           </div>
+        </div>
+      ))}
+    </div>
+  </section>
+)}
 
         {/* RECOMENDACIONES */}
         {config?.includeSections?.recommendations && (
