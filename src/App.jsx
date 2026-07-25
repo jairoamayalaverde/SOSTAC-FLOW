@@ -786,6 +786,8 @@ export default function App() {
                   <ul className="space-y-2 text-sm text-slate-500">
                       <li><a href="https://jairoamaya.co/auditor-seo-interactivo/" target="_blank" className="hover:text-amber-500 transition-colors">Auditor SEO</a></li>
                       <li><a href="https://jairoamaya.co/matriz-de-prioridad-seo/" target="_blank" className="hover:text-amber-500 transition-colors">Matriz de Prioridad</a></li>
+                      <li><a href="https://scannerseo.jairoamaya.co/" target="_blank" className="hover:text-amber-500 transition-colors">Scanner SEO</a></li>
+                      <li><a href="https://jairoamaya.co/content-pro/" target="_blank" className="hover:text-amber-500 transition-colors">Content PRO</a></li>
                   </ul>
               </div>
 
