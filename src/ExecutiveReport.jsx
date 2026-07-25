@@ -10,14 +10,14 @@ const ExecutiveReport = ({ proyecto, metricas, config, onClose }) => {
 
   // PROCESAMIENTO DE DATOS SOSTAC
   const reportData = useMemo(() => {
-    const fasesConfig = [
-      { id: 'situation', name: 'Situación', icon: '📊', color: '#3b82f6' },
-      { id: 'objectives', name: 'Objetivos', icon: '🎯', color: '#22c55e' },
-      { id: 'strategy', name: 'Estrategia', icon: '🧠', color: '#a855f7' },
-      { id: 'tactics', name: 'Tácticas', icon: '⚡', color: '#f59e0b' },
-      { id: 'action', name: 'Acción', icon: '🚀', color: '#ef4444' },
-      { id: 'control', name: 'Control', icon: '📈', color: '#06b6d4' }
-    ];
+   const fasesConfig = [
+  { id: 'situation', name: 'Situación', clientLabel: 'Dónde estás hoy', icon: '📊', color: '#3b82f6' },
+  { id: 'objectives', name: 'Objetivos', clientLabel: 'A dónde vas', icon: '🎯', color: '#22c55e' },
+  { id: 'strategy', name: 'Estrategia', clientLabel: 'El camino', icon: '🧠', color: '#a855f7' },
+  { id: 'tactics', name: 'Tácticas', clientLabel: 'Las herramientas', icon: '⚡', color: '#f59e0b' },
+  { id: 'action', name: 'Acción', clientLabel: 'En marcha', icon: '🚀', color: '#ef4444' },
+  { id: 'control', name: 'Control', clientLabel: 'Los resultados', icon: '📈', color: '#06b6d4' }
+];
 
     const fasesProcessed = fasesConfig.map(f => {
       // Usamos el encadenamiento opcional ?. para evitar crashes
