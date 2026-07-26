@@ -5,9 +5,8 @@ import {
   ArrowLeft, ExternalLink, BarChart3, FileText, RefreshCw,
   Activity, Zap, Target, Layers, ArrowUpRight, Share2, 
   Github, Twitter, Linkedin, Globe, HardDrive, Cpu, Terminal,
-  Database, Network, Download
+  Database, Network
 } from 'lucide-react';
-import jsPDF from 'jspdf';
 import { createClient } from '@supabase/supabase-js';
 import DashboardAnalytics from './DashboardAnalytics';
 import ExecutiveReport from './ExecutiveReport';
@@ -175,11 +174,11 @@ export default function App() {
   
   const initializedRef = useRef(false);
 
-  // --- CONFIG POR DEFECTO PARA "VISTA CLIENTE" (Executive Report directo) ---
+  // --- CONFIG POR DEFECTO PARA "VISTA REPORTE" (Executive Report directo) ---
   const defaultReportConfig = {
     consultantName: 'Jairo Amaya',
     consultantTitle: 'Full Stack Marketer',
-    consultantEmail: session?.user?.email || '',
+    consultantEmail: 'hola@jairoamaya.co',
     consultantWebsite: 'jairoamaya.co',
     consultantServices: 'Consultoría Estratégica SOSTAC',
     logo: null,
@@ -381,113 +380,6 @@ export default function App() {
     const newData = { ...selectedProject.data };
     newData[activePhase] = newData[activePhase].map(t => t.id === taskId ? { ...t, [field]: value } : t);
     updateProjectData(newData);
-  };
-
-  const generatePDF = () => {
-    if (!selectedProject) return;
-    const doc = new jsPDF();
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    
-    doc.setFillColor(15, 23, 42); 
-    doc.rect(0, 0, pageWidth, 40, 'F');
-    
-    doc.setTextColor(245, 158, 11);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(22);
-    doc.text('SOSTAC FLOW', 20, 20);
-    
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.text('REPORTE EJECUTIVO DE ESTRATEGIA', 20, 30);
-
-    doc.setTextColor(50, 50, 50);
-    doc.setFontSize(16);
-    doc.setFont("helvetica", "bold");
-    doc.text(selectedProject.name, 20, 55);
-
-    doc.setFontSize(10);
-    doc.setTextColor(100, 100, 100);
-    doc.setFont("helvetica", "normal");
-    doc.text(`Cliente: ${selectedProject.client}`, 20, 62);
-    doc.text(`Industria: ${selectedProject.industry}`, 20, 67);
-    doc.text(`Fecha: ${selectedProject.startDate}`, 150, 62);
-    doc.text(`Progreso: ${selectedProject.progress}%`, 150, 67);
-
-    doc.setDrawColor(200, 200, 200);
-    doc.line(20, 75, pageWidth - 20, 75);
-
-    let yPos = 85;
-
-    phases.forEach(phase => {
-        const tasks = selectedProject.data[phase.id] || [];
-        
-        doc.setFillColor(245, 158, 11);
-        doc.roundedRect(20, yPos, 170, 8, 1, 1, 'F');
-        doc.setTextColor(0, 0, 0);
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(10);
-        doc.text(`${phase.name.toUpperCase()} PHASE`, 25, yPos + 5.5);
-        
-        yPos += 15;
-
-        if (tasks.length === 0) {
-            doc.setTextColor(150, 150, 150);
-            doc.setFont("helvetica", "italic");
-            doc.text("Sin items registrados en esta fase.", 25, yPos);
-            yPos += 10;
-        } else {
-            tasks.forEach(task => {
-                doc.setDrawColor(0, 0, 0);
-                if(task.completed) {
-                    doc.setFillColor(34, 197, 94);
-                    doc.rect(25, yPos - 3, 3, 3, 'F');
-                } else {
-                    doc.setFillColor(255, 255, 255);
-                    doc.rect(25, yPos - 3, 3, 3, 'S');
-                }
-
-                doc.setTextColor(0, 0, 0);
-                doc.setFont("helvetica", task.completed ? "normal" : "bold");
-                const splitText = doc.splitTextToSize(task.text, 150);
-                doc.text(splitText, 32, yPos);
-                
-                yPos += (splitText.length * 5); 
-
-                if(task.notes) {
-                    doc.setTextColor(100, 100, 100);
-                    doc.setFont("helvetica", "italic");
-                    doc.setFontSize(9);
-                    const splitNotes = doc.splitTextToSize(`Nota: ${task.notes}`, 140);
-                    doc.text(splitNotes, 32, yPos);
-                    yPos += (splitNotes.length * 4) + 2;
-                    doc.setFontSize(10);
-                } else {
-                    yPos += 2;
-                }
-
-                if (yPos > pageHeight - 30) {
-                    doc.addPage();
-                    yPos = 20;
-                }
-            });
-        }
-        yPos += 5;
-    });
-
-    const pageCount = doc.internal.getNumberOfPages();
-    for(let i = 1; i <= pageCount; i++) {
-        doc.setPage(i);
-        doc.setFillColor(240, 240, 240);
-        doc.rect(0, pageHeight - 20, pageWidth, 20, 'F');
-        doc.setTextColor(100, 100, 100);
-        doc.setFontSize(8);
-        doc.text('Generado con SOSTAC FLOW | Jairo Amaya - Full Stack Marketer', 20, pageHeight - 10);
-        doc.text(`jairoamaya.co`, pageWidth - 40, pageHeight - 10);
-    }
-
-    doc.save(`${selectedProject.client.replace(/\s+/g, '_')}_Strategy_Report.pdf`);
   };
 
   const handleBackToHome = () => {
@@ -724,10 +616,6 @@ export default function App() {
                                       <div className="p-2 bg-amber-500/10 rounded-md text-amber-500 group-hover:text-white group-hover:bg-amber-500 transition-colors"><Plus size={16} /></div>
                                       <div><div className="text-sm font-bold text-white">Nueva Estrategia</div><div className="text-xs text-slate-500">Crear desde template</div></div>
                                   </button>
-                                  <button onClick={generatePDF} className="w-full text-left p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 transition-all flex items-center gap-3 group">
-                                      <div className="p-2 bg-blue-500/10 rounded-md text-blue-500 group-hover:text-white group-hover:bg-blue-500 transition-colors"><Download size={16} /></div>
-                                      <div><div className="text-sm font-bold text-white">Generar Reporte PDF</div><div className="text-xs text-slate-500">Descargar estado actual</div></div>
-                                  </button>
                               </div>
                               <div className="mt-8 pt-6 border-t border-slate-800">
                                   <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Integraciones</h4>
@@ -860,21 +748,13 @@ export default function App() {
                 onClick={() => { setReportConfig(defaultReportConfig); setShowExecutiveReport(true); }}
                 className="px-3 py-1.5 rounded-md text-xs font-bold transition-all border bg-green-500/10 border-green-500/50 text-green-500"
             >
-                VISTA CLIENTE
-            </button>
-            
-            <button 
-              onClick={generatePDF} 
-              className="p-2 text-amber-500 hover:text-white transition-colors" 
-              title="Descargar Reporte PDF"
-            >
-              <Download size={18} />
+                VISTA REPORTE
             </button>
 
             <button 
               onClick={() => setIsReportModalOpen(true)} 
               className="p-2 text-amber-500 hover:text-white transition-colors border-l border-slate-800 ml-1 pl-3" 
-              title="Modo Presentación Ejecutivo"
+              title="Personalizar reporte"
             >
               <FileText size={18} />
             </button>
